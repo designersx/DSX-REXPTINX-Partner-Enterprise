@@ -20,6 +20,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 import BusinessIcon from '@mui/icons-material/Business';
 import AlertCustomerDelete from './AlertCustomerDelete';
+import { FormControl, InputLabel, Select } from "@mui/material";
 // project-imports
 import IconButton from 'components/@extended/IconButton';
 import MainCard from 'components/MainCard';
@@ -103,6 +104,8 @@ export default function TransactionHistoryCard() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
+  const [planFilter, setPlanFilter] = useState("all");
+
   // const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -322,6 +325,16 @@ export default function TransactionHistoryCard() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // reset to first page
   };
+  const filteredAgents = agents
+    .filter((agent) => {
+      if (planFilter === "all") return true;
+      if (planFilter === "other") {
+        return agent.agentPlan !== "smb" && agent.agentPlan !== "Enterprise";
+      }
+      return agent.agentPlan === planFilter;
+    })
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  console.log(filteredAgents, "filteredAgents")
   //LOCK
   useEffect(() => {
     const client = new RetellWebClient();
@@ -348,136 +361,52 @@ export default function TransactionHistoryCard() {
       {isModalOpen ? (
         <AgentGeneralInfoModal open={isModalOpen} onClose={handleModalClose} onSubmit={handleAgentSubmit} />
       ) : (
+
         <MainCard
           title={<Typography variant="h5">Your Agents</Typography>}
           content={false}
           secondary={
-            <Button variant="contained" startIcon={<Add />} size="large" onClick={handleCreateAgentClick}>
-              <Link href="#" variant="h5" color="white" component="button" sx={{ textDecoration: 'none' }}>
-                Create Agent
-              </Link>
-            </Button>
+            <>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <FormControl sx={{ minWidth: 200, mb: 2 }}>
+                  <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
+                  <Select
+                    labelId="agent-plan-filter"
+                    value={planFilter}
+                    onChange={(e) => setPlanFilter(e.target.value)}
+                  >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="smb">SMB</MenuItem>
+                    <MenuItem value="Enterprise">Enterprise</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Button variant="contained" startIcon={<Add />} size="large" onClick={handleCreateAgentClick}>
+                  <Link href="#" variant="h5" color="white" component="button" sx={{ textDecoration: 'none' }}>
+                    Create Agent
+                  </Link>
+                </Button>
+              </Stack>
+            </>
           }
         >
-          {/* <Search value={searchTerm} onChange={setSearchTerm} /> */}
-          {/* <TableContainer>
-          <Table sx={{ minWidth: 560 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Avatar</TableCell>
-                <TableCell>Agent Name</TableCell>
-                <TableCell>Business Name</TableCell>
-                <TableCell>Business Category</TableCell>
-                <TableCell>Date/Time</TableCell>
-                <TableCell align="center">Mins Assigned</TableCell>
-                <TableCell align="center">Mins Remaining</TableCell>
-             
-                <TableCell align="center">Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {loading ? (
-                <Loader />
-              ) : agents.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} align="center">
-                    <Typography>No agents found.</Typography>
-                  </TableCell>
-                </TableRow>
-              ) : agents.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <TableRow hover key={index}>
-                 
-                    <TableCell align="center">
-                      <Stack direction="row" sx={{ alignItems: "center", gap: 2 }}>
-                        <Avatar
-                          alt={row.agentName}
-                          src={row.avatar?.startsWith("/") ? row.avatar : `/${row.avatar}`}
-                        />
 
-                      </Stack>
-                    </TableCell>
-
-                  
-                    <TableCell align="center">
-                      <Typography>{row.agentName}</Typography>
-                    </TableCell>
-
-                   
-                    <TableCell>
-                      <Typography>{row?.businessDetails?.name}</Typography>
-                    </TableCell>
-
-                   
-                    <TableCell>
-                      <Typography>{row?.businessDetails?.BusinessType}</Typography>
-                    </TableCell>
-
-                  
-                    <TableCell>
-                      <Stack>
-                        <Typography> {new Date(row.createdAt).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}</Typography>
-
-                      </Stack>
-                    </TableCell>
-                  
-                    <TableCell align="center">
-                      <Typography>{Math.floor(row.planMinutes / 60)}</Typography>
-                    </TableCell>
-
-                   
-                    <TableCell align="center">
-                      <Typography>{Math.floor(row.mins_left / 60)}</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Stack
-                        direction="row"
-                        sx={{ alignItems: "center", justifyContent: "center", gap: 1 }}
-                      >
-                        <Tooltip title="View call history">
-                          <IconButton
-                            color="secondary"
-                            onClick={() => router.push(`/build/agents/agentdetails/${row?.agent_id}`)}
-                          >
-                            <Eye />
-                          </IconButton>
-                        </Tooltip>
-
-                        <Tooltip title="Test Agent">
-                          <Chip
-                            size="small"
-                            color={getValidColor("primary")}
-                            label="Test Call"
-                            onClick={() => handleOpenDialog(row)}
-                          />
-                        </Tooltip>
-
-                       
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer> */}
-
-          <Grid container spacing={5} style={{ alignItems: 'stretch', display: 'flex' }}>
+          <Grid container spacing={5} sx={{
+            alignItems: 'stretch',
+            display: 'flex',
+            p: 3   // p = padding (theme spacing units, 1 = 8px)
+          }}>
             {loading ? (
               <Loader />
-            ) : agents.length === 0 ? (
+            ) : filteredAgents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              agents
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              filteredAgents
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((agent, index) => (
                   <Grid
@@ -503,17 +432,12 @@ export default function TransactionHistoryCard() {
                             disablePadding
                             secondaryAction={
                               <>
-                              
-                              <IconButton size="large" color="primary" sx={{ minWidth: 30 }} onClick={() => handleOpenDialog(agent)}>
-                                <CallIcon fontSize="small" />
-                                
-                              </IconButton>
-                              <Tooltip title="View call history">
+                                <Tooltip title="View call history">
                                   <IconButton color="secondary" onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}>
                                     <Eye />
                                   </IconButton>
                                 </Tooltip>
-                                </>
+                              </>
                             }
                           >
                             <ListItemAvatar>
@@ -627,7 +551,7 @@ export default function TransactionHistoryCard() {
                                 <ListItemIcon style={{ marginTop: '3px' }}>
                                   <Link2 size={18} />
                                 </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentPlan}</Typography>} />
+                                <ListItemText primary={<Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>{agent?.agentPlan.toUpperCase()}</Typography>} />
                               </ListItem>
                             </List>
                           </Grid>
@@ -669,6 +593,15 @@ export default function TransactionHistoryCard() {
                           </Box>
                         </Box>
                       </Grid>
+                      {/* <Stack
+                        direction="row"
+                        className="hideforPDf"
+                        sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
+                      >
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          Updated 3 days ago
+                        </Typography>
+                      </Stack> */}
                       <Stack
                         direction="row"
                         className="hideforPDf"
@@ -677,7 +610,25 @@ export default function TransactionHistoryCard() {
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                           Updated 3 days ago
                         </Typography>
+
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          startIcon={<CallIcon />}
+                          sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            px: 3,
+                            boxShadow: 2
+                          }}
+                          onClick={() => handleOpenDialog(agent)}
+                        >
+                          Test Agent
+                        </Button>
                       </Stack>
+
                     </Grid>
                   </Grid>
                 ))
