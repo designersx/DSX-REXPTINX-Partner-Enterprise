@@ -1,8 +1,34 @@
-"use client";
+'use client';
 
 import Link from 'next/link';
 
 // material imports
+
+// material-ui
+
+import Fade from '@mui/material/Fade';
+
+import Menu from '@mui/material/Menu';
+
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+
+// third-party
+// import { PatternFormat } from 'react-number-format';
+// import { PDFDownloadLink } from '@react-pdf/renderer';
+
+// project-imports
+import AlertCustomerDelete from './AlertCustomerDelete';
+import CustomerModal from './CustomerModal';
+import CustomerPreview from './CustomerPreview';
+import ListSmallCard from './export-pdf/ListSmallCard';
+import Avatar from 'components/@extended/Avatar';
+
+import MainCard from 'components/MainCard';
 import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import CardMedia from '@mui/material/CardMedia';
@@ -16,20 +42,20 @@ import CallIcon from '@mui/icons-material/Call';
 // project imports
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
 import IconButton from 'components/@extended/IconButton';
-import MainCard from 'components/MainCard';
+
 import { APP_DEFAULT_PATH } from 'config';
 import GRID_COMMON_SPACING from 'config';
 
 // assets
-import { Star1 } from '@wandersonalwes/iconsax-react';
+import { Link2, Sms, Star1 } from '@wandersonalwes/iconsax-react';
 import { useEffect, useRef, useState } from 'react';
 import { fetchAgent } from '../../../Services/auth'; // ✅ your API call
 import CallDialog from 'components/CallDialog';
-import { RetellWebClient } from "retell-client-js-sdk";
+import { RetellWebClient } from 'retell-client-js-sdk';
 import axios from 'axios';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
-
+import MoreIcon from 'components/@extended/MoreIcon';
 
 const breadcrumbLinks = [{ title: 'home', to: APP_DEFAULT_PATH }, { title: 'Demo Agents view' }];
 
@@ -42,34 +68,33 @@ export default function DemoAgentsViewPage() {
   const [callLoading, setCallLoading] = useState(false);
   const isEndingRef = useRef(false);
   const [isCallInProgress, setIsCallInProgress] = useState(false);
-  const [callId, setCallId] = useState("");
+  const [callId, setCallId] = useState('');
   const [retellWebClient, setRetellWebClient] = useState(null);
-      const [snackbar, setSnackbar] = useState<{
-        open: boolean;
-        message: string;
-        severity: AlertColor;
-      }>({
-        open: false,
-        message: '',
-        severity: 'info',
-      });
-      
-      const handleCloseSnackbar = () => {
-        setSnackbar({ ...snackbar, open: false });
-      };
-    
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
 
-// console.log('selectedAgent',selectedAgent)
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  // console.log('selectedAgent',selectedAgent)
   useEffect(() => {
     const loadAgents = async () => {
       try {
         const res = await fetchAgent(); // ✅ call your API function
-        console.log("API response:", res);
+        console.log('API response:', res);
 
         // Assuming res is an array of agents
-        setAgents(res?.agents||[]);
+        setAgents(res?.agents || []);
       } catch (err) {
-        console.error("Error fetching agents:", err);
+        console.error('Error fetching agents:', err);
       } finally {
         setLoading(false);
       }
@@ -84,14 +109,14 @@ export default function DemoAgentsViewPage() {
       <Typography>{value}</Typography>
     </Stack>
   );
-  
+
   const handleOpenDialog = (agent: any) => {
     setSelectedAgent(agent);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
-     handleEndCall();
+    handleEndCall();
     if (isCallActive) {
       isEndingRef.current = true;
       setCallLoading(true);
@@ -108,233 +133,423 @@ export default function DemoAgentsViewPage() {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const client = new RetellWebClient();
-    client.on("call_started", () => setIsCallActive(true));
-    client.on("call_ended", () => setIsCallActive(false));
-    client.on("update", (update) => {
+    client.on('call_started', () => setIsCallActive(true));
+    client.on('call_ended', () => setIsCallActive(false));
+    client.on('update', (update) => {
       //  Mark the update clearly as AGENT message
       const customUpdate = {
         ...update,
-        source: "agent", // Add explicit source
+        source: 'agent' // Add explicit source
       };
 
       // Dispatch custom event for CallTest
-      window.dispatchEvent(
-        new CustomEvent("retellUpdate", { detail: customUpdate })
-      );
+      window.dispatchEvent(new CustomEvent('retellUpdate', { detail: customUpdate }));
     });
 
     setRetellWebClient(client);
   }, []);
 
-    const handleStartCall = async() => {
-      setCallLoading(true);
-       
-          let micPermission = await navigator.permissions.query({ name: "microphone" as PermissionName });
-  
-      if (micPermission.state !== "granted") {
-        try {
-          // Step 2: Ask for mic access
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-  
-          // Step 3: Recheck permission after user action
-          micPermission = await navigator.permissions.query({ name: "microphone" as PermissionName });
-  
-          if (micPermission.state !== "granted") {
-            setSnackbar({
+  const handleStartCall = async () => {
+    setCallLoading(true);
+
+    let micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+    if (micPermission.state !== 'granted') {
+      try {
+        // Step 2: Ask for mic access
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // Step 3: Recheck permission after user action
+        micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+        if (micPermission.state !== 'granted') {
+          setSnackbar({
             open: true,
             message: 'You must grant microphone access to start the call.',
-            severity: 'warning',
+            severity: 'warning'
           });
-        
-            return;
-          }
-        } catch (err) {
-          // User denied mic access
-          setSnackbar({
+
+          return;
+        }
+      } catch (err) {
+        // User denied mic access
+        setSnackbar({
           open: true,
           message: 'Please allow microphone permission to continue.',
-          severity: 'error',
-           });
-             setCallLoading(false);
-          // setShowCallModal(false);
-          return;
-        }
+          severity: 'error'
+        });
+        setCallLoading(false);
+        // setShowCallModal(false);
+        return;
       }
-        setCallLoading(true);
-      try {
-        const agentId = selectedAgent?.agent_id;
-        if (!agentId) throw new Error("No agent ID found");
-  
-        // Example: Initiate a call with Retell AI
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/agent/create-web-call`,
-          {
-            agent_id: agentId,
-            // Add other required parameters, e.g., phone number or call settings
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
-              "Content-Type": "application/json",
-            },
+    }
+    setCallLoading(true);
+    try {
+      const agentId = selectedAgent?.agent_id;
+      if (!agentId) throw new Error('No agent ID found');
+
+      // Example: Initiate a call with Retell AI
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/agent/create-web-call`,
+        {
+          agent_id: agentId
+          // Add other required parameters, e.g., phone number or call settings
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
+            'Content-Type': 'application/json'
           }
-        );
-        setCallLoading(true);
-  
-        if (response.status == 403) {
-          setSnackbar({
-        open: true,
-        message: 'Agent Plan minutes exhausted',
-        severity: 'error',
-         });
-          setIsCallInProgress(false);
-          // setTimeout(() => {
-          //   setPopupMessage("");
-          // }, 5000);
-          return;
         }
-  
-        await retellWebClient.startCall({ accessToken: response?.data?.access_token });
-        setCallId(response?.data?.call_id);
-        setIsCallActive(true);
-      } catch (error) {
-        console.error("Error starting call:", error);
-
-        if (error.status == 403) {
-        setSnackbar({
-        open: true,
-        message: 'Agent Plan minutes exhausted',
-        severity: 'error',
-         });
-          setIsCallInProgress(false);
-          // setTimeout(() => {
-          //   setPopupMessage("");
-          // }, 5000);
-          return;
-        }
-        else{
-      setSnackbar({
-      open: true,
-      message: 'Failed to start call. Please try again.',
-      severity: 'error',
-     });
-        }
-    
-      } finally {
-        setCallLoading(false);
-      }
-    };
-  
-    const handleEndCall = async() => {
-      isEndingRef.current = true;
+      );
       setCallLoading(true);
-          isEndingRef.current = false;
-      // setRefresh((prev) => !prev);
-      try {
-        // Example: End the call with Retell AI
-        // const callId = localStorage.getItem("currentCallId"); 
-        // const callId = localStorage.getItem("currentCallId"); 
-        // if (!callId) throw new Error("No call ID found");
-  
-        const response = await retellWebClient.stopCall();
-  
-        setIsCallActive(false);
-        isEndingRef.current = false;
-      } catch (error) {
-        console.error("Error ending call:", error);
-        setSnackbar({
-      open: true,
-      message: 'Failed to end call. Please try again.',
-      severity: 'error',
-       });
-      }
-      setTimeout(() => {
-        isEndingRef.current = false;
-        setIsCallActive(false);
-        setCallLoading(false);
-        setOpenDialog(false);
-        setSelectedAgent(null);
-      }, 1000); // Simulate call ending delay
-    };
 
+      if (response.status == 403) {
+        setSnackbar({
+          open: true,
+          message: 'Agent Plan minutes exhausted',
+          severity: 'error'
+        });
+        setIsCallInProgress(false);
+        // setTimeout(() => {
+        //   setPopupMessage("");
+        // }, 5000);
+        return;
+      }
+
+      await retellWebClient.startCall({ accessToken: response?.data?.access_token });
+      setCallId(response?.data?.call_id);
+      setIsCallActive(true);
+    } catch (error) {
+      console.error('Error starting call:', error);
+
+      if (error.status == 403) {
+        setSnackbar({
+          open: true,
+          message: 'Agent Plan minutes exhausted',
+          severity: 'error'
+        });
+        setIsCallInProgress(false);
+        // setTimeout(() => {
+        //   setPopupMessage("");
+        // }, 5000);
+        return;
+      } else {
+        setSnackbar({
+          open: true,
+          message: 'Failed to start call. Please try again.',
+          severity: 'error'
+        });
+      }
+    } finally {
+      setCallLoading(false);
+    }
+  };
+
+
+  const cardStyle = {
+  // Border width
+  border: '1px solid rgba(230, 234, 237, 1)', // rgb(230.845, 234.2, 237.554) ≈ rgba(230, 234, 237, 1)
+  
+  // Border radius
+  borderRadius: '12px',
+  
+  // Inner border radius (for card content/padding)
+  '& .MuiCardContent-root': {
+    borderRadius: 'calc(12px - 1px)', // 11px
+  },
+  
+  // Box shadow (provides subtle border-like depth)
+  boxShadow: '0px 8px 24px rgba(27, 46, 94, 0.08)',
+};
+  const handleEndCall = async () => {
+    isEndingRef.current = true;
+    setCallLoading(true);
+    isEndingRef.current = false;
+    // setRefresh((prev) => !prev);
+    try {
+      // Example: End the call with Retell AI
+      // const callId = localStorage.getItem("currentCallId");
+      // const callId = localStorage.getItem("currentCallId");
+      // if (!callId) throw new Error("No call ID found");
+
+      const response = await retellWebClient.stopCall();
+
+      setIsCallActive(false);
+      isEndingRef.current = false;
+    } catch (error) {
+      console.error('Error ending call:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to end call. Please try again.',
+        severity: 'error'
+      });
+    }
+    setTimeout(() => {
+      isEndingRef.current = false;
+      setIsCallActive(false);
+      setCallLoading(false);
+      setOpenDialog(false);
+      setSelectedAgent(null);
+    }, 1000); // Simulate call ending delay
+  };
 
   return (
     <>
       <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Breadcrumbs custom heading="view" links={breadcrumbLinks} />
       </Stack>
-
       {loading ? (
         <Typography>Loading agents...</Typography>
       ) : (
-        <Grid container spacing={5}>
+        <Grid container spacing={5} >
           {agents.map((agent: any, index: number) => (
+// <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
+            //   <MainCard content={false} sx={{ p: 1.25 }}>
+            
+
+
+
+            // <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
+            //   <MainCard content={false} sx={{ p: 1.25 }}>
+            
+            //     <Box sx={{ position: 'relative', width: 1 }}>
+            //       <CardMedia
+            //         component="img"
+            //         height="auto"
+            //         image={`${agent?.avatar}` || '/images/male-02.png'}
+            //         alt="Agent"
+            //         sx={{ width: 1, display: 'block', borderRadius: 1 }}
+            //       />
+            //     </Box>
+
+            //     <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 0.5, mt: 2.5, mb: 1.25 }}>
+            //       <Stack sx={{ flex: 1, minWidth: 0 }}>
+            //         <Typography
+            //           variant="h6"
+            //           sx={{ fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: 1 }}
+            //         >
+            //           {agent.agentName || "Test"}
+            //         </Typography>
+            //         <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5, color: 'warning.main' }}>
+            //           <Star1 size="14" />
+            //           <Typography variant="body2" sx={{ color: 'text.primary' }}>
+            //             {agent.agentRole || "General Receptionist"}
+            //           </Typography>
+            //         </Stack>
+            //       </Stack>
+            //       <IconButton size="large" color="primary" sx={{ minWidth: 30 }} onClick={() => handleOpenDialog(agent)}>
+            //         <CallIcon fontSize="small" />
+            //       </IconButton>
+            //     </Stack>
+
+            //     <Divider />
+            //     <Stack>
+            //       <ItemRow title="Assigned Number" value={agent?.voip_numbers || agent?.phone || "-"} />
+            //       <Divider />
+
+            //       <ItemRow title="Business" value={agent?.businessDetails?.name || agent.company || "-"} />
+            //       <Divider />
+            //       <ItemRow title="Category" value={agent?.businessDetails?.BusinessType || "-"} />
+            //       <Divider />
+            //       <ItemRow title="Mins Left" value={agent?.mins_left || "-"} />
+            //        <Divider />
+            //       <ItemRow title="Language" value={agent?.agentLanguage || "-"} />
+
+            //     </Stack>
+            //   </MainCard>
+            // </Grid>
             <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
-              <MainCard content={false} sx={{ p: 1.25 }}>
-                <Box sx={{ position: 'relative', width: 1 }}>
-                  <CardMedia
-                    component="img"
-                    height="auto"
-                    image={`${agent?.avatar}` || '/images/male-02.png'} 
-                    alt="Agent"
-                    sx={{ width: 1, display: 'block', borderRadius: 1 }}
-                  />
-                </Box>
-
-                <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 0.5, mt: 2.5, mb: 1.25 }}>
-                  <Stack sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontWeight: 'bold', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: 1 }}
-                    >
-                      {agent.agentName || "Test"}
-                    </Typography>
-                    <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5, color: 'warning.main' }}>
-                      <Star1 size="14" />
-                      <Typography variant="body2" sx={{ color: 'text.primary' }}>
-                        {agent.agentRole || "General Receptionist"}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                  <IconButton size="large" color="primary" sx={{ minWidth: 30 }} onClick={() => handleOpenDialog(agent)}>
-                    <CallIcon fontSize="small" />
-                  </IconButton>
-                </Stack>
-
+              {/* <MainCard content={false} sx={{ p: 1.25 }}> */}
+            
+            <Grid id="print" key={index} container spacing={2.25} >
+              <Grid key={index} size={12} sx={{cardStyle}}>
+                <List sx={{ width: 1, p: 0 }}>
+                  <ListItem
+                    disablePadding
+                    secondaryAction={
+                      <IconButton
+                        edge="end"
+                        aria-label="comments"
+                        color="secondary"
+                        // onClick={handleMenuClick}
+                        sx={{ transform: 'rotate(90deg)' }}
+                      >
+                        {/* <MoreIcon /> */}
+                      </IconButton>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
+                      secondary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.name}</Typography>}
+                    />
+                  </ListItem>
+                </List>
+                {/* <Menu
+              id="fade-menu"
+              slotProps={{ list: { 'aria-labelledby': 'fade-button' } }}
+              // anchorEl={anchorEl}
+              // open={openMenu}
+              onClose={handleMenuClose}
+              slots={{ transition: Fade }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <MenuItem sx={{ a: { textDecoration: 'none', color: 'inherit' } }}>
+                {/* <PDFDownloadLink document={<ListSmallCard customer={customer} />} fileName={`Customer-${customer.name}.pdf`}>
+                  Export PDF
+                </PDFDownloadLink> */}
+                {/* </MenuItem>
+              <MenuItem onClick={editCustomer}>Edit</MenuItem>
+              <MenuItem onClick={handleAlertClose}>Delete</MenuItem>
+            </Menu> */}
+              </Grid>
+              <Grid size={12}>
                 <Divider />
-                <Stack>
-                  <ItemRow title="Assigned Number" value={agent?.voip_numbers || agent?.phone || "-"} />
-                  <Divider />
-
-                  <ItemRow title="Business" value={agent?.businessDetails?.name || agent.company || "-"} />
-                  <Divider />
-                  <ItemRow title="Category" value={agent?.businessDetails?.BusinessType || "-"} />
-                  <Divider />
-                  <ItemRow title="Mins Left" value={agent?.mins_left || "-"} />
-                   <Divider />
-                  <ItemRow title="Language" value={agent?.agentLanguage || "-"} />
-               
-                </Stack>
-              </MainCard>
+              </Grid>
+              <Grid size={12}>
+                <Typography>Hello, {agent.agentName}</Typography>
+              </Grid>
+              <Grid size={12}>
+                <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
+                  <Grid size={6}>
+                    <List
+                      sx={{
+                        p: 0,
+                        overflow: 'hidden',
+                        '& .MuiListItem-root': { px: 0, py: 0.5 },
+                        '& .MuiListItemIcon-root': { minWidth: 28 }
+                      }}
+                    >
+                      <ListItem alignItems="flex-start">
+                        <ListItemIcon>
+                          <Sms size={18} />
+                        </ListItemIcon>
+                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
+                      </ListItem>
+                      <ListItem alignItems="flex-start">
+                        <ListItemIcon>{/* <CallCalling size={18} /> */}</ListItemIcon>
+                      </ListItem>
+                    </List>
+                  </Grid>
+                  <Grid size={6}>
+                    <List
+                      sx={{
+                        p: 0,
+                        overflow: 'hidden',
+                        '& .MuiListItem-root': { px: 0, py: 0.5 },
+                        '& .MuiListItemIcon-root': { minWidth: 28 }
+                      }}
+                    >
+                      <ListItem alignItems="flex-start">
+                        {/* <ListItemIcon>
+                      <Location size={18} />
+                    </ListItemIcon> */}
+                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
+                      </ListItem>
+                      <ListItem alignItems="flex-start">
+                        <ListItemIcon>
+                          <Link2 size={18} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={
+                            <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
+                              https://rxpt.us
+                            </Link>
+                          }
+                        />
+                      </ListItem>
+                    </List>
+                  </Grid>
+                  <Grid size={6}>
+                    <List
+                      sx={{
+                        p: 0,
+                        overflow: 'hidden',
+                        '& .MuiListItem-root': { px: 0, py: 0.5 },
+                        '& .MuiListItemIcon-root': { minWidth: 28 }
+                      }}
+                    >
+                      <ListItem alignItems="flex-start">
+                        {/* <ListItemIcon>
+                      <Location size={18} />
+                    </ListItemIcon> */}
+                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.BusinessType}</Typography>} />
+                      </ListItem>
+                      <ListItem alignItems="flex-start">
+                        <ListItemIcon>
+                          <Link2 size={18} />
+                        </ListItemIcon>
+                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentPlan}</Typography>} />
+                      </ListItem>
+                    </List>
+                  </Grid>
+                  <Grid size={6}>
+                    <List
+                      sx={{
+                        p: 0,
+                        overflow: 'hidden',
+                        '& .MuiListItem-root': { px: 0, py: 0.5 },
+                        '& .MuiListItemIcon-root': { minWidth: 28 }
+                      }}
+                    >
+                      <ListItem alignItems="flex-start">
+                        {/* <ListItemIcon>
+                      <Location size={18} />
+                    </ListItemIcon> */}
+                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.mins_left}</Typography>} />
+                      </ListItem>
+                      
+                    </List>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid size={12}>
+                <Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul">
+                    {/* {customer.skills.map((skill: string, index: number) => (
+                  <ListItem disablePadding key={index} sx={{ width: 'auto', pr: 0.75, pb: 0.75 }}>
+                    <Chip color="secondary" variant="outlined" size="small" label={skill} sx={{ color: 'text.secondary' }} />
+                  </ListItem>
+                ))} */}
+                  </Box>
+                </Box>
+              </Grid>
+              <Stack
+                direction="row"
+                className="hideforPDf"
+                sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25 }}
+              >
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                  Updated 3 days ago
+                </Typography>
+                <IconButton size="large" color="primary" sx={{ minWidth: 30 }} onClick={() => handleOpenDialog(agent)}>
+                  <CallIcon fontSize="small" />
+                </IconButton>
+              </Stack>
+            </Grid>
             </Grid>
           ))}
-         {selectedAgent &&
-        <CallDialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          agent={selectedAgent}
-          isCallActive={isCallActive}
-          callLoading={callLoading}
-          onStartCall={handleStartCall}
-          onEndCall={handleEndCall}
-          isEndingRef={isEndingRef}
-        />
-         }
+          {selectedAgent && (
+            <CallDialog
+              open={openDialog}
+              onClose={handleCloseDialog}
+              agent={selectedAgent}
+              isCallActive={isCallActive}
+              callLoading={callLoading}
+              onStartCall={handleStartCall}
+              onEndCall={handleEndCall}
+              isEndingRef={isEndingRef}
+            />
+          )}
         </Grid>
       )}
-           <Snackbar
+      <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
@@ -343,7 +558,7 @@ export default function DemoAgentsViewPage() {
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
-      </Snackbar>
+      </Snackbar>{' '}
     </>
   );
 }
@@ -352,8 +567,6 @@ export default function DemoAgentsViewPage() {
 // import { Container, Drawer, List, ListItem, ListItemText, AppBar, Toolbar, Typography, Box } from '@mui/material';
 // import { Node } from 'components/Node';
 // import { Edge } from 'components/Edge';
-
-
 
 // // Full static nodes data
 // const nodesData = [

@@ -1,11 +1,12 @@
 // assets
-import { Book1,  Security, MessageProgramming, DollarSquare, Airplane } from '@wandersonalwes/iconsax-react';
+import { Book1, Security, MessageProgramming, DollarSquare, Airplane } from '@wandersonalwes/iconsax-react';
 import { SupportAgent } from '@mui/icons-material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 // types
 import { NavItemType } from 'types/menu';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 // icons
 const icons = {
   page: DashboardIcon,
@@ -14,7 +15,7 @@ const icons = {
   pricing: DollarSquare,
   // contactus: I24Support,
   landing: Airplane,
-  agent:SmartToyIcon
+  agent: SmartToyIcon
 };
 
 // ==============================|| MENU ITEMS - PAGES ||============================== //
@@ -30,10 +31,8 @@ const system: NavItemType = {
       title: 'Billing',
       type: 'item',
       url: '/system/billingHistory',
-      icon: ContactPhoneIcon,
-     
-    },
- 
+      icon: AccountBalanceIcon
+    }
   ]
 };
 
