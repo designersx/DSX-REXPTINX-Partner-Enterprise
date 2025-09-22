@@ -294,7 +294,7 @@ export default function DashboardFinance() {
                 // iconPrimary={<CallMinus />}
               />
             </Grid>
-          {dashboardData?.agents>0 &&
+          {dashboardData?.agents?.length >0 &&
           
             <Grid size={12}>
               <AgentDetailCard agents={dashboardData?.agents || []}/>
