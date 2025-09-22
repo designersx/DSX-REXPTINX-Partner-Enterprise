@@ -39,7 +39,12 @@ export enum NavActionType {
   FUNCTION = 'function',
   LINK = 'link'
 }
+export let Gender;
 
+(function (Gender) {
+  Gender['MALE'] = 'Male';
+  Gender['FEMALE'] = 'Female';
+})(Gender || (Gender = {}));
 // ==============================|| THEME CONFIG ||============================== //
 
 const config: DefaultConfigProps = {
