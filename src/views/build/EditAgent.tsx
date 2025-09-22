@@ -190,7 +190,7 @@ export default function TransactionHistoryCard({ agentId }) {
   }
   return (
     <>
-      <MainCard title={<Typography variant="h5">Call Details</Typography>} content={false}>
+      <MainCard title={<Typography variant="h5">Agent Details</Typography>} content={false}>
         {agent && (
           <Box sx={{ 
             mb: 3, 
@@ -210,7 +210,7 @@ export default function TransactionHistoryCard({ agentId }) {
             }}>
               <Stack direction="row" spacing={2} alignItems="center" sx={{ flexShrink: 0 }}>
                 <Avatar
-                  src={agent.avatar}
+                 src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`}
                   alt={agent.agentName}
                   sx={{ 
                     width: { xs: 50, sm: 60 }, 

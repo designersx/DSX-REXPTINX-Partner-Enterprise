@@ -1,6 +1,8 @@
 // assets
 import { Book1, Security, MessageProgramming, DollarSquare, Airplane } from '@wandersonalwes/iconsax-react';
 import { SupportAgent } from '@mui/icons-material';
+
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 // types
 import { NavItemType } from 'types/menu';
@@ -12,7 +14,7 @@ const icons = {
   maintenance: MessageProgramming,
   pricing: DollarSquare,
   // contactus: I24Support,
-  landing: Airplane,
+  landing: MenuBookIcon,
   agent: SmartToyIcon
 };
 
@@ -37,7 +39,7 @@ const build: NavItemType = {
       type: 'item',
       url: '/build/knowledgeBase',
       icon: icons.landing
-    },
+    }
     // {
     //   id: 'Integrations',
     //   title: 'Integrations',
