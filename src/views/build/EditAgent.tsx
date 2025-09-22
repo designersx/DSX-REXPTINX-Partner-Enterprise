@@ -56,7 +56,7 @@ export default function TransactionHistoryCard({ agentId }) {
   const fetchCalls = async (month, year, append = false) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("authToken");
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/api/callHistory/agent/${agentId}/calls-by-month`,
         {
@@ -173,7 +173,7 @@ export default function TransactionHistoryCard({ agentId }) {
 
   const formatMinutes = (minutes) => {
     if (!minutes && minutes !== 0) return 'N/A';
-    return `${minutes} minutes`;
+    return `${Math.floor(minutes / 60)} mins`;
   };
   const getStatusColor = (status) => {
     return status ? 'success' : 'error';
