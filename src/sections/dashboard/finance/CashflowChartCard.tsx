@@ -54,7 +54,8 @@ const areaChartOptions = {
   },
   tooltip: {
     y: {
-      formatter: (val: number) => '$' + val + ' thousands'
+      // formatter: (val: number) => '$' + val + ' thousands'
+      formatter: (val: number) =>  val + ' Calls'
     }
   }
 };
@@ -83,7 +84,7 @@ function CashflowChart({ data }: { data: ChartData[] }) {
         }
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug','Sep'],
         labels: {
           style: { colors: secondary }
         },
@@ -97,7 +98,8 @@ function CashflowChart({ data }: { data: ChartData[] }) {
       yaxis: {
         labels: {
           style: { colors: secondary },
-          formatter: (val: number) => '$' + val
+          // formatter: (val: number) => '$' + val
+          formatter: (val: number) =>  val
         }
       },
       legend: {
@@ -130,16 +132,16 @@ export default function CashflowChartCard() {
 
   // Define data sets for different time ranges
   const dataToday = [
-    { name: 'Income', data: [48, 35, 20, 42, 55, 60, 45, 32] },
-    { name: 'Expends', data: [78, 62, 45, 18, 72, 92, 68, 50] }
+    { name: 'Inbound', data: [48, 35, 20, 42, 55, 60, 45, 32,155] },
+    { name: 'Outbound', data: [78, 62, 45, 18, 72, 92, 68, 50,122] }
   ];
   const dataWeekly = [
-    { name: 'Income', data: [76, 85, 95, 98, 87, 94, 91, 40] },
-    { name: 'Expends', data: [44, 55, 57, 56, 61, 58, 63, 60] }
+    { name: 'Income', data: [76, 85, 95, 98, 87, 94, 91, 40,23] },
+    { name: 'Expends', data: [44, 55, 57, 56, 61, 58, 63, 60,12] }
   ];
   const dataMonthly = [
-    { name: 'Income', data: [59, 78, 35, 61, 19, 80, 39, 44] },
-    { name: 'Expends', data: [95, 73, 25, 20, 84, 38, 90, 98] }
+    { name: 'Income', data: [59, 78, 35, 61, 19, 80, 39, 44,14] },
+    { name: 'Expends', data: [95, 73, 25, 20, 84, 38, 90, 98,44] }
   ];
 
   const getChartData = () => {
@@ -162,13 +164,13 @@ export default function CashflowChartCard() {
     <MainCard sx={{ '& .MuiCardContent-root:last-child': { pb: 1 } }}>
       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
         <div>
-          <Typography variant="h5">Cashflow</Typography>
+          <Typography variant="h5">Phone inbound/outbound</Typography>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1.25 }}>
-            <Typography variant="h5">5.44%</Typography>
-            <Chip color="success" label="+2.6%" size="small" />
+            {/* <Typography variant="h5">5.44%</Typography> */}
+            {/* <Chip color="success" label="+2.6%" size="small" /> */}
           </Stack>
         </div>
-        <Box sx={{ minWidth: 120 }}>
+        {/* <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
             <Select id="demo-simple-select" value={value} onChange={handleChangeSelect}>
               <MenuItem value={'10'}>Today</MenuItem>
@@ -176,7 +178,7 @@ export default function CashflowChartCard() {
               <MenuItem value={'30'}>Monthly</MenuItem>
             </Select>
           </FormControl>
-        </Box>
+        </Box> */}
       </Stack>
       <CashflowChart data={getChartData()} />
     </MainCard>

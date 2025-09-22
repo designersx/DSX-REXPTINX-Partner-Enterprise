@@ -332,7 +332,9 @@ export default function TransactionHistoryCard() {
   }, []);
   return (
     <>
-      <MainCard
+      {isModalOpen ? <AgentGeneralInfoModal  open={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleAgentSubmit} /> : <MainCard
         title={<Typography variant="h5">Your Agents</Typography>}
         content={false}
         secondary={
@@ -495,7 +497,7 @@ export default function TransactionHistoryCard() {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50]}
         />
-      </MainCard>
+      </MainCard>}
 
       {/* Call Dialog */}
       {selectedAgent && (
@@ -512,11 +514,11 @@ export default function TransactionHistoryCard() {
       )}
 
       {/* Agent Creation Modal */}
-      <AgentGeneralInfoModal
+      {/* <AgentGeneralInfoModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleAgentSubmit}
-      />
+      /> */}
       {/* Snackbar */}
       <Snackbar
         open={snackbar.open}

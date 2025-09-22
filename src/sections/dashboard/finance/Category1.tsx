@@ -32,7 +32,7 @@ const pieChartOptions = {
     type: 'donut',
     height: 340
   },
-  labels: ['Neutral', 'Positive', 'Negative'],
+  labels: ['Phone calls', 'Web calls'],
   legend: {
     show: true
   },
@@ -53,7 +53,7 @@ function CategoryChart() {
   const grey200 = theme.palette.secondary[200];
   const backColor = theme.palette.background.paper;
 
-  const [series] = useState([72, 187, 23]);
+  const [series] = useState([187,72]);
   const [options, setOptions] = useState<ChartProps>(pieChartOptions);
 
   useEffect(() => {
@@ -102,7 +102,7 @@ function CategoryChart() {
 
 // ===========================|| FINANCE - CATEGORY ||=========================== //
 
-export default function CategoryCard() {
+export default function CategoryCard1() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -117,7 +117,7 @@ export default function CategoryCard() {
     <MainCard content={false} sx={{ p: 2.5 }}>
       <Stack sx={{ gap: 1 }}>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h5">User Sentiment's</Typography>
+          <Typography variant="h5">Inbound Calls</Typography>
           {/* <IconButton
             color="secondary"
             id="wallet-button"

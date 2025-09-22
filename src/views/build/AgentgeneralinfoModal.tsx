@@ -23,32 +23,32 @@ const Transition = React.forwardRef(function Transition(
 });
 export default function AgentGeneralInfoModal({ open, onClose, onSubmit }) {
   return (
-    <Dialog
-      open={open}
-      onClose={(event, reason) => {
-        if (reason === 'backdropClick' || reason === 'escapeKeyDown') return;
-        onClose(event, reason);
-      }}
-      fullWidth
-      disableEscapeKeyDown
-      TransitionComponent={Transition}
-      PaperProps={{
-        sx: {
-          height: '100vh',
-          borderRadius: 3,
-          overflow: 'hidden',
-          maxWidth: '900px',
-          width: '100%',
-        },
-      }}
-    >
-      <DialogContent sx={{ p: 4, width: '130%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    // <Dialog
+    //   open={open}
+    //   onClose={(event, reason) => {
+    //     if (reason === 'backdropClick' || reason === 'escapeKeyDown') return;
+    //     onClose(event, reason);
+    //   }}
+    //   fullWidth
+    //   disableEscapeKeyDown
+    //   TransitionComponent={Transition}
+    //   PaperProps={{
+    //     sx: {
+    //       height: '100vh',
+    //       borderRadius: 3,
+    //       overflow: 'hidden',
+    //       maxWidth: '900px',
+    //       width: '100%',
+    //     },
+    //   }}
+    // >
+    //   <DialogContent sx={{ p: 4, width: '130%', height: '100%', display: 'flex', flexDirection: 'column' }}>
         <AgentGeneralInfo
           open={open}
           onClose={onClose}
           onSubmit={onSubmit}
         />
-      </DialogContent>
-    </Dialog>
+    //   </DialogContent>
+    // </Dialog>
   );
 }
