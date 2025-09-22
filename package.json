@@ -24,6 +24,7 @@
     "@mui/lab": "7.0.0-beta.12",
     "@mui/material": "7.1.1",
     "@mui/system": "7.1.1",
+    "@tanstack/match-sorter-utils": "^8.19.4",
     "@wandersonalwes/iconsax-react": "0.0.10",
     "apexcharts": "^5.3.5",
     "axios": "1.10.0",
