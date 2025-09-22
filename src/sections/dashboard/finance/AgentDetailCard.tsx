@@ -140,7 +140,9 @@ const router = useRouter();
                   className="cursor-pointer"
                 >
                 <SpentCard
-                    img={agent.avatar}
+                    // src={agent.avatar?.startsWith("/") ? agent.avatar : `/${agent.avatar}`}
+
+                    img={agent.avatar?.startsWith("/") ? agent.avatar : `/${agent.avatar}`}
                     name={agent.agentName}
                     percentage={percentage}
                     money={minsLeft} // minutes me bhej diya
