@@ -39,6 +39,7 @@
     "react-csv": "2.2.2",
     "react-device-detect": "2.2.3",
     "react-dom": "19.1.0",
+    "react-draggable": "^4.4.6",
     "react-intl": "7.1.11",
     "react-syntax-highlighter": "15.6.1",
     "react-timer-hook": "4.0.5",
