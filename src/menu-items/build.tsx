@@ -46,13 +46,13 @@ const build: NavItemType = {
     //   icon: icons.contactus,
 
     // },
-    {
-      id: 'DemoAgents',
-      title: 'Demo Agents',
-      type: 'item',
-      url: '/build/Demoview',
-      icon: icons.landing
-    }
+    // {
+    //   id: 'DemoAgents',
+    //   title: 'Demo Agents',
+    //   type: 'item',
+    //   url: '/build/Demoview',
+    //   icon: icons.landing
+    // }
   ]
 };
 
