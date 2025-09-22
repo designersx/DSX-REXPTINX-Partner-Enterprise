@@ -20,6 +20,9 @@ import IconButton from 'components/@extended/IconButton';
 import MoreIcon from 'components/@extended/MoreIcon';
 import MainCard from 'components/MainCard';
 import { ThemeMode } from 'config';
+import { ArrowDown, ArrowUp, Book, Calendar, CloudChange, Wallet3,CallMinus,CallCalling ,Call,CallAdd} from '@wandersonalwes/iconsax-react';
+
+import Avatar from 'components/@extended/Avatar';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -78,7 +81,7 @@ function TransactionsChart({ color, data }: Props) {
 
 // ===========================|| FINANCE - TRANSACTIONS CARD ||=========================== //
 
-export default function TransactionCard({ title, caption, color, data, amount }: TransactionProps) {
+export default function TransactionCard({ title, caption, color, data, amount ,iconPrimary}: TransactionProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -97,9 +100,9 @@ export default function TransactionCard({ title, caption, color, data, amount }:
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <Typography variant="subtitle1">{title}</Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {caption}
-            </Typography>
+            </Typography> */}
           </div>
           {/* <IconButton
             color="secondary"
@@ -127,7 +130,7 @@ export default function TransactionCard({ title, caption, color, data, amount }:
         </Stack>
      
 
-        <TransactionsChart color={color} data={data} />
+        {/* <TransactionsChart color={color} data={data} /> */}
 
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
           <Stack direction="row" sx={{ gap: 0.25, alignItems: 'center' }}>

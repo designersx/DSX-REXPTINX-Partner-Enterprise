@@ -207,12 +207,14 @@ import MoneySpentCard from 'sections/dashboard/finance/MoneySpent';
 import AgentDetailCard from 'sections/dashboard/finance/AgentDetailCard';
 import { getUserId } from 'utils/auth';
 import EcommerceDataCard from 'components/cards/statistics/EcommerceDataCard';
-import { ArrowDown, ArrowUp, Book, Calendar, CloudChange, Wallet3 } from '@wandersonalwes/iconsax-react';
+import { ArrowDown, ArrowUp, Book, Calendar, CloudChange, Wallet3,CallMinus,CallCalling ,Call,CallAdd} from '@wandersonalwes/iconsax-react';
 import EcommerceDataChart from 'sections/widget/chart/EcommerceDataChart';
 import CashflowChartCard from 'sections/dashboard/finance/CashflowChartCard';
 import AccountsCard from 'sections/dashboard/finance/Accounts';
 import QuickTransferCard from 'sections/dashboard/finance/QuickTransfer';
 import CategoryCard from 'sections/dashboard/finance/Category';
+import CategoryCard1 from 'sections/dashboard/finance/Category1';
+import WelcomeBanner from './WelcomeBanner';
 
 export default function DashboardFinance() {
   const theme = useTheme();
@@ -242,59 +244,79 @@ export default function DashboardFinance() {
 
   return (
     <Grid container spacing={GRID_COMMON_SPACING}>
+
+        <Grid size={12}>
+        <WelcomeBanner/>
+      </Grid>
+
       <Grid size={{ xs: 12, lg: 12 }}>
-        <Grid container spacing={GRID_COMMON_SPACING}>
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Total Calls"
-              caption="Enterprise Data"
-              color={theme.palette.primary.main}
-              data={[0, 70, 120, 80, 0, 130, 199]}
-              amount={loading ? '...' : dashboardData?.totalCallCount || '0'}
-            />
+          <Grid container spacing={GRID_COMMON_SPACING}>
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <TransactionCard
+                title="Total Calls"
+                caption="Enterprise Data"
+                color={theme.palette.primary.main}
+                data={[0, 70, 120, 80, 0, 130, 199]}
+                amount={loading ? '...' : dashboardData?.totalCallCount || '0'}
+                // iconPrimary={<CallCalling />}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <TransactionCard
+                title="Total Bulk Minutes"
+                caption="Enterprise Data"
+                color={theme.palette.primary.main}
+                data={[0, 70, 120, 80, 0, 130, 199]}
+                amount={loading ? '...' : `${dashboardData?.totalMinutes || 0} Mins`}
+                // iconPrimary={<Call />}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <TransactionCard
+                title="Assigned Bulk Minutes"
+                caption="Enterprise Data"
+                color={theme.palette.success.main}
+                data={[180, 110, 50, 80, 100, 199, 50]}
+                amount={loading ? '...' : `${dashboardData?.usedMinutes || 0} Mins`}
+                  // iconPrimary={<CallAdd />}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <TransactionCard
+                title="Exhausted Minutes"
+                caption="Enterprise Data"
+                color={theme.palette.error.main}
+                data={[70, 199, 130, 140, 80, 20, 70]}
+                amount={loading ? '...' : `${dashboardData?.exhaustedMinutes || 0} Mins`}
+                // iconPrimary={<CallMinus />}
+              />
+            </Grid>
+          {dashboardData?.agents>0 &&
+          
+            <Grid size={12}>
+              <AgentDetailCard agents={dashboardData?.agents || []}/>
+            </Grid>
+            }
           </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Total Bulk Minutes"
-              caption="Enterprise Data"
-              color={theme.palette.primary.main}
-              data={[0, 70, 120, 80, 0, 130, 199]}
-              amount={loading ? '...' : `${dashboardData?.totalMinutes || 0} Mins`}
-            />
+      </Grid>
+      <Grid size={{ xs: 12, lg: 12 }}>
+          <Grid container spacing={GRID_COMMON_SPACING}>
+              <Grid size={12}>
+              <CashflowChartCard />
+            </Grid>
           </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Assigned Bulk Minutes"
-              caption="Enterprise Data"
-              color={theme.palette.success.main}
-              data={[180, 110, 50, 80, 100, 199, 50]}
-              amount={loading ? '...' : `${dashboardData?.usedMinutes || 0} Mins`}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Exhausted Minutes"
-              caption="Enterprise Data"
-              color={theme.palette.error.main}
-              data={[70, 199, 130, 140, 80, 20, 70]}
-              amount={loading ? '...' : `${dashboardData?.exhaustedMinutes || 0} Mins`}
-            />
-          </Grid>
-
-          <Grid size={12}>
-            <AgentDetailCard agents={dashboardData?.agents || []}/>
-          </Grid>
-        </Grid>
-
-             <Grid size={12}>
-             <CashflowChartCard />
-           </Grid>
-
-         <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
-        <CategoryCard/>
+      </Grid>
+      <Grid size={{ xs: 12, lg: 12 }}>
+          <Grid container spacing={GRID_COMMON_SPACING}>
+          <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+          <CategoryCard/>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+            <CategoryCard1/>
+            </Grid>
           </Grid>
       </Grid>
     </Grid>
