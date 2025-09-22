@@ -5,7 +5,7 @@ import Link from 'next/link';
 // material imports
 
 // material-ui
-
+import StoreIcon from '@mui/icons-material/Store';
 import Fade from '@mui/material/Fade';
 
 import Menu from '@mui/material/Menu';
@@ -16,12 +16,13 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
-
+import AbcIcon from '@mui/icons-material/Abc';
 // third-party
 // import { PatternFormat } from 'react-number-format';
 // import { PDFDownloadLink } from '@react-pdf/renderer';
 
 // project-imports
+import BusinessIcon from '@mui/icons-material/Business';
 import AlertCustomerDelete from './AlertCustomerDelete';
 import CustomerModal from './CustomerModal';
 import CustomerPreview from './CustomerPreview';
@@ -38,7 +39,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CallIcon from '@mui/icons-material/Call';
-
+import LanguageIcon from '@mui/icons-material/Language';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 // project imports
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
 import IconButton from 'components/@extended/IconButton';
@@ -56,6 +58,7 @@ import axios from 'axios';
 import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 import MoreIcon from 'components/@extended/MoreIcon';
+import { Language } from '@mui/icons-material';
 
 const breadcrumbLinks = [{ title: 'home', to: APP_DEFAULT_PATH }, { title: 'Demo Agents view' }];
 
@@ -248,22 +251,21 @@ export default function DemoAgentsViewPage() {
     }
   };
 
-
   const cardStyle = {
-  // Border width
-  border: '1px solid rgba(230, 234, 237, 1)', // rgb(230.845, 234.2, 237.554) ≈ rgba(230, 234, 237, 1)
-  
-  // Border radius
-  borderRadius: '12px',
-  
-  // Inner border radius (for card content/padding)
-  '& .MuiCardContent-root': {
-    borderRadius: 'calc(12px - 1px)', // 11px
-  },
-  
-  // Box shadow (provides subtle border-like depth)
-  boxShadow: '0px 8px 24px rgba(27, 46, 94, 0.08)',
-};
+    // Border width
+    border: '1px solid rgba(230, 234, 237, 1)', // rgb(230.845, 234.2, 237.554) ≈ rgba(230, 234, 237, 1)
+
+    // Border radius
+    borderRadius: '12px',
+
+    // Inner border radius (for card content/padding)
+    '& .MuiCardContent-root': {
+      borderRadius: 'calc(12px - 1px)' // 11px
+    },
+
+    // Box shadow (provides subtle border-like depth)
+    boxShadow: '0px 8px 24px rgba(27, 46, 94, 0.08)'
+  };
   const handleEndCall = async () => {
     isEndingRef.current = true;
     setCallLoading(true);
@@ -304,17 +306,14 @@ export default function DemoAgentsViewPage() {
       {loading ? (
         <Typography>Loading agents...</Typography>
       ) : (
-        <Grid container spacing={5} >
+        <Grid container spacing={5}>
           {agents.map((agent: any, index: number) => (
-// <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
+            // <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
             //   <MainCard content={false} sx={{ p: 1.25 }}>
-            
-
-
 
             // <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
             //   <MainCard content={false} sx={{ p: 1.25 }}>
-            
+
             //     <Box sx={{ position: 'relative', width: 1 }}>
             //       <CardMedia
             //         component="img"
@@ -361,36 +360,51 @@ export default function DemoAgentsViewPage() {
             //     </Stack>
             //   </MainCard>
             // </Grid>
-            <Grid key={index} size={{ xs: 12, sm: 10, lg: 4 }}>
+            <Grid
+              key={index}
+              size={{ xs: 12, sm: 10, lg: 4 }}
+              style={{
+                alignItems: 'stretch',
+                display: 'flex'
+              }}
+            >
               {/* <MainCard content={false} sx={{ p: 1.25 }}> */}
-            
-            <Grid id="print" key={index} container spacing={2.25} >
-              <Grid key={index} size={12} sx={{cardStyle}}>
-                <List sx={{ width: 1, p: 0 }}>
-                  <ListItem
-                    disablePadding
-                    secondaryAction={
-                      <IconButton
-                        edge="end"
-                        aria-label="comments"
-                        color="secondary"
-                        // onClick={handleMenuClick}
-                        sx={{ transform: 'rotate(90deg)' }}
-                      >
-                        {/* <MoreIcon /> */}
-                      </IconButton>
-                    }
-                  >
-                    <ListItemAvatar>
-                      <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
-                      secondary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.name}</Typography>}
-                    />
-                  </ListItem>
-                </List>
-                {/* <Menu
+
+              <Grid
+                id="print"
+                key={index}
+                container
+                spacing={2.25}
+                style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
+              >
+                <Grid key={index} size={12}>
+                  <List sx={{ width: 1, p: 0 }}>
+                    <ListItem
+                      disablePadding
+                      secondaryAction={
+                        // <IconButton
+                        //   edge="end"
+                        //   aria-label="comments"
+                        //   color="secondary"
+                        //   // onClick={handleMenuClick}
+                        //   sx={{ transform: 'rotate(90deg)' }}
+                        // >
+                         <IconButton size="large" color="primary" sx={{ minWidth: 30, }} onClick={() => handleOpenDialog(agent)}>
+                    <CallIcon fontSize="small" />
+                  </IconButton>
+                        
+                      }
+                    >
+                      <ListItemAvatar>
+                        <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
+                        secondary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.name}</Typography>}
+                      />
+                    </ListItem>
+                  </List>
+                  {/* <Menu
               id="fade-menu"
               slotProps={{ list: { 'aria-labelledby': 'fade-button' } }}
               // anchorEl={anchorEl}
@@ -404,135 +418,145 @@ export default function DemoAgentsViewPage() {
                 {/* <PDFDownloadLink document={<ListSmallCard customer={customer} />} fileName={`Customer-${customer.name}.pdf`}>
                   Export PDF
                 </PDFDownloadLink> */}
-                {/* </MenuItem>
+                  {/* </MenuItem>
               <MenuItem onClick={editCustomer}>Edit</MenuItem>
               <MenuItem onClick={handleAlertClose}>Delete</MenuItem>
             </Menu> */}
-              </Grid>
-              <Grid size={12}>
-                <Divider />
-              </Grid>
-              <Grid size={12}>
-                <Typography>Hello, {agent.agentName}</Typography>
-              </Grid>
-              <Grid size={12}>
-                <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
-                  <Grid size={6}>
-                    <List
-                      sx={{
-                        p: 0,
-                        overflow: 'hidden',
-                        '& .MuiListItem-root': { px: 0, py: 0.5 },
-                        '& .MuiListItemIcon-root': { minWidth: 28 }
-                      }}
-                    >
-                      <ListItem alignItems="flex-start">
-                        <ListItemIcon>
-                          <Sms size={18} />
-                        </ListItemIcon>
-                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
-                      </ListItem>
-                      <ListItem alignItems="flex-start">
-                        <ListItemIcon>{/* <CallCalling size={18} /> */}</ListItemIcon>
-                      </ListItem>
-                    </List>
-                  </Grid>
-                  <Grid size={6}>
-                    <List
-                      sx={{
-                        p: 0,
-                        overflow: 'hidden',
-                        '& .MuiListItem-root': { px: 0, py: 0.5 },
-                        '& .MuiListItemIcon-root': { minWidth: 28 }
-                      }}
-                    >
-                      <ListItem alignItems="flex-start">
-                        {/* <ListItemIcon>
-                      <Location size={18} />
-                    </ListItemIcon> */}
-                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
-                      </ListItem>
-                      <ListItem alignItems="flex-start">
-                        <ListItemIcon>
-                          <Link2 size={18} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
-                              https://rxpt.us
-                            </Link>
-                          }
-                        />
-                      </ListItem>
-                    </List>
-                  </Grid>
-                  <Grid size={6}>
-                    <List
-                      sx={{
-                        p: 0,
-                        overflow: 'hidden',
-                        '& .MuiListItem-root': { px: 0, py: 0.5 },
-                        '& .MuiListItemIcon-root': { minWidth: 28 }
-                      }}
-                    >
-                      <ListItem alignItems="flex-start">
-                        {/* <ListItemIcon>
-                      <Location size={18} />
-                    </ListItemIcon> */}
-                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.BusinessType}</Typography>} />
-                      </ListItem>
-                      <ListItem alignItems="flex-start">
-                        <ListItemIcon>
-                          <Link2 size={18} />
-                        </ListItemIcon>
-                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentPlan}</Typography>} />
-                      </ListItem>
-                    </List>
-                  </Grid>
-                  <Grid size={6}>
-                    <List
-                      sx={{
-                        p: 0,
-                        overflow: 'hidden',
-                        '& .MuiListItem-root': { px: 0, py: 0.5 },
-                        '& .MuiListItemIcon-root': { minWidth: 28 }
-                      }}
-                    >
-                      <ListItem alignItems="flex-start">
-                        {/* <ListItemIcon>
-                      <Location size={18} />
-                    </ListItemIcon> */}
-                        <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.mins_left}</Typography>} />
-                      </ListItem>
-                      
-                    </List>
+                </Grid>
+                <Grid size={12}>
+                  <Divider />
+                </Grid>
+                <Grid size={12}>
+                  <Typography>Hello, {agent.agentName}</Typography>
+                </Grid>
+                <Grid size={12}>
+                  <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
+                    <Grid size={6}>
+                      <List
+                        sx={{
+                          p: 0,
+                          overflow: 'hidden',
+                          '& .MuiListItem-root': { px: 0, py: 0.5 },
+                          '& .MuiListItemIcon-root': { minWidth: 28 }
+                        }}
+                      >
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <Sms size={18} />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
+                        </ListItem>
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <AbcIcon size={18} />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentAccent}</Typography>} />
+                        </ListItem>
+                      </List>
+                    </Grid>
+                    <Grid size={6}>
+                      <List
+                        sx={{
+                          p: 0,
+                          overflow: 'hidden',
+                          '& .MuiListItem-root': { px: 0, py: 0.5 },
+                          '& .MuiListItemIcon-root': { minWidth: 28 }
+                        }}
+                      >
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <LanguageIcon size={18}  />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
+                        </ListItem>
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon>
+                            <Link2 size={18} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
+                                https://rxpt.us
+                              </Link>
+                            }
+                          />
+                        </ListItem>
+                      </List>
+                    </Grid>
+                    <Grid size={6}>
+                      <List
+                        sx={{
+                          p: 0,
+                          overflow: 'hidden',
+                          '& .MuiListItem-root': { px: 0, py: 0.5 },
+                          '& .MuiListItemIcon-root': { minWidth: 28 },
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <BusinessIcon size={18} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.BusinessType}</Typography>}
+                          />
+                        </ListItem>
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <Link2 size={18} />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentPlan}</Typography>} />
+                        </ListItem>
+                      </List>
+                    </Grid>
+                    <Grid size={6}>
+                      <List
+                        sx={{
+                          p: 0,
+                          overflow: 'hidden',
+                          '& .MuiListItem-root': { px: 0, py: 0.5 },
+                          '& .MuiListItemIcon-root': { minWidth: 28 }
+                        }}
+                      >
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <StoreIcon size={18} />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.businessDetails?.name}</Typography>} />
+                        </ListItem>
+                        <ListItem alignItems="flex-start">
+                          <ListItemIcon style={{ marginTop: '3px' }}>
+                            <AccessTimeIcon size={18} />
+                          </ListItemIcon>
+                          <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
+                        </ListItem>
+                      </List>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid size={12}>
-                <Box>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul">
-                    {/* {customer.skills.map((skill: string, index: number) => (
+                <Grid size={12}>
+                  <Box>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul">
+                      {/* {customer.skills.map((skill: string, index: number) => (
                   <ListItem disablePadding key={index} sx={{ width: 'auto', pr: 0.75, pb: 0.75 }}>
                     <Chip color="secondary" variant="outlined" size="small" label={skill} sx={{ color: 'text.secondary' }} />
                   </ListItem>
                 ))} */}
+                    </Box>
                   </Box>
-                </Box>
+                </Grid>
+                <Stack
+                  direction="row"
+                  className="hideforPDf"
+                  sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
+                >
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    Updated 3 days ago
+                  </Typography>
+                
+                </Stack>
               </Grid>
-              <Stack
-                direction="row"
-                className="hideforPDf"
-                sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25 }}
-              >
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                  Updated 3 days ago
-                </Typography>
-                <IconButton size="large" color="primary" sx={{ minWidth: 30 }} onClick={() => handleOpenDialog(agent)}>
-                  <CallIcon fontSize="small" />
-                </IconButton>
-              </Stack>
-            </Grid>
             </Grid>
           ))}
           {selectedAgent && (
