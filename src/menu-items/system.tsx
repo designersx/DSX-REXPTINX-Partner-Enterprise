@@ -21,7 +21,7 @@ const icons = {
 
 const system: NavItemType = {
   id: 'group-pages',
-  title: 'billing',
+  title: 'system',
   type: 'group',
   icon: icons.page,
   children: [
