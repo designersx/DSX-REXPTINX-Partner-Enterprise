@@ -97,9 +97,9 @@ export default function TransactionCard({ title, caption, color, data, amount }:
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <Typography variant="subtitle1">{title}</Typography>
-            {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               {caption}
-            </Typography> */}
+            </Typography>
           </div>
           {/* <IconButton
             color="secondary"
@@ -127,7 +127,7 @@ export default function TransactionCard({ title, caption, color, data, amount }:
         </Stack>
      
 
-        {/* <TransactionsChart color={color} data={data} /> */}
+        <TransactionsChart color={color} data={data} />
 
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
           <Stack direction="row" sx={{ gap: 0.25, alignItems: 'center' }}>

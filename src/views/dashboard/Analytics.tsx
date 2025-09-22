@@ -206,6 +206,13 @@ import TransactionCard from 'sections/dashboard/finance/TransactionsCard';
 import MoneySpentCard from 'sections/dashboard/finance/MoneySpent';
 import AgentDetailCard from 'sections/dashboard/finance/AgentDetailCard';
 import { getUserId } from 'utils/auth';
+import EcommerceDataCard from 'components/cards/statistics/EcommerceDataCard';
+import { ArrowDown, ArrowUp, Book, Calendar, CloudChange, Wallet3 } from '@wandersonalwes/iconsax-react';
+import EcommerceDataChart from 'sections/widget/chart/EcommerceDataChart';
+import CashflowChartCard from 'sections/dashboard/finance/CashflowChartCard';
+import AccountsCard from 'sections/dashboard/finance/Accounts';
+import QuickTransferCard from 'sections/dashboard/finance/QuickTransfer';
+import CategoryCard from 'sections/dashboard/finance/Category';
 
 export default function DashboardFinance() {
   const theme = useTheme();
@@ -278,10 +285,17 @@ export default function DashboardFinance() {
           </Grid>
 
           <Grid size={12}>
-            {/* <MoneySpentCard /> */}
             <AgentDetailCard agents={dashboardData?.agents || []}/>
           </Grid>
         </Grid>
+
+             <Grid size={12}>
+             <CashflowChartCard />
+           </Grid>
+
+         <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+        <CategoryCard/>
+          </Grid>
       </Grid>
     </Grid>
   );
