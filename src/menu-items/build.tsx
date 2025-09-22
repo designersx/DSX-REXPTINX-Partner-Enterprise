@@ -32,14 +32,14 @@ const build: NavItemType = {
       icon: SmartToyIcon,
      
     },
-    // {
-    //   id: 'knowledgeBase',
-    //   title: 'knowledge Base',
-    //   type: 'item',
-    //   url: '/build/knowledgeBase',
-    //   icon: icons.landing,
+    {
+      id: 'knowledgeBase',
+      title: 'knowledge Base',
+      type: 'item',
+      url: '/build/knowledgeBase',
+      icon: icons.landing,
     
-    // },
+    },
     // {
     //   id: 'Integrations',
     //   title: 'Integrations',
@@ -48,14 +48,14 @@ const build: NavItemType = {
     //   icon: icons.contactus,
     
     // },
-  // {
-  //     id: 'DemoAgents',
-  //     title: 'Demo Agents',
-  //     type: 'item',
-  //     url: '/build/Demoview',
-  //     icon: icons.contactus,
+  {
+      id: 'DemoAgents',
+      title: 'Demo Agents',
+      type: 'item',
+      url: '/build/Demoview',
+      icon: icons.landing,
     
-  //   },
+    },
   ]
 };
 

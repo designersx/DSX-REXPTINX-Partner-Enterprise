@@ -36,27 +36,27 @@ const allBusinessTypes = [
     type: "Electronics & Home Appliances",
     subtype: "Consumer Electronics Retailer",
     icon: "svg/Electronics-icon.svg",
-  },
-  {
-    type: "Banking",
-    subtype: "Financial Institution",
-    icon: "svg/Banking-icon.svg",
-  },
-  {
-    type: "D2C E-commerce",
-    subtype: "Direct to Consumer Online Brand",
-    icon: "svg/Ecommerce-icon.svg",
-  },
-  {
-    type: "B2B/B2C Marketplace",
-    subtype: "Online Wholesale/Retail Platform",
-    icon: "svg/Marketplace-icon.svg",
-  },
-  {
-    type: "Insurance",
-    subtype: "Risk & Coverage Services",
-    icon: "svg/Insurance-icon.svg",
-  },
+  }
+  // {
+  //   type: "Banking",
+  //   subtype: "Financial Institution",
+  //   icon: "svg/Banking-icon.svg",
+  // },
+  // {
+  //   type: "D2C E-commerce",
+  //   subtype: "Direct to Consumer Online Brand",
+  //   icon: "svg/Ecommerce-icon.svg",
+  // },
+  // {
+  //   type: "B2B/B2C Marketplace",
+  //   subtype: "Online Wholesale/Retail Platform",
+  //   icon: "svg/Marketplace-icon.svg",
+  // },
+  // {
+  //   type: "Insurance",
+  //   subtype: "Risk & Coverage Services",
+  //   icon: "svg/Insurance-icon.svg",
+  // },
 
 
 ];
@@ -71,7 +71,6 @@ const businessServices = [
       "Washing Machines",
       "Smart TVs",
       "Laptops",
-      "Other",
     ],
   },
   {
@@ -83,7 +82,7 @@ const businessServices = [
       "Fixed Deposits",
       "Net Banking/UPI",
       "Wealth Management",
-      "Other",
+      
     ],
   },
   {
@@ -95,7 +94,7 @@ const businessServices = [
       "Electronics Accessories",
       "Home & Kitchen Essentials",
       "Nutritional Supplements",
-      "Other",
+      
     ],
   },
   {
@@ -107,7 +106,7 @@ const businessServices = [
       "Furniture",
       "FMCG Products",
       "Agricultural Goods",
-      "Other",
+     
     ],
   },
   {
@@ -119,7 +118,7 @@ const businessServices = [
       "Travel Insurance",
       "Property Insurance",
       "Business Insurance",
-      "Other",
+   
     ],
   },
 
