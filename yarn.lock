@@ -873,7 +873,7 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-apexcharts@>=4.0.0:
+apexcharts@^5.3.5, apexcharts@>=4.0.0:
   version "5.3.5"
   resolved "https://registry.npmjs.org/apexcharts/-/apexcharts-5.3.5.tgz"
   integrity sha512-I04DY/WBZbJgJD2uixeV5EzyiL+J5LgKQXEu8rctqAwyRmKv44aDVeofJoLdTJe3ao4r2KEQfCgtVzXn6pqirg==
