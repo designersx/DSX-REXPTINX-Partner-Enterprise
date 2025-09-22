@@ -297,7 +297,8 @@ export default function DashboardFinance() {
           {dashboardData?.agents?.length >0 &&
           
             <Grid size={12}>
-              <AgentDetailCard agents={dashboardData?.agents || []}/>
+              {/* <AgentDetailCard agents={dashboardData?.agents || []}/> */}
+              <AgentDetailCard agents={dashboardData?.agents?.slice(0, 4)} />
             </Grid>
             }
           </Grid>

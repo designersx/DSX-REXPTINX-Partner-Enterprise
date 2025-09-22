@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 
 // assets
 import { Add } from '@wandersonalwes/iconsax-react';
+import Link from 'next/link';
 const Food = '/assets/images/avatrs/Female-01.png';
 const Travel = '/assets/images/avatrs/Female-04.png';
 const Shopping = '/assets/images/avatrs/male-03.png';
@@ -122,6 +123,7 @@ const router = useRouter();
           sx={{ gap: 1, alignItems: { xs: 'start', sm: 'center' }, justifyContent: 'space-between' }}
         >
           <Typography variant="h5">Agents Overview</Typography>
+         <Link href="/build/agents/" passHref> <Typography variant="h5">view all</Typography></Link>
         </Stack>
 
         <Grid container spacing={1.5}>
