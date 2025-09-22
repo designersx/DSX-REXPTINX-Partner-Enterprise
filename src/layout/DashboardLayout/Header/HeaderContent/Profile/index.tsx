@@ -32,6 +32,7 @@ import useUser from 'hooks/useUser';
 // assets
 const avatar1 = '/assets/images/users/avatar-6.png';
 import { Setting2, Profile, Logout } from '@wandersonalwes/iconsax-react';
+import ChangePasswordDialog from 'components/dialogue/ChangePasswordDialog';
 
 interface TabPanelProps {
   children?: ReactNode;
@@ -78,6 +79,7 @@ export default function ProfilePage() {
   const theme = useTheme();
   const router = useRouter();
   const user = useUser();
+  const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
 
   const { data: session } = useSession();
   const provider = session?.provider;
@@ -96,6 +98,17 @@ export default function ProfilePage() {
     localStorage.removeItem('authToken');
 
     router.push('/login');
+  };
+
+
+  const handleChangePassword = () => {
+    setOpenPasswordDialog(true);
+  };
+
+  const handlePasswordSubmit = (formData) => {
+    console.log("Password form submitted", formData);
+    // yahan API call karo password change ke liye
+    setOpenPasswordDialog(false);
   };
 
   const anchorRef = useRef<any>(null);
@@ -118,6 +131,7 @@ export default function ProfilePage() {
   };
 
   return (
+    <> 
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <ButtonBase
         sx={(theme) => ({
@@ -168,7 +182,7 @@ export default function ProfilePage() {
                           <Stack>
                             <Typography variant="subtitle1">{user ? user?.name : ''}</Typography>
                             <Typography variant="body2" color="secondary">
-                              UI/UX Designer
+                              User
                             </Typography>
                           </Stack>
                         </Stack>
@@ -186,15 +200,15 @@ export default function ProfilePage() {
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
                       <Tab sx={tabStyle} icon={<Profile size={18} style={{ marginBottom: 0 }} />} label="Profile" {...a11yProps(0)} />
-                      <Tab sx={tabStyle} icon={<Setting2 size={18} style={{ marginBottom: 0 }} />} label="Setting" {...a11yProps(1)} />
+                      {/* <Tab sx={tabStyle} icon={<Setting2 size={18} style={{ marginBottom: 0 }} />} label="Setting" {...a11yProps(1)} /> */}
                     </Tabs>
                   </Box>
                   <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab handleLogout={handleLogout} />
+                    <ProfileTab handleLogout={handleLogout} handleChangePassword={handleChangePassword} />
                   </TabPanel>
-                  <TabPanel value={value} index={1} dir={theme.direction}>
+                  {/* <TabPanel value={value} index={1} dir={theme.direction}>
                     <SettingTab />
-                  </TabPanel>
+                  </TabPanel> */}
                 </MainCard>
               </ClickAwayListener>
             </Paper>
@@ -202,5 +216,10 @@ export default function ProfilePage() {
         )}
       </Popper>
     </Box>
+      <ChangePasswordDialog 
+        open={openPasswordDialog}
+        onClose={() => setOpenPasswordDialog(false)}
+        onSubmit={handlePasswordSubmit}
+      /></>
   );
 }

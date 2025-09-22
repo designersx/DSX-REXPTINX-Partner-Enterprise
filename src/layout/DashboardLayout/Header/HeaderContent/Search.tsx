@@ -17,7 +17,7 @@ export default function Search({ value, onChange }: SearchProps) {
   console.log(value)
   return (
     <Box sx={{ width: '100%', ml: { xs: 0, md: 2 }, mb: 2 }}>
-      <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
+      {/* <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
         <OutlinedInput
           id="header-search"
           value={value} // bind the value
@@ -30,7 +30,7 @@ export default function Search({ value, onChange }: SearchProps) {
           placeholder="Search Agent..."
           sx={{ '& .MuiOutlinedInput-input': { p: 1.5 } }}
         />
-      </FormControl>
+      </FormControl> */}
     </Box>
   );
 }

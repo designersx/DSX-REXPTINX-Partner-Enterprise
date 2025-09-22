@@ -13,16 +13,16 @@ interface Props {
 
 // ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 
-export default function ProfileTab({ handleLogout }: Props) {
+export default function ProfileTab({ handleLogout ,handleChangePassword}: Props) {
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-      <ListItemButton>
+      <ListItemButton onClick={handleChangePassword}>
         <ListItemIcon>
           <Edit2 variant="Bulk" size={18} />
         </ListItemIcon>
-        <ListItemText primary="Edit Profile" />
+        <ListItemText primary="Change Password"/>
       </ListItemButton>
-      <ListItemButton>
+      {/* <ListItemButton>
         <ListItemIcon>
           <Profile variant="Bulk" size={18} />
         </ListItemIcon>
@@ -39,7 +39,7 @@ export default function ProfileTab({ handleLogout }: Props) {
           <Card variant="Bulk" size={18} />
         </ListItemIcon>
         <ListItemText primary="Billing" />
-      </ListItemButton>
+      </ListItemButton> */}
       <ListItemButton onClick={handleLogout}>
         <ListItemIcon>
           <Logout variant="Bulk" size={18} />
