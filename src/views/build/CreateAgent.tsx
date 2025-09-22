@@ -82,7 +82,7 @@ const businessServices = [
       "Fixed Deposits",
       "Net Banking/UPI",
       "Wealth Management",
-      
+
     ],
   },
   {
@@ -94,7 +94,7 @@ const businessServices = [
       "Electronics Accessories",
       "Home & Kitchen Essentials",
       "Nutritional Supplements",
-      
+
     ],
   },
   {
@@ -106,7 +106,7 @@ const businessServices = [
       "Furniture",
       "FMCG Products",
       "Agricultural Goods",
-     
+
     ],
   },
   {
@@ -118,7 +118,7 @@ const businessServices = [
       "Travel Insurance",
       "Property Insurance",
       "Business Insurance",
-   
+
     ],
   },
 
@@ -1184,19 +1184,106 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     getUserMinutes()
   }, [])
   return (
+    // <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "75%" }}>
+    //   <Grid item xs={12} sm={12} md={12} lg={10} >
+    //     <Paper
+    //       elevation={3}
+    //       sx={{
+    //         p: { xs: 2, sm: 3, md: 4 },
+    //         borderRadius: 3,
+
+    //       }}
+    //     >
+    //       <IconButton
+    //         aria-label="close"
+    //         onClick={handleClose} // 👈 aapko ye function define karna hoga
+    //         sx={{
+    //           position: "absolute",
+    //           top: 8,
+    //           right: 8,
+    //           color: (theme) => theme.palette.grey[600],
+    //         }}
+    //       >
+    //         <CloseIcon />
+    //       </IconButton>
+    //       <Typography variant="h5" fontWeight="bold" gutterBottom>
+    //         Agent General Info
+    //       </Typography>
+    //       <Divider sx={{ mb: 3 }} />
+
+    //       {/* API Status Feedback */}
+    //       {apiStatus.status && (
+    //         <Alert severity={apiStatus.status} sx={{ mb: 3 }}>
+    //           {apiStatus.message}
+    //         </Alert>
+    //       )}
+
+    //       {/* Stepper */}
+    //       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+    //         {steps.map((label) => (
+    //           <Step key={label}>
+    //             <StepLabel>{label}</StepLabel>
+    //           </Step>
+    //         ))}
+    //       </Stepper>
+
+    //       {/* Step Content */}
+    //       <Box sx={{ minHeight: { xs: 300, sm: 350, md: 400 } }}>
+    //         {getStepContent(activeStep)}
+    //       </Box>
+    //       {/* Navigation Buttons */}
+    //       <Stack
+    //         direction="row"
+    //         justifyContent="space-between"
+    //         sx={{ mt: 3 }}
+    //       >
+    //         <Button
+    //           disabled={activeStep === 0}
+    //           onClick={handleBack}
+    //           sx={{ textTransform: "none" }}
+    //         >
+    //           Back
+    //         </Button>
+    //         <Button
+    //           variant="contained"
+    //           // onClick={handleNext}
+    //           onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+    //           disabled={activeStep === steps.length - 1 && isSubmitting}
+    //           disabled={isSubmitting || minute <= 0}
+    //           // disabled={}
+    //           sx={{
+    //             px: 4,
+    //             py: 1,
+    //             borderRadius: 2,
+    //             textTransform: "none",
+    //             fontWeight: "bold",
+    //           }}
+    //         >
+    //           {/* {activeStep === steps.length - 1 ? "Submit" : "Next"} */}
+    //           {isSubmitting && activeStep === steps.length - 1
+    //             ? "Submitting..." // show loader text
+    //             : activeStep === steps.length - 1
+    //               ? "Submit"
+    //               : "Next"}
+    //         </Button>
+    //       </Stack>
+    //     </Paper>
+    //   </Grid>
+    // </Grid>
     <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "75%" }}>
-      <Grid item xs={12} sm={12} md={12} lg={10} >
+      <Grid item xs={12} sm={12} md={12} lg={10}>
         <Paper
           elevation={3}
           sx={{
             p: { xs: 2, sm: 3, md: 4 },
             borderRadius: 3,
-            background: "#fafafa",
+            backgroundColor: "transparent", // 👈 background remove
+            boxShadow: "none" // 👈 optional: shadow bhi remove karne ke liye
           }}
         >
           <IconButton
             aria-label="close"
-            onClick={handleClose} // 👈 aapko ye function define karna hoga
+            onClick={handleClose}
             sx={{
               position: "absolute",
               top: 8,
@@ -1206,9 +1293,11 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           >
             <CloseIcon />
           </IconButton>
+
           <Typography variant="h5" fontWeight="bold" gutterBottom>
             Agent General Info
           </Typography>
+
           <Divider sx={{ mb: 3 }} />
 
           {/* API Status Feedback */}
@@ -1231,6 +1320,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           <Box sx={{ minHeight: { xs: 300, sm: 350, md: 400 } }}>
             {getStepContent(activeStep)}
           </Box>
+
           {/* Navigation Buttons */}
           <Stack
             direction="row"
@@ -1246,11 +1336,8 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             </Button>
             <Button
               variant="contained"
-              // onClick={handleNext}
               onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-              disabled={activeStep === steps.length - 1 && isSubmitting}
               disabled={isSubmitting || minute <= 0}
-              // disabled={}
               sx={{
                 px: 4,
                 py: 1,
@@ -1259,9 +1346,8 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                 fontWeight: "bold",
               }}
             >
-              {/* {activeStep === steps.length - 1 ? "Submit" : "Next"} */}
               {isSubmitting && activeStep === steps.length - 1
-                ? "Submitting..." // show loader text
+                ? "Submitting..."
                 : activeStep === steps.length - 1
                   ? "Submit"
                   : "Next"}
@@ -1270,5 +1356,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         </Paper>
       </Grid>
     </Grid>
+
   );
 }
