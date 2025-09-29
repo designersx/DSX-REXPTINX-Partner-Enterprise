@@ -4,8 +4,9 @@ import KnowledgeBase from 'views/build/KnowledgeBase';
 import SamplePagePage from 'views/other/SamplePage';
 import DemoAgentsViewPage from 'views/build/Demoview';
 import PhoneNumberList from 'views/deploy/PhoneNumbersList';
+import Main from 'views/deploy/index';
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function SamplePage() {
-  return <PhoneNumberList />;
+  return <Main />;
 }
