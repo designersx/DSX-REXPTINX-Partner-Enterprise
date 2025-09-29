@@ -55,7 +55,7 @@ export default function CallHistory({ agentId }) {
     // Dynamic lead types derived from calldata
     const [leadTypes, setLeadTypes] = useState(['All']);
     const sentiments = ['All', 'Positive', 'Negative', 'Neutral'];
-    const callTypes = ['All', 'Inbound', 'Outbound', 'Missed'];
+    const callTypes = ['All', 'Inbound', 'Outbound' ];
 
     useEffect(() => {
         fetchCalls(currentMonth, currentYear);
@@ -216,7 +216,7 @@ export default function CallHistory({ agentId }) {
                 <Box sx={{ p: 2 }}>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={3}>
-                            <FormControl fullWidth variant="outlined">
+                            <FormControl fullWidth variant="outlined" >
                                 <InputLabel id="lead-type-label">Lead Type</InputLabel>
                                 <Select
                                     labelId="lead-type-label"
@@ -224,6 +224,7 @@ export default function CallHistory({ agentId }) {
                                     value={leadTypeFilter}
                                     onChange={(e) => setLeadTypeFilter(e.target.value)}
                                     label="Lead Type"
+                                    
                                 >
                                     {leadTypes.map(type => (
                                         <MenuItem key={type} value={type}>{type}</MenuItem>

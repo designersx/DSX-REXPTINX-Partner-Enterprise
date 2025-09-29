@@ -40,7 +40,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AbcIcon from '@mui/icons-material/Abc';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 // assets
-import { Add, Edit, Eye, Trash } from '@wandersonalwes/iconsax-react';
+import { Add, Edit, Eye, Trash ,UserEdit} from '@wandersonalwes/iconsax-react';
 
 import { useEffect, useRef, useState } from 'react';
 import CallDialog from 'components/CallDialog';
@@ -435,6 +435,11 @@ export default function TransactionHistoryCard() {
                                 <Tooltip title="View call history">
                                   <IconButton color="secondary" onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}>
                                     <Eye />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Edit agent">
+                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
+                                    <UserEdit />
                                   </IconButton>
                                 </Tooltip>
                               </>

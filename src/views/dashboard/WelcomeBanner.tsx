@@ -14,7 +14,8 @@ import Link from 'next/link';
 
 // assets
 const cardBack = '/assets/images/widget/img-dropbox-bg.svg';
-const WelcomeImage = 	'https://www.rexpt.us/images/Mask-Profile.png';
+// const WelcomeImage = 	'https://www.rexpt.us/images/Mask-Profile.png';
+const WelcomeImage = 	'/assets/images/Mask-Profile rex.png';
 
 // ==============================|| ANALYTICS - WELCOME ||============================== //
 
