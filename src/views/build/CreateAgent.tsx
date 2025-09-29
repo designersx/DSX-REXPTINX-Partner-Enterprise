@@ -18,18 +18,21 @@ import {
   Alert,
 
   IconButton,
+  Checkbox,
+  ListItemText,
+  CircularProgress
 } from "@mui/material";
 import ErrorOutline from "@mui/icons-material/ErrorOutline"; //
-import { Paper, Divider, CheckCircle, Chip } from "@mui/material";
+import { Paper, Divider, Chip } from "@mui/material";
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 // import PauseIcon from "@mui/icons-material/Pause";
 import MainCard from "components/MainCard";
 import { GRID_COMMON_SPACING } from "config";
-
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import decodeToke from "../../lib/decodeToken"
-import { getAvailableMinutes } from "../../../Services/auth";
+import { getAvailableMinutes, validateWebsite } from "../../../Services/auth";
 // ---------------- Business Data ----------------
 const allBusinessTypes = [
   {
@@ -379,34 +382,41 @@ function getServicesByType(type) {
   const found = businessServices.find((b) => b.type === type);
   return found ? found.services : [];
 }
-
+// --- INTENT OPTIONS ---
+const intentOptions = [
+  "Billing and Invoice",
+  "Complaint Feedback",
+  "Customer Support and General",
+  "Other",
+]
 
 // ---------------- Main Component ----------------
 export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   useEffect(() => {
     if (open) {
-      setFormData({
-        agentName: "",
-        corePurpose: "",
-        industry: "",
-        service: [],
-        customService: "",
-        businessName: "",
-        agentType: "",
-        agentGender: "",
-        agentAvatar: "",
-        agentLanguage: "",
-        agentLanguageCode: "",
-        agentVoice: "",
-        customServices: [''],
-        assignMinutes: ""
-      });
       setErrors({});
       setActiveStep(0);
       setApiStatus({ status: null, message: null });
       setVoices([]);
       setPlayingVoiceId(null);
       setFilteredVoices([]);
+      //   setFormData({
+      //   agentName: "",
+      //   corePurpose: "",
+      //   industry: "",
+      //   service: [],
+      //   customService: "",
+      //   businessName: "",
+      //   agentType: "",
+      //   agentGender: "",
+      //   agentAvatar: "",
+      //   agentLanguage: "",
+      //   agentLanguageCode: "",
+      //   agentVoice: "",
+      //   customServices: [''],
+      //   assignMinutes: "",
+      //    intents: []
+      // });
     }
   }, [open]);
   const [formData, setFormData] = useState({
@@ -424,7 +434,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     agentVoice: "",
     customServices: [''],
     agentAccent: "",
-    assignMinutes: ""
+    assignMinutes: "",
+    intents: [] // [{ type: "Billing and Invoice", name: "", description: "", file: null }]
+
   });
   const [errors, setErrors] = useState({});
   const [activeStep, setActiveStep] = useState(0);
@@ -448,7 +460,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   ];
   const agentTypes = ["Inbound", "Outbound", "Both"];
   const genders = ["Male", "Female"];
-  const steps = ["Agent Details", "Business Details", "Agent Configuration", "Agent Minutes"];
+  const steps = ["Agent Details", "Business Details", "Intents", "Agent Configuration", "Agent Minutes"];
 
   const CustomPlayIcon = () => (
 
@@ -525,23 +537,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       setPlayingVoiceId(voiceId);
     }
   };
-  // const handlePlayVoice = (voiceId, previewAudioUrl) => {
-  //   if (audioRef.current) {
-  //     audioRef.current.pause();
-  //   }
-
-  //   if (playingVoiceId === voiceId) {
-  //     setPlayingVoiceId(null);
-  //   } else {
-  //     audioRef.current = new Audio(previewAudioUrl);
-  //     audioRef.current.play().catch((error) => {
-  //       console.error("Error playing audio:", error);
-  //       setApiStatus({ status: "error", message: "Failed to play voice preview" });
-  //     });
-  //     setPlayingVoiceId(voiceId);
-  //     audioRef.current.onended = () => setPlayingVoiceId(null);
-  //   }
-  // };
 
   // Clean up audio on component unmount
   const handleCustomServiceChange = (event, index) => {
@@ -575,14 +570,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       : new Array(formData.customServices.length - 1).fill('');
     setFormData({ ...formData, customServices: newCustomServices });
     setErrors({ ...errors, dashboards: newErrors });
-  };
-
-  // Example validation function (adjust as needed)
-  const validatedashboard = (value) => {
-    if (!value.trim()) {
-      return 'Custom service is required';
-    }
-    return '';
   };
   useEffect(() => {
     return () => {
@@ -665,12 +652,25 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       if (formData.service.includes("Other") && !formData.customServices) {
         newErrors.customServices = "Please specify your service";
       }
-    } else if (step === 2) {
+    }
+    else if (step === 2) {
+      if (formData.intents.length === 0) {
+        newErrors.intents = "At least one intent is required";
+      } else {
+        formData.intents.forEach((intent, idx) => {
+          if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
+          if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
+          if (!intent.file) newErrors[`intent_${idx}_file`] = `${intent.type} - File is required`;
+        });
+      }
+    }
+
+    else if (step === 3) {
       if (!formData.agentType) newErrors.agentType = "Agent Type is required";
       if (!formData.agentLanguage) newErrors.agentLanguage = "Agent Language is required";
       if (!formData.agentVoice) newErrors.agentVoice = "Agent Voice is required";
     }
-    else if (step === 3) {
+    else if (step === 4) {
       if (!formData.assignMinutes) {
         newErrors.assignMinutes = "Agent Minutes is required";
       } else if (minute <= 0) {
@@ -695,7 +695,8 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         ),
         agentAccent: formData.agentAccent
       };
-
+      console.log(finalData, "HELO")
+      return
       try {
         setApiStatus({ status: null, message: null });
         setIsSubmitting(true);
@@ -735,7 +736,115 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       }
     }
   };
+  // --- HANDLERS ---
+  // const handleIntentChange = (event) => {
+  //   const selected = event.target.value;
 
+  //   // Ensure each intent has its own object
+  //   const updatedIntents = selected.map((intent) => {
+  //     const existing = formData.intents.find((i) => i.type === intent);
+  //     return existing || { type: intent, name: "", description: "", file: null };
+  //   });
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     intents: updatedIntents,
+  //   }));
+  // };
+  const handleIntentChange = (event) => {
+    const selected = event.target.value;
+
+    const updatedIntents = selected.map((intent) => {
+      // Prevent adding "Other" from dropdown if it already exists
+      if (intent === "Other") {
+        const existingOther = formData.intents.find(i => i.type === "Other");
+        return existingOther || { type: "Other", name: "", description: "", file: null, urls: [] };
+      }
+
+      // For normal intents
+      const existing = formData.intents.find((i) => i.type === intent);
+      return existing || { type: intent, name: "", description: "", file: null, urls: [] };
+    });
+
+    setFormData((prev) => ({
+      ...prev,
+      intents: updatedIntents,
+    }));
+  };
+
+
+  const handleAddOther = () => {
+    setFormData(prev => ({
+      ...prev,
+      intents: [
+        ...prev.intents,
+        { type: "Other", id: Date.now(), name: "", description: "", file: null, urls: [] }
+      ]
+    }));
+  };
+
+  const handleIntentFieldChange = (index, field, value) => {
+    const updatedIntents = [...formData.intents];
+    updatedIntents[index][field] = value;
+    setFormData((prev) => ({ ...prev, intents: updatedIntents }));
+  };
+  // --- Handler ---
+  const handleRemoveIntent = (index) => {
+    const updatedIntents = [...formData.intents];
+    updatedIntents.splice(index, 1); // remove 1 item at index
+    setFormData((prev) => ({ ...prev, intents: updatedIntents }));
+  };
+  // --- Handlers ---
+  const handleAddUrl = async (intentIndex) => {
+    const intent = formData.intents[intentIndex];
+    const rawUrl = intent.newUrl?.trim();
+    if (!rawUrl) return;
+
+    // Start verification
+    handleIntentFieldChange(intentIndex, "verifying", true);
+    handleIntentFieldChange(intentIndex, "errorMsg", "");
+    handleIntentFieldChange(intentIndex, "currentUrlValid", false);
+
+    let url = rawUrl.replace(/^https?:\/\//i, "");
+    url = `https://${url}`;
+
+    try {
+      const result = await validateWebsite(url); // API call
+
+      if (result.valid) {
+        // URL valid → Add to list automatically
+        setFormData((prev) => {
+          const updatedIntents = [...prev.intents];
+          const currentIntent = updatedIntents[intentIndex];
+          if (!currentIntent.urls) currentIntent.urls = [];
+          if (!currentIntent.urls.includes(rawUrl)) {
+            currentIntent.urls.push(rawUrl);
+          }
+          currentIntent.newUrl = "";
+          currentIntent.currentUrlValid = false;
+          currentIntent.errorMsg = "";
+          return { ...prev, intents: updatedIntents };
+        });
+      } else {
+        // URL invalid → Show error
+        handleIntentFieldChange(intentIndex, "currentUrlValid", false);
+        handleIntentFieldChange(intentIndex, "errorMsg", "Your URL is wrong");
+      }
+    } catch (err) {
+      handleIntentFieldChange(intentIndex, "currentUrlValid", false);
+      handleIntentFieldChange(intentIndex, "errorMsg", "Error verifying URL");
+    } finally {
+      handleIntentFieldChange(intentIndex, "verifying", false);
+    }
+  };
+
+  const handleRemoveUrl = (intentIndex, urlIndex) => {
+    setFormData((prev) => {
+      const updatedIntents = [...prev.intents];
+      updatedIntents[intentIndex].urls.splice(urlIndex, 1);
+      return { ...prev, intents: updatedIntents };
+    });
+  };
   const handleNext = () => {
     if (validateStep(activeStep)) {
       if (activeStep === steps.length - 1) {
@@ -751,6 +860,15 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     setErrors({});
     setApiStatus({ status: null, message: null });
   };
+  useEffect(() => {
+    const updatedIntents = formData.intents.map((intent) => {
+      if (intent.type !== "Other") {
+        return { ...intent, name: intent.type };
+      }
+      return intent;
+    });
+    setFormData((prev) => ({ ...prev, intents: updatedIntents }));
+  }, [formData.intents]);
 
   const selectedIndustryData = allBusinessTypes.find(
     (i) => i.type === formData.industry
@@ -979,6 +1097,158 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         );
       case 2:
         return (
+          <>
+            {/* Intents */}
+            <Stack spacing={1}>
+              <InputLabel>Intents</InputLabel>
+              <Select
+                multiple
+                name="intents"
+                value={formData.intents.map((intent) => intent.type)}
+                onChange={handleIntentChange}
+                fullWidth
+                error={!!errors.intents}
+                renderValue={(selected) => selected.join(", ")}
+              >
+                {intentOptions.map((intent) => (
+                  <MenuItem key={intent} value={intent}>
+                    <Checkbox checked={formData.intents.some((i) => i.type === intent)} />
+                    <ListItemText primary={intent} />
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText error>{errors.intents}</FormHelperText>
+            </Stack>
+
+            {/* Extra fields for each selected intent */}
+            {formData.intents.map((intent, index) => (
+              <Paper key={intent.type} sx={{ p: 2, mt: 2 }} variant="outlined">
+                <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                  <Typography variant="subtitle1" sx={{ display: 'inline-block', mr: 2, wordBreak: 'break-word' }} gutterBottom>
+                    {intent.type}
+
+                  </Typography>
+
+                  {intent.type === "Other" && (
+                    <Button
+                      variant="text"
+                      sx={{ mt: 1 }}
+                      onClick={handleAddOther}
+                    >
+                      Add Another
+                    </Button>
+                  )}
+
+                </Stack>
+                <TextField
+                  label="Name"
+                  value={intent.type === "Other" ? intent.name : intent.type}
+                  onChange={(e) => handleIntentFieldChange(index, "name", e.target.value)}
+                  fullWidth
+                  margin="normal"
+                  InputProps={{ readOnly: intent.type !== "Other" }} // Only editable for Other
+                />
+
+
+                <TextField
+                  label="Description"
+                  multiline
+                  rows={3}
+                  value={intent.description}
+                  onChange={(e) =>
+                    handleIntentFieldChange(index, "description", e.target.value)
+                  }
+                  fullWidth
+                  margin="normal"
+                />
+
+
+                <Button
+
+                  variant="outlined"
+                  component="label"
+                  startIcon={<UploadFileIcon />}
+                  sx={{ mt: 1 }}
+                >
+                  Upload File
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(e) =>
+                      handleIntentFieldChange(index, "file", e.target.files?.[0] || null)
+                    }
+                  />
+                </Button>
+                {intent.file && (
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    Selected: {intent.file.name}
+                  </Typography>
+                )}
+                {/* URLs Input & Add */}
+                <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: "wrap", alignItems: "center" }}>
+                  <TextField
+                    label="Add URL"
+                    size="small"
+                    value={intent.newUrl || ""}
+                    sx={{ height: "40px", minWidth: "300px" }}
+                    onChange={(e) => {
+                      let value = e.target.value;
+                      if (value && !/^https?:\/\//i.test(value)) {
+                        value = `https://${value.replace(/^https?:\/\//i, "")}`;
+                      }
+                      handleIntentFieldChange(index, "newUrl", value);
+                    }}
+                    onKeyDown={async (e) => {
+                      if (e.key === "Enter" && intent.newUrl) {
+                        e.preventDefault();
+                        await handleAddUrl(index);
+                      }
+                    }}
+                    InputProps={{
+                      endAdornment: intent.verifying ? <CircularProgress size={20} /> : null
+                    }}
+                    error={!!intent.errorMsg}
+                    helperText={intent.errorMsg}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={() => handleAddUrl(index)}
+                    sx={{ height: "40px", minWidth: "80px" }}
+                    disabled={intent.verifying || !intent.newUrl?.trim()}
+                  >
+                    Add
+                  </Button>
+                </Stack>
+
+
+
+                {/* Display URLs as Chips */}
+                <br />
+                <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
+                  {intent.urls?.map((url, urlIndex) => (
+                    <Chip
+                      key={urlIndex}
+                      label={url}
+                      onDelete={() => handleRemoveUrl(index, urlIndex)}
+                      sx={{ mb: 1 }}
+                    />
+                  ))}
+                </Stack>
+                <Button
+                  variant="text"
+                  color="error"
+                  sx={{ mt: 1 }}
+                  onClick={() => handleRemoveIntent(index)}
+                >
+                  Remove
+                </Button>
+              </Paper>
+            ))}
+          </>
+
+        );
+      case 3:
+        return (
           <Stack spacing={3}>
             {/* Agent Type */}
             <Stack spacing={1}>
@@ -1074,7 +1344,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           </Stack>
 
         );
-      case 3:
+      case 4:
         return (
 
           <Stack spacing={3}>
@@ -1184,92 +1454,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     getUserMinutes()
   }, [])
   return (
-    // <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "75%" }}>
-    //   <Grid item xs={12} sm={12} md={12} lg={10} >
-    //     <Paper
-    //       elevation={3}
-    //       sx={{
-    //         p: { xs: 2, sm: 3, md: 4 },
-    //         borderRadius: 3,
 
-    //       }}
-    //     >
-    //       <IconButton
-    //         aria-label="close"
-    //         onClick={handleClose} // 👈 aapko ye function define karna hoga
-    //         sx={{
-    //           position: "absolute",
-    //           top: 8,
-    //           right: 8,
-    //           color: (theme) => theme.palette.grey[600],
-    //         }}
-    //       >
-    //         <CloseIcon />
-    //       </IconButton>
-    //       <Typography variant="h5" fontWeight="bold" gutterBottom>
-    //         Agent General Info
-    //       </Typography>
-    //       <Divider sx={{ mb: 3 }} />
-
-    //       {/* API Status Feedback */}
-    //       {apiStatus.status && (
-    //         <Alert severity={apiStatus.status} sx={{ mb: 3 }}>
-    //           {apiStatus.message}
-    //         </Alert>
-    //       )}
-
-    //       {/* Stepper */}
-    //       <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-    //         {steps.map((label) => (
-    //           <Step key={label}>
-    //             <StepLabel>{label}</StepLabel>
-    //           </Step>
-    //         ))}
-    //       </Stepper>
-
-    //       {/* Step Content */}
-    //       <Box sx={{ minHeight: { xs: 300, sm: 350, md: 400 } }}>
-    //         {getStepContent(activeStep)}
-    //       </Box>
-    //       {/* Navigation Buttons */}
-    //       <Stack
-    //         direction="row"
-    //         justifyContent="space-between"
-    //         sx={{ mt: 3 }}
-    //       >
-    //         <Button
-    //           disabled={activeStep === 0}
-    //           onClick={handleBack}
-    //           sx={{ textTransform: "none" }}
-    //         >
-    //           Back
-    //         </Button>
-    //         <Button
-    //           variant="contained"
-    //           // onClick={handleNext}
-    //           onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-    //           disabled={activeStep === steps.length - 1 && isSubmitting}
-    //           disabled={isSubmitting || minute <= 0}
-    //           // disabled={}
-    //           sx={{
-    //             px: 4,
-    //             py: 1,
-    //             borderRadius: 2,
-    //             textTransform: "none",
-    //             fontWeight: "bold",
-    //           }}
-    //         >
-    //           {/* {activeStep === steps.length - 1 ? "Submit" : "Next"} */}
-    //           {isSubmitting && activeStep === steps.length - 1
-    //             ? "Submitting..." // show loader text
-    //             : activeStep === steps.length - 1
-    //               ? "Submit"
-    //               : "Next"}
-    //         </Button>
-    //       </Stack>
-    //     </Paper>
-    //   </Grid>
-    // </Grid>
     <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "75%" }}>
       <Grid item xs={12} sm={12} md={12} lg={10}>
         <Paper
