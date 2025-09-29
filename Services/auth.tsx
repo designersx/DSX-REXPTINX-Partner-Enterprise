@@ -1,6 +1,5 @@
 import axios from "axios";
 import { getUserId } from "utils/auth";
-
 // const URL = "https://rex-bk.truet.net";
 console.log(process.env.NEXT_PUBLIC_API_URL)
 // admin login api
@@ -13,9 +12,6 @@ export const Login = async (email, password) => {
   } catch (error) {
     console.log(error)
     return error.response.data;
-    if (error.response?.data?.msg) {
-      throw new Error(error.response.data.msg);
-    }
 
   }
 };
@@ -104,6 +100,7 @@ export const getAgentCallById = async (agentId, callId, start_timestamp) => {
     throw new Error("Failed to fetch agent calls");
   }
 };
+
 
 export const getKbListByUserId = async (userId) => {
   try {
@@ -194,3 +191,4 @@ export const updateKb = async (formData) => {
     return { valid: false, reason: 'Error validating website' };
   }
 };
+
