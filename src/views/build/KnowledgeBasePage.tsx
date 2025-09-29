@@ -412,7 +412,7 @@ console.log(selectedItem)
                 </Paper>
               )}
 
-              {selectedItem.kbFiles?.map((file, index) => (
+              {selectedItem?.kbFiles?.map((file, index) => (
               <Paper
                 key={index}
                 sx={{
