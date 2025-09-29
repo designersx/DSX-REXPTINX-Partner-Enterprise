@@ -696,15 +696,49 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         agentAccent: formData.agentAccent
       };
       console.log(finalData, "HELO")
-      return
+      // return
       try {
         setApiStatus({ status: null, message: null });
         setIsSubmitting(true);
+        const formDataToSend = new FormData();
+
+      // ✅ Normal fields (direct req.body me milenge)
+      formDataToSend.append("agentName", formData.agentName);
+      formDataToSend.append("businessName", formData.businessName);
+      formDataToSend.append("agentType", formData.agentType);
+      formDataToSend.append("agentGender", formData.agentGender);
+      formDataToSend.append("agentAvatar", formData.agentAvatar);
+      formDataToSend.append("agentLanguage", formData.agentLanguage);
+      formDataToSend.append("agentLanguageCode", formData.agentLanguageCode);
+      formDataToSend.append("agentVoice", formData.agentVoice);
+      formDataToSend.append("agentAccent", formData.agentAccent);
+      formDataToSend.append("assignMinutes", formData.assignMinutes);
+      formDataToSend.append("industry", formData.industry);
+      formDataToSend.append("service", JSON.stringify(formData.service));
+      formDataToSend.append("customService", formData.customService);
+      formDataToSend.append("customServices", formData.customServices);
+      formDataToSend.append("corePurpose", formData.corePurpose);
+      formDataToSend.append("userId", userDetails?.user?.id);
+
+      // ✅ Intents (without files)
+      const intentsWithoutFiles = formData.intents.map(({ file, ...rest }) => rest);
+      formDataToSend.append("intents", JSON.stringify(intentsWithoutFiles));
+
+      // ✅ Intent files
+      formData.intents.forEach((intent, index) => {
+        if (intent.file) {
+          formDataToSend.append(`intentFiles[${index}]`, intent.file);
+        }
+      });
+
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log("FormData entry:", key, value);
+      }
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/enterpriseAgent/createEnterpriseAgent`, finalData,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/enterpriseAgent/createEnterpriseAgent`, formDataToSend,
           {
             headers: {
-              "Content-Type": "application/json",
+             "Content-Type": "multipart/form-data",
             },
           }
         );
@@ -733,6 +767,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       }
       finally {
         //  Re-enable button
+         setIsSubmitting(false);
       }
     }
   };
