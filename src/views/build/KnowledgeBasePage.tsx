@@ -53,7 +53,7 @@ export default function KnowledgeBaseUI() {
         // const res = await axios.get(
         //   `${process.env.NEXT_PUBLIC_API_URL}/api/enterprise/getEnterpriseKBbyUserId/${userId}`
         // );
-        const res =await getKbListByUserId(userId)
+        const res = await getKbListByUserId(userId)
         console.log("fdfsaa", res);
 
         if (res.success) {
@@ -73,20 +73,20 @@ export default function KnowledgeBaseUI() {
               // scrapedUrls → URLs
               ...(kb.scrapedUrls
                 ? JSON.parse(kb.scrapedUrls).map((url: string) => ({
-                    type: "url",
-                    value: url,
-                    pages: null,
-                    synced: kb.updatedAt,
-                  }))
+                  type: "url",
+                  value: url,
+                  pages: null,
+                  synced: kb.updatedAt,
+                }))
                 : []),
 
               // kbFiles → files
               ...(Array.isArray(kb.kbFiles)
                 ? kb.kbFiles.map((f: any) => ({
-                    type: "file",
-                    value: f.fileName,
-                    size: `${(f.fileSize / 1024).toFixed(1)} KB`,
-                  }))
+                  type: "file",
+                  value: f.fileName,
+                  size: `${(f.fileSize / 1024).toFixed(1)} KB`,
+                }))
                 : []),
             ],
           }));
@@ -114,9 +114,9 @@ export default function KnowledgeBaseUI() {
 
   const handleConfirmDelete = async () => {
     if (!selectedItem?.kbId) return;
-    console.log('selectedItem.kbId',selectedItem.kbId,userId)
+    console.log('selectedItem.kbId', selectedItem.kbId, userId)
     try {
-      await deleteKnowledgeBase({ kbId:selectedItem.kbId, userId });
+      await deleteKnowledgeBase({ kbId: selectedItem.kbId, userId });
       setItems((prev) => prev.filter((kb) => kb.kbId != selectedItem.kbId));
 
       setSnackbarMessage("Knowledge Base deleted successfully!");
@@ -131,22 +131,22 @@ export default function KnowledgeBaseUI() {
     }
   };
 
-const handleSnackbarClose = (
-  event?: React.SyntheticEvent | Event,
-  reason?: string
-) => {
+  const handleSnackbarClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
 
-  setSnackbarOpen(false);
-};
+    setSnackbarOpen(false);
+  };
 
-const handleEditSuccess = (updatedKB) => {
-   setItems((prev) =>prev.map((kb) => (kb.kbId ===updatedKB.kbId ? { ...kb, ...updatedKB } : kb))
-   );
-   setSelectedItem((prev) => (prev?.kbId === updatedKB.kbId ? { ...prev, ...updatedKB } : prev));
-   setOpenEditModal(false);
- };
+  const handleEditSuccess = (updatedKB) => {
+    setItems((prev) => prev.map((kb) => (kb.kbId === updatedKB.kbId ? { ...kb, ...updatedKB } : kb))
+    );
+    setSelectedItem((prev) => (prev?.kbId === updatedKB.kbId ? { ...prev, ...updatedKB } : prev));
+    setOpenEditModal(false);
+  };
 
-console.log(selectedItem)
+  console.log(selectedItem)
   return (
     <>
       {/* ✅ Wrapper Box for responsive flex */}
@@ -251,12 +251,12 @@ console.log(selectedItem)
                   </Typography>
                 </Box>
                 <Stack direction="row" spacing={1}>
-                     <IconButton
+                  <IconButton
                     color="primary"
                     size="small"
-                   onClick={() => setOpenEditModal(true)}
+                    onClick={() => setOpenEditModal(true)}
                   >
-                   <EditIcon />
+                    <EditIcon />
                   </IconButton>
                   <IconButton
                     color="primary"
@@ -413,34 +413,34 @@ console.log(selectedItem)
               )}
 
               {selectedItem?.kbFiles?.map((file, index) => (
-              <Paper
-                key={index}
-                sx={{
-                  p: 2,
-                  mt: 2,
-                  borderRadius: 2,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <InsertDriveFileIcon color="primary" />
-                  <Typography fontWeight={500}>{file.fileName}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {(file.fileSize / 1024 / 1024).toFixed(2)} MB
-                  </Typography>
-                </Stack>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  href={`${process.env.NEXT_PUBLIC_API_URL}/${file.filePath}`}
-                  target="_blank"
-                  download
+                <Paper
+                  key={index}
+                  sx={{
+                    p: 2,
+                    mt: 2,
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  Download
-                </Button>
-              </Paper>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <InsertDriveFileIcon color="primary" />
+                    <Typography fontWeight={500}>{file.fileName}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {(file.fileSize / 1024 / 1024).toFixed(2)} MB
+                    </Typography>
+                  </Stack>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/${file.filePath}`}
+                    target="_blank"
+                    download
+                  >
+                    Download
+                  </Button>
+                </Paper>
               ))}
 
             </Paper>
@@ -466,61 +466,61 @@ console.log(selectedItem)
 
       <BasicModal open={open} onClose={() => setOpen(false)} />
 
-        <EditKnowledgeBase
-   open={openEditModal}
-   onClose={() => setOpenEditModal(false)}
-  onSubmit={handleEditSuccess}
-   knowledgeBase={selectedItem}
- />
+      <EditKnowledgeBase
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        onSubmit={handleEditSuccess}
+        knowledgeBase={selectedItem}
+      />
 
-        {/* Delete Confirmation Dialog */}
-        <Dialog
-          open={openDeleteDialog}
-          onClose={() => setOpenDeleteDialog(false)}
-          maxWidth="xs"
-          fullWidth
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Delete Knowledge Base</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Are you sure you want to delete this knowledge base? <br />
+            <strong>This will affect any agent assigned to it.</strong>
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => setOpenDeleteDialog(false)}
+            variant="outlined"
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
         >
-          <DialogTitle sx={{ fontWeight: 600 }}>Delete Knowledge Base</DialogTitle>
-          <DialogContent>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Are you sure you want to delete this knowledge base? <br />
-              <strong>This will affect any agent assigned to it.</strong>
-            </Typography>
-          </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button
-              onClick={() => setOpenDeleteDialog(false)}
-              variant="outlined"
-              color="inherit"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleConfirmDelete}
-              variant="contained"
-              color="error"
-            >
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-  <Snackbar
-  open={snackbarOpen}
-  autoHideDuration={4000}
-  onClose={handleSnackbarClose}
-  anchorOrigin={{ vertical: "top", horizontal: "center" }}
->
-  <MuiAlert
-    elevation={6}
-    variant="filled"
-    onClose={handleSnackbarClose}
-    severity={snackbarSeverity}
-    sx={{ width: "100%" }}
-  >
-    {snackbarMessage}
-  </MuiAlert>
-</Snackbar>
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </>
   );
 }

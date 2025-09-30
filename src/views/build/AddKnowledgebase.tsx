@@ -173,14 +173,6 @@ export default function BasicModal({ open, onClose, onSubmit }) {
   };
 
   const handleSubmit = async () => {
-    // const data = { 
-    //   kbName, 
-    //   files, 
-    //   text, 
-    //   url: formData.website,
-    //   selectedSitemapUrls: Array.from(selectedUrls)
-    // };
-    // console.log(data)
     const formDataObj = new FormData();
     formDataObj.append("userId", userId);
     formDataObj.append("kbName", kbName);
@@ -269,7 +261,7 @@ export default function BasicModal({ open, onClose, onSubmit }) {
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <MainCard title="Knowledge Base" modal darkTitle content={false} style={{ width: '30%' }}>
+      <MainCard title="Knowledge Base" modal darkTitle content={false} style={{ width: '50%' }}>
         <CardContent>
           {step === 1 && (
             <Box sx={{ mb: 2 }}>
@@ -318,8 +310,6 @@ export default function BasicModal({ open, onClose, onSubmit }) {
                   </Typography>
                 )}
               </Box>
-
-
               {/* Text Input */}
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" gutterBottom>
@@ -393,7 +383,7 @@ export default function BasicModal({ open, onClose, onSubmit }) {
                         ✓ Valid
                       </Typography>
                     ) : isWebsiteValid === false ? (
-                      <Typography variant="body2" color="error.main">
+                      <Typography variant="body2" style={{marginTop:"-10px"}} color="error.main">
                         ✗ Invalid
                       </Typography>
                     ) : null}
@@ -470,7 +460,11 @@ export default function BasicModal({ open, onClose, onSubmit }) {
               variant="contained"
               size="small"
               onClick={handleSubmit}
-              disabled={!kbName.trim() && !files.length && !text.trim() && !formData.website.trim()}
+              // disabled={!kbName.trim() && !files.length && !text.trim() && !formData.website.trim()}
+              disabled={
+    !kbName.trim() || 
+    (files.length === 0 && !text.trim() && !formData.website.trim())
+  }
             >
               Submit
             </Button>

@@ -43,7 +43,6 @@ const BuyPhoneNumberModal = ({ open, onClose, onSubmit, countries }) => {
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
     };
-    console.log(requirementsData, "requirementsData")
     const contentRef = useRef<HTMLDivElement | null>(null);
     const handleChange = (e) => {
         const { name, value } = e.target;
