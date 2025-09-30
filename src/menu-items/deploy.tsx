@@ -33,7 +33,14 @@ const deploy: NavItemType = {
       icon: ContactPhoneIcon,
      
     },
- 
+   {
+      id: 'regionalAgent',
+      title: 'Regional Agents',
+      type: 'item',
+      url: '/regional/regionalAgnets',
+      icon: ContactPhoneIcon,
+     
+    },
   ]
 };
 

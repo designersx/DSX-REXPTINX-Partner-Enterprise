@@ -40,7 +40,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AbcIcon from '@mui/icons-material/Abc';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 // assets
-import { Add, Edit, Eye, Trash ,UserEdit} from '@wandersonalwes/iconsax-react';
+import { Add, Edit, Eye, Trash, UserEdit } from '@wandersonalwes/iconsax-react';
 
 import { useEffect, useRef, useState } from 'react';
 import CallDialog from 'components/CallDialog';
@@ -395,7 +395,7 @@ export default function TransactionHistoryCard() {
           <Grid container spacing={5} sx={{
             alignItems: 'stretch',
             display: 'flex',
-            p: 3   // p = padding (theme spacing units, 1 = 8px)
+            p: 3
           }}>
             {loading ? (
               <Loader />
@@ -414,10 +414,13 @@ export default function TransactionHistoryCard() {
                     size={{ xs: 12, sm: 10, lg: 4 }}
                     style={{
                       alignItems: 'stretch',
-                      display: 'flex'
+                      display: 'flex',
+                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled,
+                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto', // prevent clicks
+
+
                     }}
                   >
-                    {/* <MainCard content={false} sx={{ p: 1.25 }}> */}
 
                     <Grid
                       id="print"
@@ -454,24 +457,6 @@ export default function TransactionHistoryCard() {
                             />
                           </ListItem>
                         </List>
-                        {/* <Menu
-                      id="fade-menu"
-                      slotProps={{ list: { 'aria-labelledby': 'fade-button' } }}
-                      // anchorEl={anchorEl}
-                      // open={openMenu}
-                      onClose={handleMenuClose}
-                      slots={{ transition: Fade }}
-                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                      <MenuItem sx={{ a: { textDecoration: 'none', color: 'inherit' } }}>
-                        {/* <PDFDownloadLink document={<ListSmallCard customer={customer} />} fileName={`Customer-${customer.name}.pdf`}>
-                          Export PDF
-                        </PDFDownloadLink> */}
-                        {/* </MenuItem>
-                      <MenuItem onClick={editCustomer}>Edit</MenuItem>
-                      <MenuItem onClick={handleAlertClose}>Delete</MenuItem>
-                    </Menu> */}
                       </Grid>
                       <Grid size={12}>
                         <Divider />
@@ -590,23 +575,9 @@ export default function TransactionHistoryCard() {
                       <Grid size={12}>
                         <Box>
                           <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul">
-                            {/* {customer.skills.map((skill: string, index: number) => (
-                          <ListItem disablePadding key={index} sx={{ width: 'auto', pr: 0.75, pb: 0.75 }}>
-                            <Chip color="secondary" variant="outlined" size="small" label={skill} sx={{ color: 'text.secondary' }} />
-                          </ListItem>
-                        ))} */}
                           </Box>
                         </Box>
                       </Grid>
-                      {/* <Stack
-                        direction="row"
-                        className="hideforPDf"
-                        sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
-                      >
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          Updated 3 days ago
-                        </Typography>
-                      </Stack> */}
                       <Stack
                         direction="row"
                         className="hideforPDf"
@@ -635,6 +606,11 @@ export default function TransactionHistoryCard() {
                       </Stack>
 
                     </Grid>
+
+
+
+
+
                   </Grid>
                 ))
             )}
@@ -681,6 +657,11 @@ export default function TransactionHistoryCard() {
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
+
+
+
+
+        
       </Snackbar>
     </>
   );

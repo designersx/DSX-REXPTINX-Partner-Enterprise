@@ -20,9 +20,11 @@ import {
   IconButton,
   Checkbox,
   ListItemText,
-  CircularProgress
+  CircularProgress,
+  AlertColor,
+  Tooltip
 } from "@mui/material";
-import ErrorOutline from "@mui/icons-material/ErrorOutline"; //
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Paper, Divider, Chip } from "@mui/material";
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 // import PauseIcon from "@mui/icons-material/Pause";
@@ -33,33 +35,34 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import decodeToke from "../../lib/decodeToken"
 import { getAvailableMinutes, validateWebsite } from "../../../Services/auth";
+import { Snackbar } from "@mui/material";
 // ---------------- Business Data ----------------
 const allBusinessTypes = [
   {
     type: "Electronics & Home Appliances",
     subtype: "Consumer Electronics Retailer",
     icon: "svg/Electronics-icon.svg",
-  }
-  // {
-  //   type: "Banking",
-  //   subtype: "Financial Institution",
-  //   icon: "svg/Banking-icon.svg",
-  // },
-  // {
-  //   type: "D2C E-commerce",
-  //   subtype: "Direct to Consumer Online Brand",
-  //   icon: "svg/Ecommerce-icon.svg",
-  // },
-  // {
-  //   type: "B2B/B2C Marketplace",
-  //   subtype: "Online Wholesale/Retail Platform",
-  //   icon: "svg/Marketplace-icon.svg",
-  // },
-  // {
-  //   type: "Insurance",
-  //   subtype: "Risk & Coverage Services",
-  //   icon: "svg/Insurance-icon.svg",
-  // },
+  },
+  {
+    type: "Banking",
+    subtype: "Financial Institution",
+    icon: "svg/Banking-icon.svg",
+  },
+  {
+    type: "D2C E-commerce",
+    subtype: "Direct to Consumer Online Brand",
+    icon: "svg/Ecommerce-icon.svg",
+  },
+  {
+    type: "B2B/B2C Marketplace",
+    subtype: "Online Wholesale/Retail Platform",
+    icon: "svg/Marketplace-icon.svg",
+  },
+  {
+    type: "Insurance",
+    subtype: "Risk & Coverage Services",
+    icon: "svg/Insurance-icon.svg",
+  },
 
 
 ];
@@ -400,23 +403,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       setVoices([]);
       setPlayingVoiceId(null);
       setFilteredVoices([]);
-      //   setFormData({
-      //   agentName: "",
-      //   corePurpose: "",
-      //   industry: "",
-      //   service: [],
-      //   customService: "",
-      //   businessName: "",
-      //   agentType: "",
-      //   agentGender: "",
-      //   agentAvatar: "",
-      //   agentLanguage: "",
-      //   agentLanguageCode: "",
-      //   agentVoice: "",
-      //   customServices: [''],
-      //   assignMinutes: "",
-      //    intents: []
-      // });
     }
   }, [open]);
   const [formData, setFormData] = useState({
@@ -450,7 +436,15 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   const userDetails = decodeToke(token)
   const [minute, setMinute] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
   const purposes = [
     "Customer Support",
     "Lead Qualifier",
@@ -653,6 +647,20 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         newErrors.customServices = "Please specify your service";
       }
     }
+    // else if (step === 2) {
+    //   if (formData.intents.length === 0) {
+    //     newErrors.intents = "At least one intent is required";
+    //   } else {
+    //     formData.intents.forEach((intent, idx) => {
+    //       if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
+    //       if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
+    //       if (!intent.file) newErrors[`intent_${idx}_file`] = `${intent.type} - File is required`;
+    //       if (!intent.urls || intent.urls.length === 0) {
+    //         newErrors[`intent_${idx}_urls`] = `${intent.type} - At least one URL is required`;
+    //       }
+    //     });
+    //   }
+    // }
     else if (step === 2) {
       if (formData.intents.length === 0) {
         newErrors.intents = "At least one intent is required";
@@ -660,10 +668,28 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         formData.intents.forEach((intent, idx) => {
           if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
           if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
-          if (!intent.file) newErrors[`intent_${idx}_file`] = `${intent.type} - File is required`;
+
+          // ✅ Multiple file validation
+          if (!intent.files || intent.files.length === 0) {
+            newErrors[`intent_${idx}_files`] = `${intent.type} - At least one file is required`;
+          } else {
+            if (intent.files.length > 5) {
+              newErrors[`intent_${idx}_files`] = `${intent.type} - Max 5 files allowed`;
+            }
+            intent.files.forEach((file) => {
+              if (file.size > 10 * 1024 * 1024) {
+                newErrors[`intent_${idx}_files`] = `${intent.type} - File "${file.name}" exceeds 10MB`;
+              }
+            });
+          }
+
+          if (!intent.urls || intent.urls.length === 0) {
+            newErrors[`intent_${idx}_urls`] = `${intent.type} - At least one URL is required`;
+          }
         });
       }
     }
+
 
     else if (step === 3) {
       if (!formData.agentType) newErrors.agentType = "Agent Type is required";
@@ -682,6 +708,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
   //AGENT CREATION PROCESS
   const handleSubmit = async () => {
@@ -702,48 +731,55 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         setIsSubmitting(true);
         const formDataToSend = new FormData();
 
-      // ✅ Normal fields (direct req.body me milenge)
-      formDataToSend.append("agentName", formData.agentName);
-      formDataToSend.append("businessName", formData.businessName);
-      formDataToSend.append("agentType", formData.agentType);
-      formDataToSend.append("agentGender", formData.agentGender);
-      formDataToSend.append("agentAvatar", formData.agentAvatar);
-      formDataToSend.append("agentLanguage", formData.agentLanguage);
-      formDataToSend.append("agentLanguageCode", formData.agentLanguageCode);
-      formDataToSend.append("agentVoice", formData.agentVoice);
-      formDataToSend.append("agentAccent", formData.agentAccent);
-      formDataToSend.append("assignMinutes", formData.assignMinutes);
-      formDataToSend.append("industry", formData.industry);
-      formDataToSend.append("service", JSON.stringify(formData.service));
-      formDataToSend.append("customService", formData.customService);
-      formDataToSend.append("customServices", formData.customServices);
-      formDataToSend.append("corePurpose", formData.corePurpose);
-      formDataToSend.append("userId", userDetails?.user?.id);
+        // Normal fields (direct req.body me milenge)
+        formDataToSend.append("agentName", formData.agentName);
+        formDataToSend.append("businessName", formData.businessName);
+        formDataToSend.append("agentType", formData.agentType);
+        formDataToSend.append("agentGender", formData.agentGender);
+        formDataToSend.append("agentAvatar", formData.agentAvatar);
+        formDataToSend.append("agentLanguage", formData.agentLanguage);
+        formDataToSend.append("agentLanguageCode", formData.agentLanguageCode);
+        formDataToSend.append("agentVoice", formData.agentVoice);
+        formDataToSend.append("agentAccent", formData.agentAccent);
+        formDataToSend.append("assignMinutes", formData.assignMinutes);
+        formDataToSend.append("industry", formData.industry);
+        formDataToSend.append("service", JSON.stringify(formData.service));
+        formDataToSend.append("customService", formData.customService);
+        formDataToSend.append("customServices", formData.customServices);
+        formDataToSend.append("corePurpose", formData.corePurpose);
+        formDataToSend.append("userId", userDetails?.user?.id);
 
-      // ✅ Intents (without files)
-      const intentsWithoutFiles = formData.intents.map(({ file, ...rest }) => rest);
-      formDataToSend.append("intents", JSON.stringify(intentsWithoutFiles));
+        //Intents (without files)
+        const intentsWithoutFiles = formData.intents.map(({ file, ...rest }) => rest);
+        formDataToSend.append("intents", JSON.stringify(intentsWithoutFiles));
 
-      // ✅ Intent files
-      formData.intents.forEach((intent, index) => {
-        if (intent.file) {
-          formDataToSend.append(`intentFiles[${index}]`, intent.file);
+        //  Intent files
+        formData.intents.forEach((intent, idx) => {
+          if (intent.files && intent.files.length > 0) {
+            intent.files.forEach((file, fileIdx) => {
+              formDataToSend.append(`intentFiles[${idx}]`, file);
+            });
+          }
+        });
+
+        for (let [key, value] of formDataToSend.entries()) {
+          console.log("FormData entry:", key, value);
         }
-      });
-
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log("FormData entry:", key, value);
-      }
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/api/enterpriseAgent/createEnterpriseAgent`, formDataToSend,
           {
             headers: {
-             "Content-Type": "multipart/form-data",
+              "Content-Type": "multipart/form-data",
             },
           }
         );
 
         if (response) {
+          setSnackbar({
+            open: true,
+            message: response?.data?.message,
+            severity: 'success'
+          });
           setTimeout(() => {
             handleClose();
           }, 1500);
@@ -767,25 +803,11 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       }
       finally {
         //  Re-enable button
-         setIsSubmitting(false);
+        setIsSubmitting(false);
       }
     }
   };
   // --- HANDLERS ---
-  // const handleIntentChange = (event) => {
-  //   const selected = event.target.value;
-
-  //   // Ensure each intent has its own object
-  //   const updatedIntents = selected.map((intent) => {
-  //     const existing = formData.intents.find((i) => i.type === intent);
-  //     return existing || { type: intent, name: "", description: "", file: null };
-  //   });
-
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     intents: updatedIntents,
-  //   }));
-  // };
   const handleIntentChange = (event) => {
     const selected = event.target.value;
 
@@ -806,8 +828,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       intents: updatedIntents,
     }));
   };
-
-// 
   const handleAddOther = () => {
     setFormData(prev => ({
       ...prev,
@@ -817,11 +837,16 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       ]
     }));
   };
-
   const handleIntentFieldChange = (index, field, value) => {
     const updatedIntents = [...formData.intents];
     updatedIntents[index][field] = value;
     setFormData((prev) => ({ ...prev, intents: updatedIntents }));
+    // Clear the error for this field
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[`intent_${index}_${field}`]; // remove error key for this field
+      return newErrors;
+    });
   };
   // --- Handler ---
   const handleRemoveIntent = (index) => {
@@ -860,6 +885,13 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           currentIntent.errorMsg = "";
           return { ...prev, intents: updatedIntents };
         });
+
+        // Clear URL error
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[`intent_${intentIndex}_urls`];
+          return newErrors;
+        });
       } else {
         // URL invalid → Show error
         handleIntentFieldChange(intentIndex, "currentUrlValid", false);
@@ -879,7 +911,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       updatedIntents[intentIndex].urls.splice(urlIndex, 1);
       return { ...prev, intents: updatedIntents };
     });
-  };
+  }
   const handleNext = () => {
     if (validateStep(activeStep)) {
       if (activeStep === steps.length - 1) {
@@ -895,31 +927,21 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     setErrors({});
     setApiStatus({ status: null, message: null });
   };
-  // useEffect(() => {
-  //   const updatedIntents = formData.intents.map((intent) => {
-  //     if (intent.type !== "Other") {
-  //       return { ...intent, name: intent.type };
-  //     }
-  //     return intent;
-  //   });
-  //   setFormData((prev) => ({ ...prev, intents: updatedIntents }));
-  // }, [formData.intents]);
-  
-useEffect(() => {
-  const updatedIntents = formData.intents.map((intent) => {
-    if (intent.type !== "Other") {
-      return { ...intent, name: intent.type };
+  useEffect(() => {
+    const updatedIntents = formData.intents.map((intent) => {
+      if (intent.type !== "Other") {
+        return { ...intent, name: intent.type };
+      }
+      return intent;
+    });
+
+    // ✅ Only update if something actually changed
+    const isChanged = JSON.stringify(updatedIntents) !== JSON.stringify(formData.intents);
+
+    if (isChanged) {
+      setFormData((prev) => ({ ...prev, intents: updatedIntents }));
     }
-    return intent;
-  });
-
-  // ✅ Only update if something actually changed
-  const isChanged = JSON.stringify(updatedIntents) !== JSON.stringify(formData.intents);
-
-  if (isChanged) {
-    setFormData((prev) => ({ ...prev, intents: updatedIntents }));
-  }
-}, [formData.intents]);
+  }, [formData.intents]);
 
   const selectedIndustryData = allBusinessTypes.find(
     (i) => i.type === formData.industry
@@ -1191,30 +1213,63 @@ useEffect(() => {
                   )}
 
                 </Stack>
-                <TextField
-                  label="Name"
-                  value={intent.type === "Other" ? intent.name : intent.type}
-                  onChange={(e) => handleIntentFieldChange(index, "name", e.target.value)}
-                  fullWidth
-                  margin="normal"
-                  InputProps={{ readOnly: intent.type !== "Other" }} // Only editable for Other
-                />
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <TextField
+                    label="Name"
+                    value={intent.type === "Other" ? intent.name : intent.type}
+                    onChange={(e) => handleIntentFieldChange(index, "name", e.target.value)}
+                    fullWidth
+                    margin="normal"
+                    error={!!errors[`intent_${index}_name`]}  // ✅ show red border
+                    helperText={errors[`intent_${index}_name`]} // ✅ show error text
+                    InputProps={{ readOnly: intent.type !== "Other" }} // Only editable for Other
+                  />
+                  <Tooltip
+                    title={
+                      <>
+                        <div><strong>Purpose:</strong> Short, meaningful name summarizing the intent.</div>
+                        <div><strong>Example:</strong> Describe the transition condition, Provide billing info</div>
+                      </>
+                    }
+                    arrow
+                  >
+                    <IconButton>
+                      <InfoOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
 
+                </Stack>
+                <br />
+                <Stack direction="row" alignItems="center" spacing={1}>
 
-                <TextField
-                  label="Description"
-                  multiline
-                  rows={3}
-                  value={intent.description}
-                  onChange={(e) =>
-                    handleIntentFieldChange(index, "description", e.target.value)
-                  }
-                  fullWidth
-                  margin="normal"
-                />
-
-
-                <Button
+                  <TextField
+                    label="Description"
+                    multiline
+                    rows={3}
+                    value={intent.description}
+                    error={!!errors[`intent_${index}_description`]}  // ✅ red border
+                    helperText={errors[`intent_${index}_description`]} // ✅ error text
+                    onChange={(e) =>
+                      handleIntentFieldChange(index, "description", e.target.value)
+                    }
+                    fullWidth
+                    margin="normal"
+                  />
+                  <Tooltip
+                    title={
+                      <>
+                        <div><strong>Purpose:</strong> Explain in detail what this intent is for.</div>
+                        <div><strong>Example:</strong> This intent explains how to handle state transitions in workflow.</div>
+                      </>
+                    }
+                    arrow
+                  >
+                    <IconButton>
+                      <InfoOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+                {/* <Button
 
                   variant="outlined"
                   component="label"
@@ -1229,12 +1284,74 @@ useEffect(() => {
                       handleIntentFieldChange(index, "file", e.target.files?.[0] || null)
                     }
                   />
-                </Button>
-                {intent.file && (
+                </Button> */}
+                <br />
+                {/* File Upload */}
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    startIcon={<UploadFileIcon />}
+                  >
+                    Upload Knowledge Files
+                    <input
+                      type="file"
+                      hidden
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+
+                        // validation: max 5 files, each ≤ 10MB
+                        let errorMsg = "";
+                        if (files.length > 5) {
+                          errorMsg = "You can upload a maximum of 5 files.";
+                        } else {
+                          files.forEach((file) => {
+                            if (file.size > 10 * 1024 * 1024) {
+                              errorMsg = `File "${file.name}" exceeds 10MB limit.`;
+                            }
+                          });
+                        }
+
+                        if (errorMsg) {
+                          // alert(errorMsg); // ya snackbar show kar do
+                          setSnackbar({
+                            open: true,
+                            message: errorMsg,
+                            severity: 'error'
+                          });
+                          return;
+                        }
+
+                        handleIntentFieldChange(index, "files", files);
+                      }}
+                    />
+                  </Button>
+
+                  <Tooltip
+                    title={
+                      <>
+                        <div><strong>Purpose:</strong> Upload PDFs/DOCs with detailed knowledge for the agent.</div>
+                        <div><strong>Example:</strong> Training manuals, product guides, workflow docs</div>
+                        <div><strong>Limit:</strong> Max 5 files, each ≤ 10MB</div>
+                      </>
+                    }
+                    arrow
+                  >
+                    <IconButton>
+                      <InfoOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+                {intent.files?.length > 0 && (
                   <Typography variant="body2" sx={{ mt: 1 }}>
-                    Selected: {intent.file.name}
+                    Selected: {intent.files.map((f) => f.name).join(", ")}
                   </Typography>
                 )}
+                {errors[`intent_${index}_files`] && (
+                  <FormHelperText error>{errors[`intent_${index}_files`]}</FormHelperText>
+                )}
+                <br />
                 {/* URLs Input & Add */}
                 <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: "wrap", alignItems: "center" }}>
                   <TextField
@@ -1261,6 +1378,19 @@ useEffect(() => {
                     error={!!intent.errorMsg}
                     helperText={intent.errorMsg}
                   />
+                  <Tooltip
+                    title={
+                      <>
+                        <div><strong>Purpose:</strong> Add a URL to your knowledge base or FAQ that the agent can reference.</div>
+                        <div><strong>Example:</strong> https://yourwebsite.com/knowledgebase/transition-conditions</div>
+                      </>
+                    }
+                    arrow
+                  >
+                    <IconButton>
+                      <InfoOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                   <Button
                     variant="contained"
                     onClick={() => handleAddUrl(index)}
@@ -1270,7 +1400,10 @@ useEffect(() => {
                     Add
                   </Button>
                 </Stack>
-
+                <br />
+                {errors[`intent_${index}_urls`] && (
+                  <FormHelperText error>{errors[`intent_${index}_urls`]}</FormHelperText>
+                )}
 
 
                 {/* Display URLs as Chips */}
@@ -1506,7 +1639,7 @@ useEffect(() => {
   }, [])
   return (
 
-    <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "75%" }}>
+    <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "100%" }}>
       <Grid item xs={12} sm={12} md={12} lg={10}>
         <Paper
           elevation={3}
@@ -1533,7 +1666,9 @@ useEffect(() => {
           <Typography variant="h5" fontWeight="bold" gutterBottom>
             Agent General Info
           </Typography>
-
+          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+            Fill in the details to create a new agent
+          </Typography>
           <Divider sx={{ mb: 3 }} />
 
           {/* API Status Feedback */}
@@ -1561,7 +1696,7 @@ useEffect(() => {
           <Stack
             direction="row"
             justifyContent="space-between"
-            sx={{ mt: 3 }}
+            sx={{ mt: 1 }}
           >
             <Button
               disabled={activeStep === 0}
@@ -1589,6 +1724,16 @@ useEffect(() => {
                   : "Next"}
             </Button>
           </Stack>
+          <Snackbar
+            open={snackbar.open}
+            autoHideDuration={6000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          >
+            <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+              {snackbar.message}
+            </Alert>
+          </Snackbar>
         </Paper>
       </Grid>
     </Grid>

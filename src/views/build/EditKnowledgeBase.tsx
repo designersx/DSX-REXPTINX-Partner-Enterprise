@@ -1353,7 +1353,7 @@ const groupBaseUrls = (scrapedUrls, webUrl) => {
         handleClose(); // ✅ allow programmatic close (like after submit)
       }}
     >
-      <MainCard title="Edit Knowledge Base" modal darkTitle content={false} style={{ width: '50%' }}>
+      <MainCard title="Edit Knowledge Base" modal darkTitle content={false} style={{ width: '60%' }}>
         <CardContent>
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle2" gutterBottom>
