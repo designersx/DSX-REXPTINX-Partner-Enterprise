@@ -895,15 +895,31 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     setErrors({});
     setApiStatus({ status: null, message: null });
   };
-  useEffect(() => {
-    const updatedIntents = formData.intents.map((intent) => {
-      if (intent.type !== "Other") {
-        return { ...intent, name: intent.type };
-      }
-      return intent;
-    });
+  // useEffect(() => {
+  //   const updatedIntents = formData.intents.map((intent) => {
+  //     if (intent.type !== "Other") {
+  //       return { ...intent, name: intent.type };
+  //     }
+  //     return intent;
+  //   });
+  //   setFormData((prev) => ({ ...prev, intents: updatedIntents }));
+  // }, [formData.intents]);
+  
+useEffect(() => {
+  const updatedIntents = formData.intents.map((intent) => {
+    if (intent.type !== "Other") {
+      return { ...intent, name: intent.type };
+    }
+    return intent;
+  });
+
+  // ✅ Only update if something actually changed
+  const isChanged = JSON.stringify(updatedIntents) !== JSON.stringify(formData.intents);
+
+  if (isChanged) {
     setFormData((prev) => ({ ...prev, intents: updatedIntents }));
-  }, [formData.intents]);
+  }
+}, [formData.intents]);
 
   const selectedIndustryData = allBusinessTypes.find(
     (i) => i.type === formData.industry
