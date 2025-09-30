@@ -807,7 +807,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     }));
   };
 
-
+// 
   const handleAddOther = () => {
     setFormData(prev => ({
       ...prev,
