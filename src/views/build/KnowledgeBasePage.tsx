@@ -11,7 +11,12 @@ import {
   Stack,
   Box,
   IconButton,
-  Button
+  Button,
+  DialogTitle,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Alert
 } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LinkIcon from "@mui/icons-material/Link";
@@ -23,6 +28,11 @@ import BasicModal from "./AddKnowledgebase";
 import { getUserId } from "utils/auth";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { deleteKnowledgeBase, getKbListByUserId } from "../../../Services/auth";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import EditKnowledgeBase from "./EditKnowledgeBase";
+
 
 
 export default function KnowledgeBaseUI() {
@@ -32,60 +42,76 @@ export default function KnowledgeBaseUI() {
   const [loading, setLoading] = useState(false);
   const [showAllLinks, setShowAllLinks] = useState(false);
   const userId = getUserId();
-
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info" | "warning">("success");
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-
-  useEffect(() => {
-    const fetchKBs = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/enterprise/getEnterpriseKBbyUserId/${userId}`
+  const [message, setMessage] = useState("")
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
+  function safeParseJSON(str: string) {
+    try {
+      return str ? JSON.parse(str) : [];
+    } catch {
+      return [];
+    }
+  }
+  const fetchKBs = async () => {
+    try {
+      const res = await getKbListByUserId(userId)
+      if (res.success) {
+        // Map backend data into UI format
+        const sortedData = res.data.sort(
+          (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-        console.log("fdfsaa", res);
+        const formatted = sortedData?.map((kb: any) => ({
+          ...kb, // ✅ keep original fields like text, webUrl, scrapedUrls
+          name: kb.kbName,
+          id: `know...${kb.kbId}`,
+          uploadedAt: new Date(kb.createdAt).toLocaleString([], {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          details: [
+            // scrapedUrls → URLs
+            ...(kb.scrapedUrls
+              ? safeParseJSON(kb.scrapedUrls).map((url: string) => ({
+                type: "url",
+                value: url,
+                pages: null,
+                synced: kb.updatedAt,
+              }))
+              : []),
 
-        if (res.data.success) {
-          // Map backend data into UI format
-          const formatted = res.data.data.map((kb: any) => ({
-            ...kb, // ✅ keep original fields like text, webUrl, scrapedUrls
-            name: kb.kbName,
-            id: `know...${kb.kbId}`,
-            uploadedAt: new Date(kb.createdAt).toLocaleString([], {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            details: [
-              // scrapedUrls → URLs
-              ...(kb.scrapedUrls
-                ? JSON.parse(kb.scrapedUrls).map((url: string) => ({
-                    type: "url",
-                    value: url,
-                    pages: null,
-                    synced: kb.updatedAt,
-                  }))
-                : []),
+            // kbFiles → files
+            ...(Array.isArray(kb.kbFiles)
+              ? kb.kbFiles.map((f: any) => ({
+                type: "file",
+                value: f.fileName,
+                size: `${(f.fileSize / 1024).toFixed(1)} KB`,
+              }))
+              : []),
+          ],
+        }));
 
-              // kbFiles → files
-              ...(Array.isArray(kb.kbFiles)
-                ? kb.kbFiles.map((f: any) => ({
-                    type: "file",
-                    value: f.fileName,
-                    size: `${(f.fileSize / 1024).toFixed(1)} KB`,
-                  }))
-                : []),
-            ],
-          }));
-
-          setItems(formatted);
-        }
-      } catch (err) {
-        console.error("Error fetching KBs:", err);
+        setItems(formatted);
       }
-    };
-
+    } catch (err) {
+      console.error("Error fetching KBs:", err);
+    }
+  };
+  useEffect(() => {
     fetchKBs();
   }, [userId]);
 
@@ -98,8 +124,58 @@ export default function KnowledgeBaseUI() {
     a.download = `${item.name || "knowledgebase"}.txt`;
     a.click();
     window.URL.revokeObjectURL(url);
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!selectedItem?.kbId) return;
+    console.log('selectedItem.kbId', selectedItem.kbId, userId)
+    try {
+      await deleteKnowledgeBase({ kbId: selectedItem.kbId, userId });
+      setItems((prev) => prev.filter((kb) => kb.kbId != selectedItem.kbId));
+
+      setSnackbarMessage("Knowledge Base deleted successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (err: any) {
+      setSnackbarMessage(err.message || "Failed to delete KB");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setOpenDeleteDialog(false);
+    }
   };
 
+  const handleSnackbarClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+
+    setSnackbarOpen(false);
+  };
+
+  const handleEditSuccess = (updatedKB) => {
+    setItems((prev) => prev.map((kb) => (kb.kbId === updatedKB.kbId ? { ...kb, ...updatedKB } : kb))
+    );
+    setSelectedItem((prev) => (prev?.kbId === updatedKB.kbId ? { ...prev, ...updatedKB } : prev));
+    setOpenEditModal(false);
+  };
+
+useEffect(() => {
+  if (message) {
+    console.log(message, "message");
+    setSnackbar({
+      open: true,
+      message: message,
+      severity: 'success'
+    });
+
+    // Clear message so next alert can trigger
+    setMessage("");
+  }
+}, [message]);
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
   return (
     <>
       {/* ✅ Wrapper Box for responsive flex */}
@@ -204,6 +280,13 @@ export default function KnowledgeBaseUI() {
                   </Typography>
                 </Box>
                 <Stack direction="row" spacing={1}>
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    onClick={() => setOpenEditModal(true)}
+                  >
+                    <EditIcon />
+                  </IconButton>
                   <IconButton
                     color="primary"
                     size="small"
@@ -357,6 +440,38 @@ export default function KnowledgeBaseUI() {
                   </Button>
                 </Paper>
               )}
+
+              {selectedItem?.kbFiles?.map((file, index) => (
+                <Paper
+                  key={index}
+                  sx={{
+                    p: 2,
+                    mt: 2,
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <InsertDriveFileIcon color="primary" />
+                    <Typography fontWeight={500}>{file.fileName}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {(file.fileSize / 1024 / 1024).toFixed(2)} MB
+                    </Typography>
+                  </Stack>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/${file.filePath}`}
+                    target="_blank"
+                    download
+                  >
+                    Download
+                  </Button>
+                </Paper>
+              ))}
+
             </Paper>
           ) : (
             <Paper
@@ -378,7 +493,83 @@ export default function KnowledgeBaseUI() {
         </Box>
       </Box>
 
-      <BasicModal open={open} onClose={() => setOpen(false)} />
+      <BasicModal
+        open={open}
+        onClose={() => setOpen(false)}
+        refresh={fetchKBs}
+        setAlert={setMessage}
+
+      />
+
+      <EditKnowledgeBase
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        onSubmit={handleEditSuccess}
+        knowledgeBase={selectedItem}
+         setAlert={setMessage}
+
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 600 }}>Delete Knowledge Base</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Are you sure you want to delete this knowledge base? <br />
+            <strong>This will affect any agent assigned to it.</strong>
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => setOpenDeleteDialog(false)}
+            variant="outlined"
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
+
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

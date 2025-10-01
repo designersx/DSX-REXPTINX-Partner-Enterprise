@@ -165,8 +165,6 @@ export default function TransactionHistoryCard({ agentId }) {
     } catch (err) {
       console.log(err.message); 
     } 
-   
- 
   }
   fetchAgent();
 }, [agentId]);

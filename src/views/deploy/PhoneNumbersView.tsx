@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from 'react';
 import {
   Grid,
@@ -29,7 +30,8 @@ import {
   FormLabel,
   Chip,
   Alert,
-  MenuItem as MenuItemSelect
+  MenuItem as MenuItemSelect,
+  Snackbar
 } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AddIcon from '@mui/icons-material/Add';
@@ -44,7 +46,11 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import SearchIcon from '@mui/icons-material/Search';
 import { getUserId } from 'utils/auth';
 import { v4 as uuidv4 } from 'uuid';
-
+import { countries } from './helper';
+import { fetchAgent, fetchAvailablePhoneNumberByCountry } from '../../../Services/auth';
+import BuyPhoneNumberModal from './BuyPhoneNumberModal';
+import { assignNumberToAgent, getPhoneNumbersWithUserId } from '../../../Services/phoneNumbers';
+import ResourceListItem from './ResourceListItem';
 // Option Selection Modal
 const OptionSelectionModal = ({ open, onClose, onSelect }) => {
   return (
@@ -140,11 +146,11 @@ const OptionSelectionModal = ({ open, onClose, onSelect }) => {
                     Buy Phone Number
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Purchase new phone numbers from Twilio or Telnyx
+                    Purchase new phone numbers
                   </Typography>
                   <Stack direction="row" spacing={1} mt={1}>
-                    <Chip label="Standard $2/mo" size="small" color="success" variant="outlined" />
-                    <Chip label="Toll-free $5/mo" size="small" color="info" variant="outlined" />
+                    <Chip label="local " size="small" color="success" variant="outlined" />
+                    <Chip label="Toll-free" size="small" color="info" variant="outlined" />
                   </Stack>
                 </Box>
                 <CreditCardIcon sx={{ fontSize: 24, color: 'warning.main' }} />
@@ -345,307 +351,6 @@ const SIPConfigurationModal = ({ open, onClose, onSubmit }) => {
     </Dialog>
   );
 };
-
-// Buy Phone Number Modal
-const BuyPhoneNumberModal = ({ open, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    provider: 'twilio',
-    country: 'US',
-    numberType: 'standard',
-    searchQuery: '',
-    phoneNumber: ''
-  });
-
-  const providers = [
-    { value: 'twilio', label: 'Twilio', icon: '📞' },
-    { value: 'telnyx', label: 'Telnyx', icon: '☎️' }
-  ];
-
-  const countries = [
-    { value: 'US', label: 'United States', flag: '🇺🇸' },
-    { value: 'CA', label: 'Canada', flag: '🇨🇦' },
-    { value: 'GB', label: 'United Kingdom', flag: '🇬🇧' },
-    { value: 'IN', label: 'India', flag: '🇮🇳' }
-  ];
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSearch = () => {
-    // Simulate search - in real app, this would call an API
-    const mockNumbers = ['+1 555-123-4567', '+1 555-234-5678', '+1 555-345-6789', '+1 555-456-7890'];
-    // Filter based on search query
-    const filtered = mockNumbers.filter((num) => num.includes(formData.searchQuery.replace(/\D/g, '')));
-    setFormData((prev) => ({ ...prev, phoneNumber: filtered[0] || '' }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.phoneNumber) {
-      alert('Please search and select a phone number');
-      return;
-    }
-
-    onSubmit({
-      ...formData,
-      id: uuidv4(),
-      type: 'number',
-      phone: formData.phoneNumber,
-      status: 'purchased',
-      createdAt: new Date().toISOString(),
-      isActive: true,
-      monthlyCost: formData.numberType === 'standard' ? 2 : 5
-    });
-    onClose();
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        <Typography variant="h5" fontWeight="bold">
-          Buy Phone Number
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Purchase a new phone number from your preferred provider
-        </Typography>
-      </DialogTitle>
-      <form onSubmit={handleSubmit}>
-        <DialogContent sx={{ p: 3 }}>
-          <Stack spacing={3}>
-            {/* Provider Selection */}
-            <Paper sx={{ p: 2, borderRadius: 2 }}>
-              <Typography variant="subtitle1" fontWeight="medium" mb={2}>
-                Provider Selection
-              </Typography>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-                <FormControl fullWidth>
-                  <InputLabel>Provider</InputLabel>
-                  <Select name="provider" value={formData.provider} onChange={handleChange} label="Provider">
-                    {providers.map((provider) => (
-                      <MenuItem key={provider.value} value={provider.value}>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <span>{provider.icon}</span>
-                          <span>{provider.label}</span>
-                        </Stack>
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <FormControl fullWidth>
-                  <InputLabel>Country</InputLabel>
-                  <Select name="country" value={formData.country} onChange={handleChange} label="Country">
-                    {countries.map((country) => (
-                      <MenuItem key={country.value} value={country.value}>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <span>{country.flag}</span>
-                          <span>{country.label}</span>
-                        </Stack>
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Stack>
-            </Paper>
-
-            {/* Number Type Selection */}
-            <Paper sx={{ p: 2, borderRadius: 2 }}>
-              <Typography variant="subtitle1" fontWeight="medium" mb={2}>
-                Number Type
-              </Typography>
-              <RadioGroup row name="numberType" value={formData.numberType} onChange={handleChange}>
-                <FormControlLabel
-                  value="standard"
-                  control={<Radio />}
-                  label={
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <PhoneIcon fontSize="small" />
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          Standard
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          $2/month
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  }
-                />
-                <FormControlLabel
-                  value="tollfree"
-                  control={<Radio />}
-                  label={
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <PhoneIcon fontSize="small" color="warning" />
-                      <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          Toll-free
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          $5/month
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  }
-                />
-              </RadioGroup>
-            </Paper>
-
-            {/* Search Numbers */}
-            <Paper sx={{ p: 2, borderRadius: 2 }}>
-              <Typography variant="subtitle1" fontWeight="medium" mb={2}>
-                Search Available Numbers
-              </Typography>
-              <Stack direction="row" spacing={2} alignItems="end">
-                <TextField
-                  fullWidth
-                  label="Search numbers (e.g., 650)"
-                  name="searchQuery"
-                  value={formData.searchQuery}
-                  onChange={handleChange}
-                  placeholder="Enter area code or partial number"
-                  variant="outlined"
-                />
-                <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} sx={{ minWidth: 120 }}>
-                  Search
-                </Button>
-              </Stack>
-
-              {formData.phoneNumber && (
-                <Alert severity="success" sx={{ mt: 2 }}>
-                  <Typography variant="body2" fontWeight="medium">
-                    Selected Number: {formData.phoneNumber}
-                  </Typography>
-                </Alert>
-              )}
-            </Paper>
-
-            <Alert severity="info" icon={<CreditCardIcon />}>
-              <Typography variant="body2">
-                Payment is required for purchasing phone numbers. You will be charged ${formData.numberType === 'standard' ? 2 : 5}/month.
-              </Typography>
-            </Alert>
-          </Stack>
-        </DialogContent>
-
-        <DialogActions sx={{ p: 3 }}>
-          <Button onClick={onClose} variant="outlined">
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained" disabled={!formData.phoneNumber} startIcon={<CreditCardIcon />}>
-            Purchase Number - ${formData.numberType === 'standard' ? 2 : 5}/mo
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
-  );
-};
-
-// Phone Resource List Item
-const ResourceListItem = ({ resource, selected, onSelect, onEdit, onDelete }) => {
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString([], {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getTypeIcon = (type) => {
-    return type === 'sip' ? <SipIcon fontSize="small" /> : <PhoneIcon fontSize="small" />;
-  };
-
-  const getTypeColor = (type) => {
-    return type === 'sip' ? 'info.main' : 'primary.main';
-  };
-
-  return (
-    <ListItem
-      button
-      onClick={() => onSelect(resource)}
-      selected={selected}
-      sx={{
-        borderRadius: 1,
-        mb: 0.5,
-        mx: 1,
-        '&:hover': { bgcolor: 'action.hover' },
-        bgcolor: selected ? 'action.selected' : 'inherit',
-        border: selected ? '2px solid' : 'none',
-        borderColor: selected ? 'primary.main' : 'transparent'
-      }}
-    >
-      <ListItemIcon>
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 1,
-            background: `linear-gradient(135deg, ${getTypeColor(resource.type)} 0%, ${getTypeColor(resource.type)}80 100%)`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          {getTypeIcon(resource.type)}
-        </Box>
-      </ListItemIcon>
-      <ListItemText
-        primary={
-          <Box>
-            <Typography variant="body2" fontWeight="medium" noWrap sx={{ maxWidth: 200 }}>
-              {resource.name}
-            </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
-              {resource.type === 'number' ? resource.phone : resource.terminationUri || 'SIP Config'}
-            </Typography>
-          </Box>
-        }
-        secondary={
-          <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5}>
-            <Chip
-              label={resource.type === 'sip' ? 'SIP' : 'Phone'}
-              size="small"
-              color={resource.type === 'sip' ? 'info' : 'primary'}
-              variant="outlined"
-            />
-            {resource.isActive && <CheckCircleIcon sx={{ fontSize: '12px', color: 'success.main' }} />}
-            <Typography variant="caption" color="text.secondary">
-              {formatDate(resource.createdAt)}
-            </Typography>
-          </Stack>
-        }
-        secondaryTypographyProps={{ component: 'div', sx: { mt: 0.25 } }}
-      />
-
-      <Stack direction="row" spacing={0.5}>
-        <IconButton
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(resource);
-          }}
-        >
-          <EditIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          size="small"
-          color="error"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(resource);
-          }}
-        >
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-      </Stack>
-    </ListItem>
-  );
-};
-
 // Delete Confirmation Dialog
 const DeleteDialog = ({ open, onClose, onDelete, resourceName, resourceType }) => (
   <Dialog open={open} onClose={onClose}>
@@ -665,82 +370,46 @@ const DeleteDialog = ({ open, onClose, onDelete, resourceName, resourceType }) =
   </Dialog>
 );
 
-export default function KnowledgeBaseUI() {
+export default function PhoneNumbersView() {
+  const token = localStorage.getItem("authToken")
   const [resources, setResources] = useState([]);
   const [selectedResource, setSelectedResource] = useState(null);
   const [openOptionModal, setOpenOptionModal] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // "sip", "number", or null
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [inboundAgent, setInboundAgent] = useState("");
+  const [outboundAgent, setOutboundAgent] = useState("");
+  const [agents, setAgents] = useState([])
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
   const userId = getUserId();
-
-  useEffect(() => {
-    const savedResources = localStorage.getItem(`phoneResources_${userId}`);
-    if (savedResources) {
-      setResources(JSON.parse(savedResources));
-    } else {
-      const sampleResources = [
-        {
-          id: '1',
-          name: 'Main SIP Trunk',
-          type: 'sip',
-          inboundCallAgent: 'Inbound Agent',
-          terminationUri: 'sip.mycompany.com',
-          sipTrunkUsername: 'trunk_user',
-          isActive: true,
-          createdAt: '2024-01-15T10:30:00Z'
-        },
-        {
-          id: '2',
-          name: 'Support Line',
-          type: 'number',
-          phone: '+1 (555) 123-4567',
-          provider: 'twilio',
-          numberType: 'standard',
-          status: 'active',
-          monthlyCost: 2,
-          isActive: true,
-          createdAt: '2024-02-20T14:22:00Z'
-        },
-        {
-          id: '3',
-          name: 'Sales Toll-free',
-          type: 'number',
-          phone: '+1 800-123-4567',
-          provider: 'telnyx',
-          numberType: 'tollfree',
-          status: 'active',
-          monthlyCost: 5,
-          isActive: true,
-          createdAt: '2024-03-10T09:15:00Z'
-        }
-      ];
-      setResources(sampleResources);
-      localStorage.setItem(`phoneResources_${userId}`, JSON.stringify(sampleResources));
+  const getPhoneNumbers = async () => {
+    try {
+      const response = await getPhoneNumbersWithUserId(token, userId)
+      console.log(response, "response")
+      setResources(response?.data?.data)
+    } catch (error) {
     }
-  }, [userId]);
-
-  useEffect(() => {
-    if (resources.length > 0) {
-      localStorage.setItem(`phoneResources_${userId}`, JSON.stringify(resources));
-    }
-  }, [resources, userId]);
-
+  }
   const handleOptionSelect = (option) => {
     setActiveModal(option);
     setOpenOptionModal(false);
   };
-
   const handleSIPSubmit = (sipConfig) => {
     setResources((prev) => [sipConfig, ...prev]);
     setSelectedResource(sipConfig);
   };
-
-  const handleNumberSubmit = (phoneNumber) => {
-    setResources((prev) => [phoneNumber, ...prev]);
-    setSelectedResource(phoneNumber);
+  const handleNumberSubmit = () => {
+    getPhoneNumbers()
   };
-
   const handleDeleteResource = () => {
     if (deleteTarget) {
       setResources((prev) => prev.filter((r) => r.id !== deleteTarget.id));
@@ -751,13 +420,9 @@ export default function KnowledgeBaseUI() {
       setOpenDeleteDialog(false);
     }
   };
-
   const handleEditResource = (resource) => {
-    // For now, just reopen the modal with current data
     setActiveModal(resource.type);
-    // You can implement full editing later
   };
-
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString([], {
       year: 'numeric',
@@ -767,14 +432,44 @@ export default function KnowledgeBaseUI() {
       minute: '2-digit'
     });
   };
+  useEffect(() => {
+    getPhoneNumbers()
+    fetchAgent().then((res) => {
+      console.log(res, "AHELEE")
+      let agentsData = res?.agents || [];
+      setAgents(agentsData)
+    })
 
+  }, [userId]);
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+  const handleAssignNumber = (agent, selectedResource) => {
+    console.log(selectedResource)
+    const inbound_agent_id = agent.agent_id
+    const outbound_agent_id = agent.agent_id
+    const phoneNumber = selectedResource.phoneNumber
+    const importStatus1 = selectedResource.importStatus
+    try {
+      const res = assignNumberToAgent(token, inbound_agent_id, outbound_agent_id, phoneNumber, importStatus1)
+      setSnackbar({
+        open: true,
+        message: 'Number assign Successfully',
+        severity: 'success'
+      });
+      getPhoneNumbers()
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, height: '100vh', p: 2 }}>
         {/* Static Sidebar */}
         <Paper
           sx={{
-            width: { xs: '100%', md: 350 },
+            width: { xs: '100%', md: 360 },
             height: { xs: 'auto', md: '100%' },
             borderRadius: 2,
             boxShadow: 2,
@@ -838,7 +533,7 @@ export default function KnowledgeBaseUI() {
               >
                 <Box>
                   <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-                    {selectedResource.type === 'sip' ? (
+                    {selectedResource.import_type === 'sip' ? (
                       <SipIcon sx={{ color: 'info.main' }} />
                     ) : (
                       <PhoneIcon sx={{ color: 'primary.main' }} />
@@ -849,35 +544,20 @@ export default function KnowledgeBaseUI() {
                     {selectedResource.isActive && <CheckCircleIcon sx={{ color: 'success.main' }} />}
                   </Stack>
                   <Typography variant="body1" color="text.secondary">
-                    {selectedResource.type === 'number' ? selectedResource.phone : 'SIP Configuration'}
+                    {selectedResource.import_type === 'phone' ? selectedResource.phoneNumber : 'SIP Configuration'}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     Added: {formatDate(selectedResource.createdAt)} • {selectedResource.status || 'Active'}
                   </Typography>
                 </Box>
 
-                <Stack direction="row" spacing={1}>
-                  <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEditResource(selectedResource)}>
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => {
-                      setDeleteTarget(selectedResource);
-                      setOpenDeleteDialog(true);
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </Stack>
+
               </Stack>
 
               <Divider sx={{ mb: 3 }} />
 
               {/* Resource Details */}
-              <Grid container spacing={3}>
+              <Grid container md={12} >
                 {selectedResource.type === 'sip' ? (
                   // SIP Details
                   <>
@@ -955,9 +635,10 @@ export default function KnowledgeBaseUI() {
                   </>
                 ) : (
                   // Phone Number Details
-                  <>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2, height: '100%' }}>
+                  <Grid container spacing={2}>
+                    {/* Phone Details */}
+                    <Grid item xs={12} md={12}>
+                      <Paper sx={{ p: 2, height: "100%" }}>
                         <Typography variant="subtitle1" fontWeight="medium" mb={2}>
                           Phone Details
                         </Typography>
@@ -967,16 +648,7 @@ export default function KnowledgeBaseUI() {
                               Number
                             </Typography>
                             <Typography variant="body1" fontWeight="medium">
-                              {selectedResource.phone}
-                            </Typography>
-                          </Stack>
-                          <Divider />
-                          <Stack direction="row" justifyContent="space-between">
-                            <Typography variant="body2" color="text.secondary">
-                              Provider
-                            </Typography>
-                            <Typography variant="body1" fontWeight="medium">
-                              {selectedResource.provider}
+                              {selectedResource.phoneNumber}
                             </Typography>
                           </Stack>
                           <Divider />
@@ -985,51 +657,54 @@ export default function KnowledgeBaseUI() {
                               Type
                             </Typography>
                             <Typography variant="body1" fontWeight="medium">
-                              {selectedResource.numberType}
+                              {selectedResource.phone_number_type}
                             </Typography>
                           </Stack>
                           <Divider />
                           <Stack direction="row" justifyContent="space-between">
                             <Typography variant="body2" color="text.secondary">
-                              Monthly Cost
+                              Import Type
                             </Typography>
                             <Typography variant="body1" fontWeight="medium">
-                              ${selectedResource.monthlyCost}
+                              {selectedResource.import_type}
                             </Typography>
                           </Stack>
                         </Stack>
                       </Paper>
                     </Grid>
-
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2, height: '100%' }}>
+                    {/* Agent & Add-ons Section */}
+                    <Grid item xs={12} md={12}>
+                      <Paper sx={{ p: 2, height: "100%" }}>
                         <Typography variant="subtitle1" fontWeight="medium" mb={2}>
-                          Quick Actions
+                          Call Agent Configuration
                         </Typography>
                         <Stack spacing={2}>
-                          <Button
-                            fullWidth
-                            variant="contained"
-                            startIcon={<PhoneIcon />}
-                            onClick={() => (window.location.href = `tel:${selectedResource.phone.replace(/\D/g, '')}`)}
-                          >
-                            Call Number
-                          </Button>
-                          <Button
-                            fullWidth
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={() => navigator.clipboard.writeText(selectedResource.phone)}
-                          >
-                            Copy Number
-                          </Button>
-                          <Button fullWidth variant="outlined" color="success" startIcon={<CheckCircleIcon />}>
-                            Configure Call Flow
-                          </Button>
+                          {/* Inbound Agent */}
+                          <FormControl fullWidth>
+                            <InputLabel>Inbound call agent</InputLabel>
+                            <Select
+                              value={selectedResource?.inboundAgent?.agent_id || inboundAgent || ""}
+                              onChange={(e) => setInboundAgent(e.target.value)}
+                              label="Inbound call agent"
+                            >
+                              {agents.map((agent) => (
+                                <MenuItem
+                                  key={agent.agent_id}
+                                  onClick={() => handleAssignNumber(agent, selectedResource)}
+                                  value={agent.agent_id}
+                                >
+                                  {agent.agentName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+
+                          </FormControl>
+
+
                         </Stack>
                       </Paper>
                     </Grid>
-                  </>
+                  </Grid>
                 )}
               </Grid>
             </Paper>
@@ -1058,7 +733,8 @@ export default function KnowledgeBaseUI() {
                 </Button>
               </Box>
             </Paper>
-          )}
+          )
+          }
         </Box>
       </Box>
 
@@ -1067,7 +743,10 @@ export default function KnowledgeBaseUI() {
 
       <SIPConfigurationModal open={activeModal === 'sip'} onClose={() => setActiveModal(null)} onSubmit={handleSIPSubmit} />
 
-      <BuyPhoneNumberModal open={activeModal === 'number'} onClose={() => setActiveModal(null)} onSubmit={handleNumberSubmit} />
+      <BuyPhoneNumberModal open={activeModal === 'number'}
+        onClose={() => setActiveModal(null)}
+        onSubmit={handleNumberSubmit}
+        countries={countries} />
 
       <DeleteDialog
         open={openDeleteDialog}
@@ -1079,6 +758,16 @@ export default function KnowledgeBaseUI() {
         resourceName={deleteTarget?.name}
         resourceType={deleteTarget?.type}
       />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

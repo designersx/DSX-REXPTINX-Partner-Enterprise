@@ -8,3 +8,38 @@
 input[type='number']::-webkit-inner-spin-button {
   margin-left: 5px;
 }
+/* styles/globals.css */
+.google-address-autocomplete {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.google-address-autocomplete:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.suggestions-container {
+  margin-top: 4px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestion-item.active {
+  background-color: #e5e7eb;
+}
+
+.suggestion-loading {
+  padding: 8px;
+  color: #6b7280;
+}
