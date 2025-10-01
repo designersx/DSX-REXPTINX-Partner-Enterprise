@@ -15,7 +15,8 @@ import {
   DialogTitle,
   Dialog,
   DialogActions,
-  DialogContent
+  DialogContent,
+  Alert
 } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LinkIcon from "@mui/icons-material/Link";
@@ -46,58 +47,71 @@ export default function KnowledgeBaseUI() {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info" | "warning">("success");
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [message, setMessage] = useState("")
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
+  function safeParseJSON(str: string) {
+    try {
+      return str ? JSON.parse(str) : [];
+    } catch {
+      return [];
+    }
+  }
+  const fetchKBs = async () => {
+    try {
+      const res = await getKbListByUserId(userId)
+      if (res.success) {
+        // Map backend data into UI format
+        const sortedData = res.data.sort(
+          (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        const formatted = sortedData?.map((kb: any) => ({
+          ...kb, // ✅ keep original fields like text, webUrl, scrapedUrls
+          name: kb.kbName,
+          id: `know...${kb.kbId}`,
+          uploadedAt: new Date(kb.createdAt).toLocaleString([], {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          details: [
+            // scrapedUrls → URLs
+            ...(kb.scrapedUrls
+              ? safeParseJSON(kb.scrapedUrls).map((url: string) => ({
+                type: "url",
+                value: url,
+                pages: null,
+                synced: kb.updatedAt,
+              }))
+              : []),
 
-  useEffect(() => {
-    const fetchKBs = async () => {
-      try {
-        // const res = await axios.get(
-        //   `${process.env.NEXT_PUBLIC_API_URL}/api/enterprise/getEnterpriseKBbyUserId/${userId}`
-        // );
-        const res = await getKbListByUserId(userId)
-        console.log("fdfsaa", res);
+            // kbFiles → files
+            ...(Array.isArray(kb.kbFiles)
+              ? kb.kbFiles.map((f: any) => ({
+                type: "file",
+                value: f.fileName,
+                size: `${(f.fileSize / 1024).toFixed(1)} KB`,
+              }))
+              : []),
+          ],
+        }));
 
-        if (res.success) {
-          // Map backend data into UI format
-          const formatted = res.data.map((kb: any) => ({
-            ...kb, // ✅ keep original fields like text, webUrl, scrapedUrls
-            name: kb.kbName,
-            id: `know...${kb.kbId}`,
-            uploadedAt: new Date(kb.createdAt).toLocaleString([], {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            details: [
-              // scrapedUrls → URLs
-              ...(kb.scrapedUrls
-                ? JSON.parse(kb.scrapedUrls).map((url: string) => ({
-                  type: "url",
-                  value: url,
-                  pages: null,
-                  synced: kb.updatedAt,
-                }))
-                : []),
-
-              // kbFiles → files
-              ...(Array.isArray(kb.kbFiles)
-                ? kb.kbFiles.map((f: any) => ({
-                  type: "file",
-                  value: f.fileName,
-                  size: `${(f.fileSize / 1024).toFixed(1)} KB`,
-                }))
-                : []),
-            ],
-          }));
-
-          setItems(formatted);
-        }
-      } catch (err) {
-        console.error("Error fetching KBs:", err);
+        setItems(formatted);
       }
-    };
-
+    } catch (err) {
+      console.error("Error fetching KBs:", err);
+    }
+  };
+  useEffect(() => {
     fetchKBs();
   }, [userId]);
 
@@ -146,7 +160,22 @@ export default function KnowledgeBaseUI() {
     setOpenEditModal(false);
   };
 
-  console.log(selectedItem)
+useEffect(() => {
+  if (message) {
+    console.log(message, "message");
+    setSnackbar({
+      open: true,
+      message: message,
+      severity: 'success'
+    });
+
+    // Clear message so next alert can trigger
+    setMessage("");
+  }
+}, [message]);
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
   return (
     <>
       {/* ✅ Wrapper Box for responsive flex */}
@@ -464,13 +493,21 @@ export default function KnowledgeBaseUI() {
         </Box>
       </Box>
 
-      <BasicModal open={open} onClose={() => setOpen(false)} />
+      <BasicModal
+        open={open}
+        onClose={() => setOpen(false)}
+        refresh={fetchKBs}
+        setAlert={setMessage}
+
+      />
 
       <EditKnowledgeBase
         open={openEditModal}
         onClose={() => setOpenEditModal(false)}
         onSubmit={handleEditSuccess}
         knowledgeBase={selectedItem}
+         setAlert={setMessage}
+
       />
 
       {/* Delete Confirmation Dialog */}
@@ -520,6 +557,18 @@ export default function KnowledgeBaseUI() {
         >
           {snackbarMessage}
         </MuiAlert>
+      </Snackbar>
+
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
       </Snackbar>
     </>
   );
