@@ -36,6 +36,7 @@ import axios from "axios";
 import decodeToke from "../../lib/decodeToken"
 import { getAvailableMinutes, validateWebsite } from "../../../Services/auth";
 import { Snackbar } from "@mui/material";
+import KnowledgeBase from "./KnowledgeBase";
 // ---------------- Business Data ----------------
 const allBusinessTypes = [
   {
@@ -385,14 +386,6 @@ function getServicesByType(type) {
   const found = businessServices.find((b) => b.type === type);
   return found ? found.services : [];
 }
-// --- INTENT OPTIONS ---
-const intentOptions = [
-  "Billing and Invoice",
-  "Complaint Feedback",
-  "Customer Support and General",
-  "Other",
-]
-
 // ---------------- Main Component ----------------
 export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   useEffect(() => {
@@ -421,15 +414,29 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     customServices: [''],
     agentAccent: "",
     assignMinutes: "",
-    intents: [] // [{ type: "Billing and Invoice", name: "", description: "", file: null }]
+    intents: [],
+    KnowledgeBase: [
+      {
+        title: "",
+        description: "",
+        files: {
+          brochure: [],
+          tutorial: [],
+          troubleshooting: [],
+          other: [],
+        },
+        urls: [],
+      }
+    ]
 
   });
+  console.log(formData, "formDataformData")
   const [errors, setErrors] = useState({});
   const [activeStep, setActiveStep] = useState(0);
   const [apiStatus, setApiStatus] = useState({ status: null, message: null });
   const [voices, setVoices] = useState([]);
   const [playingVoiceId, setPlayingVoiceId] = useState(null);
-  const [audio, setAudio] = useState(null); // Track current audio instance
+  const [audio, setAudio] = useState(null);
   const audioRef = useRef(null);
   const [filteredVoices, setFilteredVoices] = useState([]);
   const token = localStorage.getItem("authToken")
@@ -445,17 +452,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     message: '',
     severity: 'info'
   });
-  const purposes = [
-    "Customer Support",
-    "Lead Qualifier",
-    "Survey Agent",
-    "Technical Support",
-    "General Receptionist",
-  ];
   const agentTypes = ["Inbound", "Outbound", "Both"];
   const genders = ["Male", "Female"];
-  const steps = ["Agent Details", "Business Details", "Intents", "Agent Configuration", "Agent Minutes"];
-
+  const steps = ["Agent Details", "Business Details", "Knowledge Base", "Agent Configuration", "Agent Minutes"];
   const CustomPlayIcon = () => (
 
     <svg
@@ -508,7 +507,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       setApiStatus({ status: null, message: '' });
     }
   }, [formData.agentGender, formData.agentLanguage]);
-
   const handlePlayVoice = (voiceId, audioUrl) => {
     if (playingVoiceId === voiceId) {
       // Pause if the same voice is playing
@@ -531,7 +529,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       setPlayingVoiceId(voiceId);
     }
   };
-
   // Clean up audio on component unmount
   const handleCustomServiceChange = (event, index) => {
     const newCustomServices = [...formData.customServices];
@@ -543,7 +540,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     newErrors[index] = validateCustomService(event.target.value);
     setErrors({ ...errors, customServices: newErrors });
   };
-
   const handleAddCustomService = () => {
     setFormData({
       ...formData,
@@ -556,7 +552,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         : ['']
     });
   };
-
   const handleRemoveCustomService = (index) => {
     const newCustomServices = formData.customServices.filter((_, i) => i !== index);
     const newErrors = Array.isArray(errors.customServices)
@@ -624,19 +619,16 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       customServices: value.includes('Other') ? formData.customServices.map(validateCustomService) : []
     });
   };
-
   const handleAvatarSelect = (avatarImg) => {
     setFormData({
       ...formData,
       agentAvatar: avatarImg,
     });
   };
-
   const validateStep = (step) => {
     let newErrors = {};
     if (step === 0) {
       if (!formData.agentName) newErrors.agentName = "Agent Name is required";
-      // if (!formData.corePurpose) newErrors.corePurpose = "Core Purpose is required";
       if (!formData.agentGender) newErrors.agentGender = "Agent Gender is required";
       if (!formData.agentAvatar) newErrors.agentAvatar = "Please select an avatar";
     } else if (step === 1) {
@@ -654,7 +646,21 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     //     formData.intents.forEach((intent, idx) => {
     //       if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
     //       if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
-    //       if (!intent.file) newErrors[`intent_${idx}_file`] = `${intent.type} - File is required`;
+
+    //       // ✅ Multiple file validation
+    //       if (!intent.files || intent.files.length === 0) {
+    //         newErrors[`intent_${idx}_files`] = `${intent.type} - At least one file is required`;
+    //       } else {
+    //         if (intent.files.length > 5) {
+    //           newErrors[`intent_${idx}_files`] = `${intent.type} - Max 5 files allowed`;
+    //         }
+    //         intent.files.forEach((file) => {
+    //           if (file.size > 10 * 1024 * 1024) {
+    //             newErrors[`intent_${idx}_files`] = `${intent.type} - File "${file.name}" exceeds 10MB`;
+    //           }
+    //         });
+    //       }
+
     //       if (!intent.urls || intent.urls.length === 0) {
     //         newErrors[`intent_${idx}_urls`] = `${intent.type} - At least one URL is required`;
     //       }
@@ -662,33 +668,44 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     //   }
     // }
     else if (step === 2) {
-      if (formData.intents.length === 0) {
-        newErrors.intents = "At least one intent is required";
+      if (formData.service.length === 0) {
+        newErrors.service = "At least one Business Service/Product is required";
       } else {
-        formData.intents.forEach((intent, idx) => {
-          if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
-          if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
+        // ✅ Validate only the first service
+        const idx = 0; // first service index
+        const service = formData.service[idx];
+        const kb = formData.KnowledgeBase[idx] || {};
 
-          // ✅ Multiple file validation
-          if (!intent.files || intent.files.length === 0) {
-            newErrors[`intent_${idx}_files`] = `${intent.type} - At least one file is required`;
-          } else {
-            if (intent.files.length > 5) {
-              newErrors[`intent_${idx}_files`] = `${intent.type} - Max 5 files allowed`;
-            }
-            intent.files.forEach((file) => {
-              if (file.size > 10 * 1024 * 1024) {
-                newErrors[`intent_${idx}_files`] = `${intent.type} - File "${file.name}" exceeds 10MB`;
-              }
-            });
-          }
+        let serviceHasError = false;
 
-          if (!intent.urls || intent.urls.length === 0) {
-            newErrors[`intent_${idx}_urls`] = `${intent.type} - At least one URL is required`;
-          }
-        });
+        // Description
+        if (!kb.description || kb.description.trim() === "") {
+          serviceHasError = true;
+          newErrors[`service_${idx}_description`] = `${service} - Description is required`;
+        }
+
+        // Files
+        const hasFiles = kb.files && Object.values(kb.files).some(arr => arr.length > 0);
+        if (!hasFiles) {
+          serviceHasError = true;
+          newErrors[`service_${idx}_files`] = `${service} - At least one file is required`;
+        }
+
+        // URLs
+        const hasUrls = kb.urls && kb.urls.length > 0;
+        if (!hasUrls) {
+          serviceHasError = true;
+          newErrors[`service_${idx}_urls`] = `${service} - At least one URL is required`;
+        }
+
+        if (serviceHasError) {
+          newErrors.generalService = "Please complete all fields for the selected service";
+        }
       }
+
+      setErrors(newErrors);
     }
+
 
 
     else if (step === 3) {
@@ -724,7 +741,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         ),
         agentAccent: formData.agentAccent
       };
-      console.log(finalData, "HELO")
+
       // return
       try {
         setApiStatus({ status: null, message: null });
@@ -946,6 +963,153 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   const selectedIndustryData = allBusinessTypes.find(
     (i) => i.type === formData.industry
   );
+  const handleIndustryChange = (e) => {
+    const selectedIndustry = e.target.value;
+
+    if (selectedIndustry !== "Electronics & Home Appliances") {
+      setSnackbar({
+        open: true,
+        message: "Coming Soon!",
+        severity: 'info'
+      });
+      return;
+    }
+    // If Electronics & Home Appliances, update form data normally
+    handleChange(e);
+    setFormData({
+      ...formData,
+      industry: selectedIndustry,
+      service: [],
+      customServices: "",
+    });
+  };
+  //MULTI AGENT FLOW
+  // File upload handler
+  const handleFileUploadServices = (intentIndex, fileType, event) => {
+    const files = Array.from(event.target.files || []);
+    let errorMsg = "";
+
+    if (files.length > 5) {
+      errorMsg = "You can upload a maximum of 5 files.";
+    } else {
+      files.forEach(file => {
+        if (file.size > 10 * 1024 * 1024) {
+          errorMsg = `File "${file.name}" exceeds 10MB limit.`;
+        }
+      });
+    }
+
+    if (errorMsg) {
+      setSnackbar({ open: true, message: errorMsg, severity: "error" });
+      return;
+    }
+
+    setFormData(prev => {
+      const kbCopy = [...prev.KnowledgeBase];
+      kbCopy[intentIndex].files[fileType] = files;
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+  };
+  const ensureKnowledgeBase = (index, intent) => {
+    setFormData(prev => {
+      const kbCopy = [...prev.KnowledgeBase];
+      if (!kbCopy[index]) {
+        kbCopy[index] = {
+          title: intent || "",
+          description: "",
+          files: {
+            brochure: [],
+            tutorial: [],
+            troubleshooting: [],
+            other: [],
+          },
+          urls: [],
+          newUrl: "",
+        };
+      }
+      else {
+        // Object already hai, sirf title update karo
+        kbCopy[index].title = intent || "";
+      }
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+  };
+  // URL add handler
+  const handleAddUrlServices = async (intentIndex) => {
+    const kb = formData.KnowledgeBase[intentIndex];
+    const rawUrl = kb.newUrl?.trim();
+    if (!rawUrl) return;
+
+    // Start verification
+    setFormData(prev => {
+      const kbCopy = [...prev.KnowledgeBase];
+      kbCopy[intentIndex].verifying = true;
+      kbCopy[intentIndex].errorMsg = "";
+      kbCopy[intentIndex].currentUrlValid = false;
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+
+    // Normalize URL
+    let url = rawUrl.replace(/^https?:\/\//i, "");
+    url = `https://${url}`;
+
+    try {
+      // Replace this with your actual URL validation API call
+      const result = await validateWebsite(url);
+
+      setFormData(prev => {
+        const kbCopy = [...prev.KnowledgeBase];
+        const currentKB = kbCopy[intentIndex];
+
+        if (result.valid) {
+          if (!currentKB.urls.includes(url)) {
+            currentKB.urls.push(url);
+          }
+          currentKB.newUrl = "";
+          currentKB.errorMsg = "";
+          currentKB.currentUrlValid = true;
+        } else {
+          currentKB.errorMsg = "Your URL is invalid";
+          currentKB.currentUrlValid = false;
+        }
+
+        kbCopy[intentIndex] = currentKB;
+        return { ...prev, KnowledgeBase: kbCopy };
+      });
+    } catch (err) {
+      setFormData(prev => {
+        const kbCopy = [...prev.KnowledgeBase];
+        kbCopy[intentIndex].errorMsg = "Error verifying URL";
+        kbCopy[intentIndex].currentUrlValid = false;
+        return { ...prev, KnowledgeBase: kbCopy };
+      });
+    } finally {
+      setFormData(prev => {
+        const kbCopy = [...prev.KnowledgeBase];
+        kbCopy[intentIndex].verifying = false;
+        return { ...prev, KnowledgeBase: kbCopy };
+      });
+    }
+  };
+  // Remove URL
+  const handleRemoveUrlServices = (intentIndex, urlIndex) => {
+    setFormData(prev => {
+      const kbCopy = [...prev.KnowledgeBase];
+      kbCopy[intentIndex].urls.splice(urlIndex, 1);
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+  };
+  // Remove intent
+  const handleRemoveServices = (intentIndex) => {
+    setFormData(prev => {
+      const serviceCopy = [...prev.service];
+      const kbCopy = [...prev.KnowledgeBase];
+      serviceCopy.splice(intentIndex, 1);
+      kbCopy.splice(intentIndex, 1);
+      return { ...prev, service: serviceCopy, KnowledgeBase: kbCopy };
+    });
+  };
+
   const getStepContent = (step) => {
     switch (step) {
       case 0:
@@ -1047,15 +1211,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
               <Select
                 name="industry"
                 value={formData.industry}
-                onChange={(e) => {
-                  handleChange(e);
-                  setFormData({
-                    ...formData,
-                    industry: e.target.value,
-                    service: [],
-                    customServices: "",
-                  });
-                }}
+
+                onChange={handleIndustryChange}
+
                 error={!!errors.industry}
                 fullWidth
               >
@@ -1173,27 +1331,26 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           <>
             {/* Intents */}
             <Stack spacing={1}>
-              <InputLabel>Intents</InputLabel>
+              <InputLabel>Knowledge Base</InputLabel>
               <Select
                 multiple
                 name="intents"
-                value={formData.intents.map((intent) => intent.type)}
+                value={formData.service.map((services) => services)}
                 onChange={handleIntentChange}
                 fullWidth
-                error={!!errors.intents}
                 renderValue={(selected) => selected.join(", ")}
               >
-                {intentOptions.map((intent) => (
+                {formData.service.map((intent) => (
                   <MenuItem key={intent} value={intent}>
-                    <Checkbox checked={formData.intents.some((i) => i.type === intent)} />
+                    <Checkbox checked={formData.intents.some((i) => i === intent)} />
                     <ListItemText primary={intent} />
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText error>{errors.intents}</FormHelperText>
-            </Stack>
 
-            {/* Extra fields for each selected intent */}
+            </Stack>
+            {/* CoversationFlow */}
+            {/*            
             {formData.intents.map((intent, index) => (
               <Paper key={intent.type} sx={{ p: 2, mt: 2 }} variant="outlined">
                 <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
@@ -1269,24 +1426,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                     </IconButton>
                   </Tooltip>
                 </Stack>
-                {/* <Button
-
-                  variant="outlined"
-                  component="label"
-                  startIcon={<UploadFileIcon />}
-                  sx={{ mt: 1 }}
-                >
-                  Upload File
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) =>
-                      handleIntentFieldChange(index, "file", e.target.files?.[0] || null)
-                    }
-                  />
-                </Button> */}
+             
                 <br />
-                {/* File Upload */}
+              
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
                   <Button
                     variant="outlined"
@@ -1352,7 +1494,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                   <FormHelperText error>{errors[`intent_${index}_files`]}</FormHelperText>
                 )}
                 <br />
-                {/* URLs Input & Add */}
+               
                 <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: "wrap", alignItems: "center" }}>
                   <TextField
                     label="Add URL"
@@ -1406,7 +1548,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                 )}
 
 
-                {/* Display URLs as Chips */}
+             
                 <br />
                 <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
                   {intent.urls?.map((url, urlIndex) => (
@@ -1427,9 +1569,153 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                   Remove
                 </Button>
               </Paper>
-            ))}
-          </>
+            ))} */}
+            {/* Multi Prompt Agent */}
+            {formData.service.map((intent, index) => {
 
+              return (
+                <Paper key={intent} sx={{ p: 2, mt: 2 }} variant="outlined">
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                    <Typography variant="subtitle1" sx={{ display: 'inline-block', mr: 2, wordBreak: 'break-word' }} gutterBottom>
+                      {intent}
+                    </Typography>
+                  </Stack>
+
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <TextField
+                      label="Description"
+                      multiline
+                      rows={3}
+                      value={formData.KnowledgeBase[index]?.description || ""}
+                      fullWidth
+                      margin="normal"
+                      error={!!errors[`service_${index}_description`]}
+                      helperText={errors[`service_${index}_description`] || ""}
+                      onChange={(e) => {
+                        ensureKnowledgeBase(index, intent);
+                        const value = e.target.value;
+                        setFormData(prev => {
+                          const kbCopy = [...prev.KnowledgeBase];
+                          kbCopy[index].description = value;
+                          return { ...prev, KnowledgeBase: kbCopy };
+                        });
+                      }}
+                    />
+                    <Tooltip title="Explain in detail what this discription is for." arrow>
+                      <IconButton>
+                        <InfoOutlinedIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                  <br />
+                  {/* File uploads */}
+                  {["brochure", "tutorial", "troubleshooting", "other"].map(type => (
+                    <Stack key={type} direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
+                      <Button variant="outlined" component="label" startIcon={<UploadFileIcon />}>
+                        Upload {type.charAt(0).toUpperCase() + type.slice(1)} File
+                        <input
+                          type="file"
+                          hidden
+                          multiple
+
+                          onChange={(e) => handleFileUploadServices(index, type, e)}
+                        />
+                      </Button>
+                      <Tooltip title={`Upload ${type} files (Max 5 files, ≤ 10MB each)`} arrow>
+                        <IconButton>
+                          <InfoOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      {formData.KnowledgeBase[index]?.files[type]?.length > 0 && (
+                        <Typography variant="body2">
+                          Selected: {formData.KnowledgeBase[index].files[type].map(f => f.name).join(", ")}
+                        </Typography>
+                      )}
+
+                    </Stack>
+                  ))}
+                  {errors[`service_${index}_files`] && (
+                    <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                      {errors[`service_${index}_files`]}
+                    </Typography>
+                  )}
+
+                  <br />
+                  {/* //GMB SECTION */}
+                  {/* URL Section */}
+                  <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: "wrap", alignItems: "center" }}>
+                    <TextField
+                      label="Add URL"
+                      size="small"
+                      value={formData.KnowledgeBase[index]?.newUrl || ""}
+                      sx={{ height: "40px", minWidth: "300px" }}
+                      onChange={(e) => {
+                        let value = e.target.value;
+
+
+                        if (value && !/^https?:\/\//i.test(value)) {
+                          value = `https://${value.replace(/^https?:\/\//i, "")}`;
+                        }
+                        setFormData(prev => {
+                          const kbCopy = [...prev.KnowledgeBase];
+                          kbCopy[index].newUrl = value;
+                          return { ...prev, KnowledgeBase: kbCopy };
+                        });
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddUrlServices(index);
+                        }
+                      }}
+                      error={!!formData.KnowledgeBase[index]?.errorMsg || !!errors[`service_${index}_urls`]}
+                      helperText={
+                        formData.KnowledgeBase[index]?.errorMsg || errors[`service_${index}_urls`] || ""
+                      }
+                    />
+                    <Tooltip title="Add a URL the agent can reference." arrow>
+                      <IconButton>
+                        <InfoOutlinedIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Button
+                      variant="contained"
+                      sx={{ height: "40px", minWidth: "80px" }}
+                      disabled={!formData.KnowledgeBase[index]?.newUrl?.trim()}
+                      onClick={() => handleAddUrlServices(index)}
+                    >
+                      Add
+                    </Button>
+                  </Stack>
+
+                  <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
+                    {formData.KnowledgeBase[index]?.urls?.map((url, urlIndex) => (
+                      <Chip
+                        key={urlIndex}
+                        label={url}
+                        onDelete={() => handleRemoveUrlServices(index, urlIndex)}
+                        sx={{ mb: 1 }}
+                      />
+                    ))}
+                  </Stack>
+                  {/* <Button
+                  variant="text"
+                  color="error"
+                  sx={{ mt: 1 }}
+                  onClick={() => handleRemoveServices(index)}
+                >
+                  Remove
+                </Button> */}
+                </Paper>
+              )
+            })}
+            {errors.generalService && (
+              <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+                {errors.generalService}
+              </Typography>
+            )}
+
+          </>
         );
       case 3:
         return (
@@ -1646,8 +1932,8 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           sx={{
             p: { xs: 2, sm: 3, md: 4 },
             borderRadius: 3,
-            backgroundColor: "transparent", // 👈 background remove
-            boxShadow: "none" // 👈 optional: shadow bhi remove karne ke liye
+            backgroundColor: "transparent",
+            boxShadow: "none"
           }}
         >
           <IconButton
