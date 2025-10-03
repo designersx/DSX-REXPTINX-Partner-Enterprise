@@ -208,8 +208,9 @@ export default function TransactionHistoryCard() {
     setSelectedAgent(agentdatass);
     setError(null);
     try {
+      console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const response = await fetch(`http://localhost:2512/api/agent/elevenlabsagents/signed-url/${agentdatass.id}`);
+      const response = await fetch(`${process.env.NEXT_API_PUBLIC_URL}/api/agent/regionalagents/signed-url/${agentdatass.id}`);
       const data = await response.json();
       const conversationToken = data.token;
       if (!conversationToken) {
@@ -403,23 +404,42 @@ export default function TransactionHistoryCard() {
   //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   console.log('planFilter', planFilter);
-  const filteredAgents = agents
-    .filter((agent) => {
-      const plan = agent.agentPlan?.toLowerCase();
+  // const filteredAgents = agents
+  //   .filter((agent) => {
+  //     const plan = agent.agentPlan?.toLowerCase();
 
-      if (planFilter === 'all') return true;
+  //     if (planFilter === 'all') return true;
 
-      if (planFilter === 'enterprise') return plan === 'enterprise';
+  //     if (planFilter === 'enterprise') return plan === 'enterprise';
 
-      if (planFilter === 'smb') return plan === 'smb';
+  //     if (planFilter === 'smb') return plan === 'smb';
 
-      // if (planFilter === 'other') {
-      //   return plan !== 'smb' && plan !== 'enterprise';
-      // }
+  //     // if (planFilter === 'other') {
+  //     //   return plan !== 'smb' && plan !== 'enterprise';
+  //     // }
 
-      return true; // default fallback
-    })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  //     return true; // default fallback
+  //   })
+  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  let filteredAgents;
+
+  if (planFilter === 'all') {
+    filteredAgents = [...agents, ...agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  } else {
+    filteredAgents = agents
+      .filter((agent) => {
+        const plan = agent.agentPlan?.toLowerCase();
+
+        if (planFilter === 'enterprise') return plan === 'enterprise';
+        if (planFilter === 'smb') return plan === 'smb';
+
+        return true; // default fallback
+      })
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
   console.log(filteredAgents, 'filteredAgents');
   //LOCK
   useEffect(() => {

@@ -1,19 +1,8 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Typography,
-  Button,
-  CardMedia,
-  Stack,
-  CircularProgress,
-  Box
-} from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, IconButton, Typography, Button, CardMedia, Stack, CircularProgress, Box } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
-import axios from "axios"
+import axios from 'axios';
 
 type CallDialogProps = {
   open: boolean;
@@ -45,19 +34,16 @@ const CallDialog: React.FC<CallDialogProps> = ({
   const [selectedAgent, setSelectedAgent] = React.useState<any>(null);
 
   const displayAgentName =
-    agent?.agentName && agent.agentName.length > 15
-      ? agent.agentName.slice(0, 12) + '...'
-      : agent?.agentName || 'Agent';
+    agent?.agentName && agent.agentName.length > 15 ? agent.agentName.slice(0, 12) + '...' : agent?.agentName || 'Agent';
 
-  const displayBusinessName =
-    agent?.businessDetails?.name || agent?.company || 'Enterprise';
+  const displayBusinessName = agent?.businessDetails?.name || agent?.company || 'Enterprise';
 
   const handleClose = (event: object, reason: string) => {
-    console.log("agentsource")
-    console.log(agent?.source,"agentsource")
-    
+    console.log('agentsource');
+    console.log(agent?.source, 'agentsource');
+
     if (reason === 'backdropClick') return;
-    console.log(agent?.source,"agentsource")
+    console.log(agent?.source, 'agentsource');
     if (agent?.source === 'filtered') {
       onEndCall();
     } else {
@@ -70,20 +56,17 @@ const CallDialog: React.FC<CallDialogProps> = ({
     setSelectedAgent(agent);
     setError(null);
     try {
-      setCallLoading(true); 
+      setCallLoading(true);
       await navigator.mediaDevices.getUserMedia({ audio: true });
-     const response = await axios.get(
-  `${process.env.NEXT_PUBLIC_API_URL}/api/agent/elevenlabsagents/signed-url/${agent.id}`
-);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/regionalagents/signed-url/${agent.id}`);
 
-      
       const conversationToken = response?.data.token;
       if (!conversationToken) throw new Error('No conversation token received from backend');
 
       const { Conversation } = await import('@elevenlabs/client');
       const conversation = await Conversation.startSession({
         conversationToken,
-        connectionType: 'webrtc',
+        connectionType: 'webrtc'
       });
       setConversation(conversation);
       console.log('Conversation started');
@@ -91,8 +74,8 @@ const CallDialog: React.FC<CallDialogProps> = ({
     } catch (err: any) {
       setError(`Failed to start call: ${err.message}`);
       console.error('Error starting call:', err);
-    }finally{
-      setCallLoading(false)
+    } finally {
+      setCallLoading(false);
     }
   };
 
@@ -103,8 +86,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
       setSelectedAgent(null);
       setError(null);
     }
-      setIsCallActive(false);
-
+    setIsCallActive(false);
   };
 
   const handleStartClick = () => {
@@ -135,8 +117,8 @@ const CallDialog: React.FC<CallDialogProps> = ({
           p: 2,
           bgcolor: 'background.paper',
           boxShadow: 3,
-          minWidth: { xs: '90%', sm: 320 },
-        },
+          minWidth: { xs: '90%', sm: 320 }
+        }
       }}
     >
       <DialogTitle sx={{ p: 0, display: 'flex', justifyContent: 'flex-end' }}>
@@ -148,13 +130,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
         <Box sx={{ mb: 3 }}>
           <CardMedia
             component="img"
-            image={
-              agent?.avatar
-                ? agent.avatar.startsWith('/')
-                  ? agent.avatar
-                  : `/${agent.avatar}`
-                : '/images/male-02.png'
-            }
+            image={agent?.avatar ? (agent.avatar.startsWith('/') ? agent.avatar : `/${agent.avatar}`) : '/images/male-02.png'}
             alt={displayAgentName}
             sx={{
               width: 80,
@@ -163,7 +139,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
               mx: 'auto',
               border: '2px solid',
               borderColor: 'primary.main',
-              objectFit: 'cover',
+              objectFit: 'cover'
             }}
           />
         </Box>
