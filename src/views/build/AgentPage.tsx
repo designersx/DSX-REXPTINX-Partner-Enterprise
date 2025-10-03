@@ -92,7 +92,7 @@ const rows = [
 
 const agentdataa = [
   {
-    id: 'agent_0801k6m552cbeyq91c9b5pfvzhb4',
+    id: 'agent_3501k6mvqwpyf1gs5v3mn9txe9g3',
     businessname: 'Designersx Pvt ltd.',
     agentPlan: 'Regional',
     mins_left: '1200',
@@ -100,7 +100,23 @@ const agentdataa = [
 
     agentName: 'REX',
     businessType: 'Website design Agency',
-    agentLanguage: 'Hindi',
+    agentLanguage: 'Hindi + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'Regional',
+    description: 'Handles customer queries',
+    userId: 'RXQ1NM1759328246'
+  },
+  {
+    id: 'agent_0801k6m552cbeyq91c9b5pfvzhb4',
+    businessname: 'State Bank of India',
+    agentPlan: 'Regional',
+    mins_left: '1200',
+    avatar: '/images/Male-02.png',
+
+    agentName: 'Suraj',
+    businessType: 'Banking',
+    agentLanguage: 'Hindi + Multi',
     agentGender: 'male',
     agentAccent: 'American',
     plantype: 'Regional',
