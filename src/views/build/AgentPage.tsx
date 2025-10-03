@@ -123,7 +123,7 @@ export default function TransactionHistoryCard() {
   useEffect(() => {
     const loadAgents = async () => {
       try {
-        const res = await fetchAgent(); // ✅ call your API function
+        const res = await fetchAgent();
         let agentsData = res?.agents || [];
         setAgents(agentsData);
       } catch (err) {
