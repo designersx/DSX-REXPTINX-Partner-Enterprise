@@ -51,6 +51,7 @@ import { fetchAgent } from '../../../Services/auth';
 import { TablePagination } from '@mui/material';
 import Loader from 'components/Loader';
 import Grid from '@mui/material/Grid';
+import { useConversation } from '@elevenlabs/react';
 
 import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
 const Avatar1 = '/assets/images/avatrs/Female-01.png';
@@ -88,6 +89,12 @@ const rows = [
   createData('Airi Satou', Avatar5, 'Spotify', '2023/02/07', '09:05 PM', 60, 'Inactive', 'error')
 ];
 
+ const agentdataa = [
+    { id: 'agent_5001k6ft79dve88t89ycm3g263n5',businessname:'Designersx Pvt ltd.',agentPlan:'free',mins_left:'1200',avatar:'/images/Male-01.png',agentPlan:'free', agentName: 'billy', businessType:'Website design Agency',agentLanguage:'Hindi',agentGender:'male',agentAccent:"American" ,plantype:'demo',description: 'Handles customer queries' },
+    // ... add your remaining agents
+        { id: 'agent_5801k6fsyyycfjbr7eds04vdz08v',businessname:'Testing Pvt ltd.',agentPlan:'free',mins_left:'900',avatar:'/images/Male-02.png',agentPlan:'free', agentName: 'rex', businessType:'Testing',agentLanguage:'Multi',agentGender:'male',agentAccent:"Indian" ,plantype:'demo',description: 'Handles customer queries' },
+
+  ];
 export default function TransactionHistoryCard() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -105,7 +112,9 @@ export default function TransactionHistoryCard() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
   const [planFilter, setPlanFilter] = useState("all");
-
+  const [selectAgent, setSelectAgent] = useState(null);
+  const [conversation, setConversation] = useState(null);
+  const [error, setError] = useState(null);
   // const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -165,11 +174,55 @@ export default function TransactionHistoryCard() {
     }
   };
 
-  const handleOpenDialog = (agent: any) => {
-    setSelectedAgent(agent);
-    setOpenDialog(true);
-  };
+  // const handleOpenDialog = (agent: any,source) => {
+  //   setSelectedAgent(agent);
+  //   setOpenDialog(true);
+  // };
 
+const handleOpenDialog = (agent: any, ) => {
+  setSelectedAgent( agent); // agent + source together
+  setOpenDialog(true);
+};
+
+  const conv = useConversation({
+    onConnect: () => console.log('Connected'),
+    onDisconnect: () => console.log('Disconnected'),
+    onMessage: (message) => console.log('Message:', message),
+    onError: (error) => console.error('Error:', error),
+  });
+  const startCall = async (agentdatass) => {
+    console.log(agentdatass,"agent")
+    setSelectedAgent(agentdatass);
+    setError(null);
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const response = await fetch(`http://localhost:2512/api/agent/elevenlabsagents/signed-url/${agentdatass.id}`);
+      const data = await response.json();
+      const conversationToken = data.token;
+      if (!conversationToken) {
+        throw new Error('No conversation token received from backend');
+      }
+      // Use the vanilla JavaScript SDK approach for WebRTC
+      const { Conversation } = await import('@elevenlabs/client');
+      const conversation = await Conversation.startSession({
+        conversationToken,
+        connectionType: 'webrtc',
+      });
+      setConversation(conversation);
+      console.log('Conversation started');
+    } catch (err) {
+      setError(`Failed to start call: ${err.message}`);
+      console.error('Error starting call:', err);
+    }
+  };
+  const endCall = async () => {
+    if (conversation) {
+      await conversation.endSession();
+      setConversation(null);
+      setSelectedAgent(null);
+      setError(null);
+    }
+  };
   const handleCloseDialog = () => {
     handleEndCall();
     if (isCallActive) {
@@ -356,313 +409,335 @@ export default function TransactionHistoryCard() {
   useEffect(() => {
     loadAgents();
   }, []);
-  return (
-    <>
-      {isModalOpen ? (
-        <AgentGeneralInfoModal open={isModalOpen} onClose={handleModalClose} onSubmit={handleAgentSubmit} />
-      ) : (
+ return (
+  <>
+    {isModalOpen ? (
+      <AgentGeneralInfoModal open={isModalOpen} onClose={handleModalClose} onSubmit={handleAgentSubmit} />
+    ) : (
+      <MainCard
+        title={<Typography variant="h5">Your Agents</Typography>}
+        content={false}
+        secondary={
+          <>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <FormControl sx={{ minWidth: 200, mb: 2 }}>
+                <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
+                <Select
+                  labelId="agent-plan-filter"
+                  value={planFilter}
+                  onChange={(e) => setPlanFilter(e.target.value)}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="smb">SMB</MenuItem>
+                  <MenuItem value="Enterprise">Enterprise</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
 
-        <MainCard
-          title={<Typography variant="h5">Your Agents</Typography>}
-          content={false}
-          secondary={
-            <>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <FormControl sx={{ minWidth: 200, mb: 2 }}>
-                  <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
-                  <Select
-                    labelId="agent-plan-filter"
-                    value={planFilter}
-                    onChange={(e) => setPlanFilter(e.target.value)}
-                  >
-                    <MenuItem value="all">All</MenuItem>
-                    <MenuItem value="smb">SMB</MenuItem>
-                    <MenuItem value="Enterprise">Enterprise</MenuItem>
-                    <MenuItem value="other">Other</MenuItem>
-                  </Select>
-                </FormControl>
-
-                <Button variant="contained" startIcon={<Add />} size="large" onClick={handleCreateAgentClick}>
-                  <Link href="#" variant="h5" color="white" component="button" sx={{ textDecoration: 'none' }}>
-                    Create Agent
-                  </Link>
-                </Button>
-              </Stack>
-            </>
-          }
-        >
-
-          <Grid container spacing={5} sx={{
+              <Button variant="contained" startIcon={<Add />} size="large" onClick={handleCreateAgentClick}>
+                <Link href="#" variant="h5" color="white" component="button" sx={{ textDecoration: 'none' }}>
+                  Create Agent
+                </Link>
+              </Button>
+            </Stack>
+          </>
+        }
+      >
+        <Grid
+          container
+          spacing={5}
+          sx={{
             alignItems: 'stretch',
             display: 'flex',
-            p: 3
-          }}>
-            {loading ? (
-              <Loader />
-            ) : filteredAgents.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  <Typography>No agents found.</Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAgents
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((agent, index) => (
+            p: 3,
+          }}
+        >
+          {loading ? (
+            <Loader />
+          ) : [...filteredAgents.map(agent => ({ ...agent, source: 'filtered' })), ...agentdataa.map(agent => ({ ...agent, source: 'elevenLabs' }))].length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} align="center">
+                <Typography>No agents found.</Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            [...filteredAgents.map(agent => ({ ...agent, source: 'filtered' })), ...agentdataa.map(agent => ({ ...agent, source: 'elevenLabs' }))]
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((agent, index) => (
+                <Grid
+                  key={`${agent.agent_id}-${agent.source}-${index}`} // Unique key to avoid conflicts
+                  size={{ xs: 12, sm: 10, lg: 4 }}
+                  style={{
+                    alignItems: 'stretch',
+                    display: 'flex',
+                    opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled
+                    pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto', // prevent clicks
+                  }}
+                >
                   <Grid
-                    key={index}
-                    size={{ xs: 12, sm: 10, lg: 4 }}
-                    style={{
-                      alignItems: 'stretch',
-                      display: 'flex',
-                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled,
-                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto', // prevent clicks
-
-
-                    }}
+                    id="print"
+                    container
+                    spacing={2.25}
+                    style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
                   >
-
-                    <Grid
-                      id="print"
-                      key={index}
-                      container
-                      spacing={2.25}
-                      style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
-                    >
-                      <Grid key={index} size={12}>
-                        <List sx={{ width: 1, p: 0 }}>
-                          <ListItem
-                            disablePadding
-                            secondaryAction={
-                              <>
-                                <Tooltip title="View call history">
-                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}>
-                                    <Eye />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Edit agent">
-                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
-                                    <UserEdit />
-                                  </IconButton>
-                                </Tooltip>
-                              </>
-                            }
-                          >
-                            <ListItemAvatar>
-                              <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
-                              secondary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.name}</Typography>}
+                <Grid size={12}>
+                     
+                      <List sx={{ width: 1, p: 0 }}>
+                        <ListItem
+                          disablePadding
+                          secondaryAction={
+                            agent.source == 'filtered' ?
+                            <>
+                              <Tooltip title="View call history">
+                                <IconButton
+                                  color="secondary"
+                                  onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
+                                >
+                                  <Eye />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Edit agent">
+                                <IconButton
+                                  color="secondary"
+                                  onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}
+                                >
+                                  <UserEdit />
+                                </IconButton>
+                              </Tooltip>
+                            </>:null
+                          }
+                        >
+                          <ListItemAvatar>
+                            <Avatar
+                              alt={agent.agentName}
+                              src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`}
                             />
-                          </ListItem>
-                        </List>
-                      </Grid>
-                      <Grid size={12}>
-                        <Divider />
-                      </Grid>
-                      <Grid size={12}>
-                        <Typography>Hello, {agent.agentName}</Typography>
-                      </Grid>
-                      <Grid size={12}>
-                        <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 }
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <Sms size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
-                              </ListItem>
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <AbcIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentAccent}</Typography>} />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 }
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <LanguageIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
-                              </ListItem>
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon>
-                                  <Link2 size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
-                                      https://rxpt.us
-                                    </Link>
-                                  }
-                                />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 },
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <BusinessIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.BusinessType}</Typography>}
-                                />
-                              </ListItem>
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <Link2 size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>{agent?.agentPlan.toUpperCase()}</Typography>} />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 }
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <StoreIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}>{agent.businessDetails?.name}</Typography>}
-                                />
-                              </ListItem>
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <AccessTimeIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
-                              </ListItem>
-                            </List>
-                          </Grid>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
+                            secondary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.name || agent?.businessname}</Typography>}
+                          />
+                        </ListItem>
+                      </List>
+                    </Grid>
+                    <Grid size={12}>
+                      <Divider />
+                    </Grid>
+                    <Grid size={12}>
+                      <Typography>Hello, {agent.agentName}</Typography>
+                    </Grid>
+                    <Grid size={12}>
+                      <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 },
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <Sms size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>}
+                              />
+                            </ListItem>
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <AbcIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentAccent}</Typography>}
+                              />
+                            </ListItem>
+                          </List>
+                        </Grid>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 },
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <LanguageIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>}
+                              />
+                            </ListItem>
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon>
+                                <Link2 size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
+                                    https://rxpt.us
+                                  </Link>
+                                }
+                              />
+                            </ListItem>
+                          </List>
+                        </Grid>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 },
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <BusinessIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {agent?.businessDetails?.BusinessType || agent?.businessType}
+                                  </Typography>
+                                }
+                              />
+                            </ListItem>
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <Link2 size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                                    {agent?.agentPlan}
+                                  </Typography>
+                                }
+                              />
+                            </ListItem>
+                          </List>
+                        </Grid>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 },
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <StoreIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={<Typography sx={{ color: 'text.secondary' }}>{agent.businessDetails?.name || agent?.businessname}</Typography>}
+                              />
+                            </ListItem>
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <AccessTimeIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>}
+                              />
+                            </ListItem>
+                          </List>
                         </Grid>
                       </Grid>
-                      <Grid size={12}>
-                        <Box>
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul">
-                          </Box>
-                        </Box>
-                      </Grid>
-                      <Stack
-                        direction="row"
-                        className="hideforPDf"
-                        sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
-                      >
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          Updated 3 days ago
-                        </Typography>
-
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="large"
-                          startIcon={<CallIcon />}
-                          sx={{
-                            borderRadius: 2,
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            px: 3,
-                            boxShadow: 2
-                          }}
-                          onClick={() => handleOpenDialog(agent)}
-                        >
-                          Test Agent
-                        </Button>
-                      </Stack>
-
                     </Grid>
+                    <Grid size={12}>
+                      <Box>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul"></Box>
+                      </Box>
+                    </Grid>
+                    <Stack
+                      direction="row"
+                      className="hideforPDf"
+                      sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
+                    >
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        Updated 3 days ago
+                      </Typography>
 
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        startIcon={<CallIcon />}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          px: 3,
+                          boxShadow: 2,
+                        }}
+                        onClick={() =>
+  agent.source === 'filtered'
+    ? handleOpenDialog({ ...agent, source: agent.source })
+    : handleOpenDialog({...agent, source: agent.source })
+}
 
-
-
-
+                      >
+                        Test Agent
+                      </Button>
+                    </Stack>
                   </Grid>
-                ))
-            )}
-          </Grid>
-          <TablePagination
-            component="div"
-            count={agents.length}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-          />
-        </MainCard>
-      )}
-
-      {/* Call Dialog */}
-      {selectedAgent && (
-        <CallDialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          agent={selectedAgent}
-          isCallActive={isCallActive}
-          callLoading={callLoading}
-          onStartCall={handleStartCall}
-          onEndCall={handleEndCall}
-          isEndingRef={isEndingRef}
+                </Grid>
+              ))
+          )}
+        </Grid>
+        <TablePagination
+          component="div"
+          count={[...filteredAgents, ...agentdataa].length} // Total count of both agent sets
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 50]}
         />
-      )}
+      </MainCard>
+    )}
 
-      {/* Agent Creation Modal */}
-      {/* <AgentGeneralInfoModal
+    {/* Call Dialog */}
+    {selectedAgent && (
+      <CallDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        agent={selectedAgent}
+        isCallActive={isCallActive}
+        callLoading={callLoading}
+        onStartCall={handleStartCall}
+        onEndCall={handleEndCall}
+        isEndingRef={isEndingRef}
+        setCallLoading={setCallLoading}
+        setIsCallActive={setIsCallActive}
+      />
+    )}
+
+    {/* Agent Creation Modal */}
+    {/* <AgentGeneralInfoModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleAgentSubmit}
       /> */}
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-
-
-
-
-        
-      </Snackbar>
-    </>
-  );
+    {/* Snackbar */}
+    <Snackbar
+      open={snackbar.open}
+      autoHideDuration={6000}
+      onClose={handleCloseSnackbar}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+    >
+      <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
+  </>
+);
 }

@@ -1,17 +1,4 @@
 import React from 'react';
-import Badge from '@mui/material/Badge';
-import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-
-// project imports
-import Breadcrumbs from 'components/@extended/Breadcrumbs';
-import MainCard from 'components/MainCard';
-import { APP_DEFAULT_PATH } from 'config';
-import GRID_COMMON_SPACING from 'config';
-
-// assets
-import { Star1 } from '@wandersonalwes/iconsax-react';
 import {
   Dialog,
   DialogContent,
@@ -22,9 +9,11 @@ import {
   CardMedia,
   Stack,
   CircularProgress,
+  Box
 } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
+import axios from "axios"
 
 type CallDialogProps = {
   open: boolean;
@@ -35,6 +24,8 @@ type CallDialogProps = {
   onStartCall: () => void;
   onEndCall: () => void;
   isEndingRef: React.MutableRefObject<boolean>;
+  setCallLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCallActive: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CallDialog: React.FC<CallDialogProps> = ({
@@ -46,19 +37,92 @@ const CallDialog: React.FC<CallDialogProps> = ({
   onStartCall,
   onEndCall,
   isEndingRef,
+  setCallLoading,
+  setIsCallActive
 }) => {
-  const displayAgentName = agent?.agentName && agent.agentName.length > 15
-    ? agent.agentName.slice(0, 12) + "..."
-    : agent?.agentName || "Agent";
-  const displayBusinessName = agent?.businessDetails?.name || agent?.company || "Enterprise";
+  const [conversation, setConversation] = React.useState<any>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [selectedAgent, setSelectedAgent] = React.useState<any>(null);
+
+  const displayAgentName =
+    agent?.agentName && agent.agentName.length > 15
+      ? agent.agentName.slice(0, 12) + '...'
+      : agent?.agentName || 'Agent';
+
+  const displayBusinessName =
+    agent?.businessDetails?.name || agent?.company || 'Enterprise';
 
   const handleClose = (event: object, reason: string) => {
-    if (reason === 'backdropClick') {
-      return; // Ignore backdrop clicks to prevent closing
+    console.log("agentsource")
+    console.log(agent?.source,"agentsource")
+    
+    if (reason === 'backdropClick') return;
+    console.log(agent?.source,"agentsource")
+    if (agent?.source === 'filtered') {
+      onEndCall();
+    } else {
+      endCalleleven(agent);
     }
-    onEndCall();
-    onClose(); // Allow closing for other reasons (e.g., close button)
+    onClose();
   };
+
+  const startCalleleven = async (agent: any) => {
+    setSelectedAgent(agent);
+    setError(null);
+    try {
+      setCallLoading(true); 
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+     const response = await axios.get(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/agent/elevenlabsagents/signed-url/${agent.id}`
+);
+
+      
+      const conversationToken = response?.data.token;
+      if (!conversationToken) throw new Error('No conversation token received from backend');
+
+      const { Conversation } = await import('@elevenlabs/client');
+      const conversation = await Conversation.startSession({
+        conversationToken,
+        connectionType: 'webrtc',
+      });
+      setConversation(conversation);
+      console.log('Conversation started');
+      setIsCallActive(true);
+    } catch (err: any) {
+      setError(`Failed to start call: ${err.message}`);
+      console.error('Error starting call:', err);
+    }finally{
+      setCallLoading(false)
+    }
+  };
+
+  const endCalleleven = async (agent) => {
+    if (conversation) {
+      await conversation.endSession();
+      setConversation(null);
+      setSelectedAgent(null);
+      setError(null);
+    }
+      setIsCallActive(false);
+
+  };
+
+  const handleStartClick = () => {
+    if (agent?.source === 'filtered') {
+      onStartCall();
+    } else {
+      startCalleleven(agent);
+    }
+  };
+
+  const handleEndClick = () => {
+    if (agent?.source === 'filtered') {
+      onEndCall();
+    } else {
+      endCalleleven(agent);
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -86,10 +150,10 @@ const CallDialog: React.FC<CallDialogProps> = ({
             component="img"
             image={
               agent?.avatar
-                ? agent.avatar.startsWith("/")
+                ? agent.avatar.startsWith('/')
                   ? agent.avatar
                   : `/${agent.avatar}`
-                : "/images/male-02.png"
+                : '/images/male-02.png'
             }
             alt={displayAgentName}
             sx={{
@@ -110,6 +174,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
           {displayBusinessName} Agent
         </Typography>
+
         {isEndingRef.current ? (
           <Stack alignItems="center" spacing={2}>
             <CircularProgress size={24} color="error" />
@@ -125,7 +190,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
             variant="contained"
             color="error"
             startIcon={<CallIcon />}
-            onClick={onEndCall}
+            onClick={handleEndClick}
             sx={{ borderRadius: 2, px: 4, py: 1.5, fontWeight: 'medium' }}
             fullWidth
           >
@@ -136,7 +201,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
             variant="contained"
             color="success"
             startIcon={<CallIcon />}
-            onClick={onStartCall}
+            onClick={handleStartClick}
             sx={{ borderRadius: 2, px: 4, py: 1.5, fontWeight: 'medium' }}
             fullWidth
           >
