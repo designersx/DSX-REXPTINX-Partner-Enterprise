@@ -440,11 +440,11 @@ export default function TransactionHistoryCard() {
                                     <Eye />
                                   </IconButton>
                                 </Tooltip>
-                                <Tooltip title="Edit agent">
+                                {/* <Tooltip title="Edit agent">
                                   <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
                                     <UserEdit />
                                   </IconButton>
-                                </Tooltip>
+                                </Tooltip> */}
                               </>
                             }
                           >

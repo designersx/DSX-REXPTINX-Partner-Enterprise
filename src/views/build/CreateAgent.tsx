@@ -405,6 +405,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     service: [],
     customService: "",
     businessName: "",
+    businessAddress: "",
     agentType: "",
     agentGender: "",
     agentAvatar: "",
@@ -741,8 +742,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         ),
         agentAccent: formData.agentAccent
       };
-
-      // return
+      console.log('formData',formData)
       try {
         setApiStatus({ status: null, message: null });
         setIsSubmitting(true);
@@ -751,6 +751,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         // Normal fields (direct req.body me milenge)
         formDataToSend.append("agentName", formData.agentName);
         formDataToSend.append("businessName", formData.businessName);
+        formDataToSend.append("businessAddress", formData.businessAddress);
         formDataToSend.append("agentType", formData.agentType);
         formDataToSend.append("agentGender", formData.agentGender);
         formDataToSend.append("agentAvatar", formData.agentAvatar);
@@ -778,6 +779,34 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             });
           }
         });
+
+  // --- KnowledgeBase metadata ---
+  const kbWithoutFiles = formData.KnowledgeBase.map(({ files, ...rest }) => rest);
+  formDataToSend.append("KnowledgeBase", JSON.stringify(kbWithoutFiles));
+
+  // --- KnowledgeBase files with readable names ---
+  function sanitizeName(name: string) {
+    return name.replace(/\s+/g, "_").replace(/[^\w.-]/g, "");
+  }
+
+  formData.KnowledgeBase.forEach((kbItem, kbIdx) => {
+    const kbName = sanitizeName(kbItem.title); // "Mobile Phones" -> "Mobile_Phones"
+
+    if (kbItem.files) {
+      Object.entries(kbItem.files).forEach(([fileType, fileArray]) => {
+        fileArray.forEach((file, fileIdx) => {
+          const readableName = `${kbName}-${fileType}-${sanitizeName(file.name)}`;
+          const renamedFile = new File([file], readableName, { type: file.type });
+
+          // Append with KB title in fieldname
+          formDataToSend.append(
+            `knowledgeBaseFiles[${kbName}][${fileType}][${fileIdx}]`,
+            renamedFile
+          );
+        });
+      });
+    }
+  });
 
         for (let [key, value] of formDataToSend.entries()) {
           console.log("FormData entry:", key, value);
@@ -1315,13 +1344,25 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             </Stack>
             {/* Business Name (Optional) */}
             <Stack spacing={1}>
-              <InputLabel>Business Name</InputLabel>
+              <InputLabel>Busines Name</InputLabel>
               <TextField
                 name="businessName"
                 placeholder="E.g., Samsung, Amazon"
                 value={formData.businessName}
                 onChange={handleChange}
                 fullWidth
+              />
+            </Stack>
+            <Stack spacing={1}>
+              <InputLabel>Business Address</InputLabel>
+              <TextField
+                name="businessAddress"
+                placeholder=""
+                value={formData.businessAddress}
+                onChange={handleChange}
+                fullWidth
+                rows={4} 
+                multiline
               />
             </Stack>
           </Stack>
@@ -1332,7 +1373,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             {/* Intents */}
             <Stack spacing={1}>
               <InputLabel>Knowledge Base</InputLabel>
-              <Select
+              {/* <Select
                 multiple
                 name="intents"
                 value={formData.service.map((services) => services)}
@@ -1346,7 +1387,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                     <ListItemText primary={intent} />
                   </MenuItem>
                 ))}
-              </Select>
+              </Select> */}
 
             </Stack>
             {/* CoversationFlow */}
