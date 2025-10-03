@@ -392,7 +392,7 @@ export default function TransactionHistoryCard() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // reset to first page
   };
-  const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId === 'RXQ1NM1759328246');
+  const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
   // const filteredAgents = agents
   //   .filter((agent) => {
   //     if (planFilter == 'all') return true;
@@ -424,7 +424,7 @@ export default function TransactionHistoryCard() {
   let filteredAgents;
 
   if (planFilter === 'all') {
-    filteredAgents = [...agents, ...agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
+    filteredAgents = [...agents, ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
   } else {
@@ -518,7 +518,7 @@ export default function TransactionHistoryCard() {
                 // ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
                 // ...agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
                 ...(planFilter === 'Regional'
-                  ? agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+                  ? userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
                   : filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })))
               ]
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
