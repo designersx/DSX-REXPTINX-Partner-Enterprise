@@ -78,7 +78,9 @@ const tabStyle = {
 export default function ProfilePage() {
   const theme = useTheme();
   const router = useRouter();
-  const user = useUser();
+  // const user = useUser();
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
 
   const { data: session } = useSession();

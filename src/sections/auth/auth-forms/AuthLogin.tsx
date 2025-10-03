@@ -86,6 +86,15 @@ export default function AuthLogin({ providers, csrfToken }: any) {
 
             if (result.success && result.token) {
               localStorage.setItem('authToken', result.token); // Save token
+                 sessionStorage.setItem(
+                'user',
+                JSON.stringify({
+                  userId: result.userId,
+                  name: result.name,
+                  businessName: result.businessName,
+                  logo: result.logo
+                })
+              );
               setStatus({ success: true });
               setSubmitting(false);
               preload('/dashboard/analytics', fetcher); // Preload dashboard menu
