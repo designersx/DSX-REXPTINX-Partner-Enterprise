@@ -183,7 +183,6 @@ const BuyPhoneNumberModal = ({ open, onClose, onSubmit, countries }) => {
                     Purchase a new phone number from your preferred provider
                 </Typography>
             </DialogTitle>
-
             {!showRequirements ? <form onSubmit={handleSubmit}>
                 <DialogContent sx={{ p: 3 }}>
                     <Stack spacing={3}>

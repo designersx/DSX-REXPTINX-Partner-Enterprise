@@ -37,6 +37,7 @@ import decodeToke from "../../lib/decodeToken"
 import { getAvailableMinutes, validateWebsite } from "../../../Services/auth";
 import { Snackbar } from "@mui/material";
 import KnowledgeBase from "./KnowledgeBase";
+import AddressAutocomplete from "components/AddressAutocomplete";
 // ---------------- Business Data ----------------
 const allBusinessTypes = [
   {
@@ -405,7 +406,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     service: [],
     customService: "",
     businessName: "",
-    businessAddress: "",
+    businessAddress: [],
     agentType: "",
     agentGender: "",
     agentAvatar: "",
@@ -427,6 +428,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           other: [],
         },
         urls: [],
+
       }
     ]
 
@@ -742,7 +744,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         ),
         agentAccent: formData.agentAccent
       };
-      console.log('formData',formData)
+      console.log('formData', formData)
       try {
         setApiStatus({ status: null, message: null });
         setIsSubmitting(true);
@@ -780,33 +782,33 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           }
         });
 
-  // --- KnowledgeBase metadata ---
-  const kbWithoutFiles = formData.KnowledgeBase.map(({ files, ...rest }) => rest);
-  formDataToSend.append("KnowledgeBase", JSON.stringify(kbWithoutFiles));
+        // --- KnowledgeBase metadata ---
+        const kbWithoutFiles = formData.KnowledgeBase.map(({ files, ...rest }) => rest);
+        formDataToSend.append("KnowledgeBase", JSON.stringify(kbWithoutFiles));
 
-  // --- KnowledgeBase files with readable names ---
-  function sanitizeName(name: string) {
-    return name.replace(/\s+/g, "_").replace(/[^\w.-]/g, "");
-  }
+        // --- KnowledgeBase files with readable names ---
+        function sanitizeName(name: string) {
+          return name.replace(/\s+/g, "_").replace(/[^\w.-]/g, "");
+        }
 
-  formData.KnowledgeBase.forEach((kbItem, kbIdx) => {
-    const kbName = sanitizeName(kbItem.title); // "Mobile Phones" -> "Mobile_Phones"
+        formData.KnowledgeBase.forEach((kbItem, kbIdx) => {
+          const kbName = sanitizeName(kbItem.title); // "Mobile Phones" -> "Mobile_Phones"
 
-    if (kbItem.files) {
-      Object.entries(kbItem.files).forEach(([fileType, fileArray]) => {
-        fileArray.forEach((file, fileIdx) => {
-          const readableName = `${kbName}-${fileType}-${sanitizeName(file.name)}`;
-          const renamedFile = new File([file], readableName, { type: file.type });
+          if (kbItem.files) {
+            Object.entries(kbItem.files).forEach(([fileType, fileArray]) => {
+              fileArray.forEach((file, fileIdx) => {
+                const readableName = `${kbName}-${fileType}-${sanitizeName(file.name)}`;
+                const renamedFile = new File([file], readableName, { type: file.type });
 
-          // Append with KB title in fieldname
-          formDataToSend.append(
-            `knowledgeBaseFiles[${kbName}][${fileType}][${fileIdx}]`,
-            renamedFile
-          );
+                // Append with KB title in fieldname
+                formDataToSend.append(
+                  `knowledgeBaseFiles[${kbName}][${fileType}][${fileIdx}]`,
+                  renamedFile
+                );
+              });
+            });
+          }
         });
-      });
-    }
-  });
 
         for (let [key, value] of formDataToSend.entries()) {
           console.log("FormData entry:", key, value);
@@ -1138,6 +1140,37 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       return { ...prev, service: serviceCopy, KnowledgeBase: kbCopy };
     });
   };
+  const parseAddressComponents = (place) => {
+    console.log(place, "place")
+    const components = place.address_components || [];
+    const getComponent = (type) => {
+      const comp = components.find(c => c.types.includes(type));
+      return comp ? comp.long_name : "";
+    };
+
+    return {
+      businessName: place.name || getComponent("premise"),
+      streetAddress: getComponent("route") || "", // route = street name
+      locality: getComponent("sublocality_level_1") || getComponent("locality") || "",
+      city: getComponent("administrative_area_level_3") || "",
+      district: getComponent("administrative_area_level_2") || "",
+      state: getComponent("administrative_area_level_1") || "",
+      country: getComponent("country") || "",
+      postalCode: getComponent("postal_code") || "",
+      formattedAddress: place.formatted_address || "",
+      placeId: place.place_id || "",
+      url: place.url || "",
+    };
+  };
+
+  // Example usage with React state
+const handleAddressDataChange = (data) => {
+  setFormData(prev => {
+    const updated = [...prev.businessAddress];
+    updated[0] = data; // replace the first element
+    return { ...prev, businessAddress: updated };
+  });
+};
 
   const getStepContent = (step) => {
     switch (step) {
@@ -1355,15 +1388,21 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             </Stack>
             <Stack spacing={1}>
               <InputLabel>Business Address</InputLabel>
-              <TextField
-                name="businessAddress"
-                placeholder=""
-                value={formData.businessAddress}
-                onChange={handleChange}
-                fullWidth
-                rows={4} 
-                multiline
+             
+              <AddressAutocomplete
+            address={formData.businessAddress[0]?.formatted_address || ""}  // safe access
+
+              setAddress={(value) => {
+    setFormData(prev => {
+      const updated = [...prev.businessAddress];
+      updated[0] = { ...updated[0], formatted_address: value };
+      return { ...prev, businessAddress: updated };
+    });
+  }}
+                onAddressDataChange={handleAddressDataChange}
+
               />
+
             </Stack>
           </Stack>
         );
