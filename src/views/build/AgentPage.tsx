@@ -20,7 +20,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 import BusinessIcon from '@mui/icons-material/Business';
 import AlertCustomerDelete from './AlertCustomerDelete';
-import { FormControl, InputLabel, Select } from "@mui/material";
+import { FormControl, InputLabel, Select } from '@mui/material';
 // project-imports
 import IconButton from 'components/@extended/IconButton';
 import MainCard from 'components/MainCard';
@@ -51,6 +51,8 @@ import { fetchAgent } from '../../../Services/auth';
 import { TablePagination } from '@mui/material';
 import Loader from 'components/Loader';
 import Grid from '@mui/material/Grid';
+import { useConversation } from '@elevenlabs/react';
+import { getUserId } from 'utils/auth';
 
 import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
 const Avatar1 = '/assets/images/avatrs/Female-01.png';
@@ -88,6 +90,24 @@ const rows = [
   createData('Airi Satou', Avatar5, 'Spotify', '2023/02/07', '09:05 PM', 60, 'Inactive', 'error')
 ];
 
+const agentdataa = [
+  {
+    id: 'agent_0801k6m552cbeyq91c9b5pfvzhb4',
+    businessname: 'Designersx Pvt ltd.',
+    agentPlan: 'Regional',
+    mins_left: '1200',
+    avatar: '/images/Male-01.png',
+
+    agentName: 'REX',
+    businessType: 'Website design Agency',
+    agentLanguage: 'Hindi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'Regional',
+    description: 'Handles customer queries',
+    userId: 'RXQ1NM1759328246'
+  }
+];
 export default function TransactionHistoryCard() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -104,8 +124,10 @@ export default function TransactionHistoryCard() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
-  const [planFilter, setPlanFilter] = useState("all");
-
+  const [planFilter, setPlanFilter] = useState('all');
+  const [selectAgent, setSelectAgent] = useState(null);
+  const [conversation, setConversation] = useState(null);
+  const [error, setError] = useState(null);
   // const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -116,7 +138,7 @@ export default function TransactionHistoryCard() {
     message: '',
     severity: 'info'
   });
-
+  const userId = getUserId();
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -165,11 +187,56 @@ export default function TransactionHistoryCard() {
     }
   };
 
+  // const handleOpenDialog = (agent: any,source) => {
+  //   setSelectedAgent(agent);
+  //   setOpenDialog(true);
+  // };
+
   const handleOpenDialog = (agent: any) => {
-    setSelectedAgent(agent);
+    setSelectedAgent(agent); // agent + source together
     setOpenDialog(true);
   };
 
+  const conv = useConversation({
+    onConnect: () => console.log('Connected'),
+    onDisconnect: () => console.log('Disconnected'),
+    onMessage: (message) => console.log('Message:', message),
+    onError: (error) => console.error('Error:', error)
+  });
+  const startCall = async (agentdatass) => {
+    console.log(agentdatass, 'agent');
+    setSelectedAgent(agentdatass);
+    setError(null);
+    try {
+      console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const response = await fetch(`${process.env.NEXT_API_PUBLIC_URL}/api/agent/regionalagents/signed-url/${agentdatass.id}`);
+      const data = await response.json();
+      const conversationToken = data.token;
+      if (!conversationToken) {
+        throw new Error('No conversation token received from backend');
+      }
+      // Use the vanilla JavaScript SDK approach for WebRTC
+      const { Conversation } = await import('@elevenlabs/client');
+      const conversation = await Conversation.startSession({
+        conversationToken,
+        connectionType: 'webrtc'
+      });
+      setConversation(conversation);
+      console.log('Conversation started');
+    } catch (err) {
+      setError(`Failed to start call: ${err.message}`);
+      console.error('Error starting call:', err);
+    }
+  };
+  const endCall = async () => {
+    if (conversation) {
+      await conversation.endSession();
+      setConversation(null);
+      setSelectedAgent(null);
+      setError(null);
+    }
+  };
   const handleCloseDialog = () => {
     handleEndCall();
     if (isCallActive) {
@@ -325,16 +392,55 @@ export default function TransactionHistoryCard() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // reset to first page
   };
-  const filteredAgents = agents
-    .filter((agent) => {
-      if (planFilter === "all") return true;
-      if (planFilter === "other") {
-        return agent.agentPlan !== "smb" && agent.agentPlan !== "Enterprise";
-      }
-      return agent.agentPlan === planFilter;
-    })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  console.log(filteredAgents, "filteredAgents")
+  const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
+  // const filteredAgents = agents
+  //   .filter((agent) => {
+  //     if (planFilter == 'all') return true;
+  //     if (planFilter == 'other') {
+  //       return agent.agentPlan.toLowerCase() != 'smb' && agent.agentPlan.toLowerCase() != 'enterprise';
+  //     }
+  //     return agent.agentPlan === planFilter;
+  //   })
+  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  console.log('planFilter', planFilter);
+  // const filteredAgents = agents
+  //   .filter((agent) => {
+  //     const plan = agent.agentPlan?.toLowerCase();
+
+  //     if (planFilter === 'all') return true;
+
+  //     if (planFilter === 'enterprise') return plan === 'enterprise';
+
+  //     if (planFilter === 'smb') return plan === 'smb';
+
+  //     // if (planFilter === 'other') {
+  //     //   return plan !== 'smb' && plan !== 'enterprise';
+  //     // }
+
+  //     return true; // default fallback
+  //   })
+  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  let filteredAgents;
+
+  if (planFilter === 'all') {
+    filteredAgents = [...agents, ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  } else {
+    filteredAgents = agents
+      .filter((agent) => {
+        const plan = agent.agentPlan?.toLowerCase();
+
+        if (planFilter === 'enterprise') return plan === 'enterprise';
+        if (planFilter === 'smb') return plan === 'smb';
+
+        return true; // default fallback
+      })
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  console.log(filteredAgents, 'filteredAgents');
   //LOCK
   useEffect(() => {
     const client = new RetellWebClient();
@@ -361,7 +467,6 @@ export default function TransactionHistoryCard() {
       {isModalOpen ? (
         <AgentGeneralInfoModal open={isModalOpen} onClose={handleModalClose} onSubmit={handleAgentSubmit} />
       ) : (
-
         <MainCard
           title={<Typography variant="h5">Your Agents</Typography>}
           content={false}
@@ -370,15 +475,12 @@ export default function TransactionHistoryCard() {
               <Stack direction="row" spacing={2} alignItems="center">
                 <FormControl sx={{ minWidth: 200, mb: 2 }}>
                   <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
-                  <Select
-                    labelId="agent-plan-filter"
-                    value={planFilter}
-                    onChange={(e) => setPlanFilter(e.target.value)}
-                  >
+                  <Select labelId="agent-plan-filter" value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
                     <MenuItem value="all">All</MenuItem>
                     <MenuItem value="smb">SMB</MenuItem>
                     <MenuItem value="Enterprise">Enterprise</MenuItem>
-                    <MenuItem value="other">Other</MenuItem>
+                    <MenuItem value="Regional">Regional</MenuItem>
+                    {/* <MenuItem value="other">Other</MenuItem> */}
                   </Select>
                 </FormControl>
 
@@ -391,61 +493,74 @@ export default function TransactionHistoryCard() {
             </>
           }
         >
-
-          <Grid container spacing={5} sx={{
-            alignItems: 'stretch',
-            display: 'flex',
-            p: 3
-          }}>
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'stretch',
+              display: 'flex',
+              p: 3
+            }}
+          >
             {loading ? (
               <Loader />
-            ) : filteredAgents.length === 0 ? (
+            ) : [
+                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+              ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              filteredAgents
+              [
+                // ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+                // ...agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+                ...(planFilter === 'Regional'
+                  ? userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+                  : filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })))
+              ]
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((agent, index) => (
                   <Grid
-                    key={index}
+                    key={`${agent.agent_id}-${agent.source}-${index}`} // Unique key to avoid conflicts
                     size={{ xs: 12, sm: 10, lg: 4 }}
                     style={{
                       alignItems: 'stretch',
                       display: 'flex',
-                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled,
-                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto', // prevent clicks
-
-
+                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled
+                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto' // prevent clicks
                     }}
                   >
-
                     <Grid
                       id="print"
-                      key={index}
                       container
                       spacing={2.25}
                       style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
                     >
-                      <Grid key={index} size={12}>
+                      <Grid size={12}>
                         <List sx={{ width: 1, p: 0 }}>
                           <ListItem
                             disablePadding
                             secondaryAction={
-                              <>
-                                <Tooltip title="View call history">
-                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}>
-                                    <Eye />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Edit agent">
-                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
-                                    <UserEdit />
-                                  </IconButton>
-                                </Tooltip>
-                              </>
+                              agent.source == 'filtered' ? (
+                                <>
+                                  <Tooltip title="View call history">
+                                    <IconButton
+                                      color="secondary"
+                                      onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
+                                    >
+                                      <Eye />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Edit agent">
+                                    <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
+                                      <UserEdit />
+                                    </IconButton>
+                                  </Tooltip>
+                                </>
+                              ) : null
                             }
                           >
                             <ListItemAvatar>
@@ -453,7 +568,11 @@ export default function TransactionHistoryCard() {
                             </ListItemAvatar>
                             <ListItemText
                               primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
-                              secondary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.name}</Typography>}
+                              secondary={
+                                <Typography sx={{ color: 'text.secondary' }}>
+                                  {agent?.businessDetails?.name || agent?.businessname}
+                                </Typography>
+                              }
                             />
                           </ListItem>
                         </List>
@@ -504,7 +623,7 @@ export default function TransactionHistoryCard() {
                                 </ListItemIcon>
                                 <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
                               </ListItem>
-                              <ListItem alignItems="flex-start">
+                              {/* <ListItem alignItems="flex-start">
                                 <ListItemIcon>
                                   <Link2 size={18} />
                                 </ListItemIcon>
@@ -514,6 +633,14 @@ export default function TransactionHistoryCard() {
                                       https://rxpt.us
                                     </Link>
                                   }
+                                />
+                              </ListItem> */}
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <AccessTimeIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={<Typography sx={{ color: 'text.secondary' }}>{Math.floor(agent?.mins_left / 60)}</Typography>}
                                 />
                               </ListItem>
                             </List>
@@ -534,14 +661,24 @@ export default function TransactionHistoryCard() {
                                   <BusinessIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.businessDetails?.BusinessType}</Typography>}
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {agent?.businessDetails?.BusinessType || agent?.businessType}
+                                    </Typography>
+                                  }
                                 />
                               </ListItem>
                               <ListItem alignItems="flex-start">
                                 <ListItemIcon style={{ marginTop: '3px' }}>
                                   <Link2 size={18} />
                                 </ListItemIcon>
-                                <ListItemText primary={<Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>{agent?.agentPlan.toUpperCase()}</Typography>} />
+                                <ListItemText
+                                  primary={
+                                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                                      {agent?.agentPlan}
+                                    </Typography>
+                                  }
+                                />
                               </ListItem>
                             </List>
                           </Grid>
@@ -559,23 +696,26 @@ export default function TransactionHistoryCard() {
                                   <StoreIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}>{agent.businessDetails?.name}</Typography>}
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {agent.businessDetails?.name || agent?.businessname}
+                                    </Typography>
+                                  }
                                 />
                               </ListItem>
-                              <ListItem alignItems="flex-start">
+                              {/* <ListItem alignItems="flex-start">
                                 <ListItemIcon style={{ marginTop: '3px' }}>
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
-                              </ListItem>
+                              </ListItem> */}
                             </List>
                           </Grid>
                         </Grid>
                       </Grid>
                       <Grid size={12}>
                         <Box>
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul">
-                          </Box>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul"></Box>
                         </Box>
                       </Grid>
                       <Stack
@@ -599,25 +739,23 @@ export default function TransactionHistoryCard() {
                             px: 3,
                             boxShadow: 2
                           }}
-                          onClick={() => handleOpenDialog(agent)}
+                          onClick={() =>
+                            agent.source === 'filtered'
+                              ? handleOpenDialog({ ...agent, source: agent.source })
+                              : handleOpenDialog({ ...agent, source: agent.source })
+                          }
                         >
                           Test Agent
                         </Button>
                       </Stack>
-
                     </Grid>
-
-
-
-
-
                   </Grid>
                 ))
             )}
           </Grid>
           <TablePagination
             component="div"
-            count={agents.length}
+            count={[...filteredAgents, ...userFilteredAgentdataa].length} // Total count of both agent sets
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
@@ -638,6 +776,8 @@ export default function TransactionHistoryCard() {
           onStartCall={handleStartCall}
           onEndCall={handleEndCall}
           isEndingRef={isEndingRef}
+          setCallLoading={setCallLoading}
+          setIsCallActive={setIsCallActive}
         />
       )}
 
@@ -657,11 +797,6 @@ export default function TransactionHistoryCard() {
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
-
-
-
-
-        
       </Snackbar>
     </>
   );

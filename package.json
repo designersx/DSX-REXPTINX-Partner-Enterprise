@@ -17,6 +17,7 @@
     "knip": "knip"
   },
   "dependencies": {
+     "@elevenlabs/react": "^0.7.1",
     "@dnd-kit/core": "^6.3.0",
     "@emotion/cache": "11.14.0",
     "@emotion/react": "11.14.0",
