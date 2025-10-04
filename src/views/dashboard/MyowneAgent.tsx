@@ -228,7 +228,7 @@ export default function MyownAgent() {
         <Grid container>
           <Grid size={{ md: 6, sm: 6, xs: 12 }}>
             <Stack sx={{ gap: 2, padding: 1 }}>
-              <Typography variant="h4">Suraj</Typography>
+           
               <Typography variant="h6">Name: Partner Agent</Typography>
               <Typography variant="h6">Mins Left: N/A</Typography>
               <Typography variant="h6">Mins Assigned: N/A</Typography>
