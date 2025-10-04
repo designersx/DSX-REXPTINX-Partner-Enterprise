@@ -452,7 +452,7 @@ export default function MyownAgent() {
       }
 
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/partneragent/${userId}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/Enterprisepartneragent/${userId}`);
         const data = response.data;
         if (response.status === 200 && data.status && data.agents?.length > 0) {
           setAgents(data.agents);
