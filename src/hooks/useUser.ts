@@ -12,7 +12,7 @@ interface UserProps {
 export default function useUser() {
   const { data: session } = useSession();
   if (session) {
-    const user = session?.user;
+    const user = ?.user;
     const provider = session?.provider;
     let thumb = user?.image || '/assets/images/users/avatar-1.png';
     if (provider === 'cognito') {

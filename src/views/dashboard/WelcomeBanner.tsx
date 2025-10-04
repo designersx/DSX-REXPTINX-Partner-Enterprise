@@ -1,5 +1,5 @@
 // material-ui
-"use client";
+'use client';
 import { Theme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CardMedia from '@mui/material/CardMedia';
@@ -15,7 +15,7 @@ import Link from 'next/link';
 // assets
 const cardBack = '/assets/images/widget/img-dropbox-bg.svg';
 // const WelcomeImage = 	'https://www.rexpt.us/images/Mask-Profile.png';
-const WelcomeImage = 	'/assets/images/Mask-Profile rex.png';
+const WelcomeImage = '/assets/images/Mask-Profile rex.png';
 
 // ==============================|| ANALYTICS - WELCOME ||============================== //
 
@@ -42,41 +42,38 @@ export default function WelcomeBanner() {
     >
       <Grid container>
         <Grid size={{ md: 6, sm: 6, xs: 12 }}>
-          <Stack sx={{ gap: 2, padding: 3 }}>
-            <Typography variant="h2">Create Agents with Rexpt</Typography>
-            <Typography variant="h6">
-            Build, customize, and manage intelligent agents seamlessly with the power of Rexpt. 
-            Unlock endless possibilities for automation and innovation.      
-            </Typography>
+          <Stack sx={{ gap: 2, padding: 1 }}>
+            <Typography variant="h4">Create Agents with Rexpt</Typography>
+            <Typography variant="h6">Build, customize, and manage intelligent agents seamlessly with the power of Rexpt.</Typography>
             <Box sx={{ pt: 1.5 }}>
               <Link href="/build/agents/" passHref>
-              <Button
-                variant="outlined"
-                color="secondary"
-                // onClick={() => router.push("/create-agent")}
-                sx={(theme) => ({
-                  color: 'background.paper',
-                  borderColor: 'background.paper',
-                  ...theme.applyStyles('dark', { color: 'text.primary', borderColor: 'text.primary' }),
-                  zIndex: 2,
-                  '&:hover': {
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  // onClick={() => router.push("/create-agent")}
+                  sx={(theme) => ({
                     color: 'background.paper',
                     borderColor: 'background.paper',
-                    bgcolor: 'primary.main',
-                    ...theme.applyStyles('dark', { color: 'text.primary', borderColor: 'text.primary' })
-                  }
-                })}
-                target="_blank"
-              >
-                Create Agent
-              </Button>
+                    ...theme.applyStyles('dark', { color: 'text.primary', borderColor: 'text.primary' }),
+                    zIndex: 2,
+                    '&:hover': {
+                      color: 'background.paper',
+                      borderColor: 'background.paper',
+                      bgcolor: 'primary.main',
+                      ...theme.applyStyles('dark', { color: 'text.primary', borderColor: 'text.primary' })
+                    }
+                  })}
+                  target="_blank"
+                >
+                  Create Agent
+                </Button>
               </Link>
             </Box>
           </Stack>
         </Grid>
         <Grid sx={{ display: { xs: 'none', sm: 'initial' } }} size={{ sm: 6, xs: 12 }}>
           <Stack sx={{ justifyContent: 'center', alignItems: 'flex-end', position: 'relative', pr: { sm: 3, md: 8 }, zIndex: 2 }}>
-            <CardMedia component="img" sx={{ width: 200 }} src={WelcomeImage} alt="Welcome" />
+            <CardMedia component="img" sx={{ maxWidth: 200 }} src={WelcomeImage} alt="Welcome" />
           </Stack>
         </Grid>
       </Grid>

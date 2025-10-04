@@ -211,14 +211,31 @@ export default function BasicModal({ open, onClose, onSubmit, refresh, setAlert 
     // if (onSubmit) onSubmit(data);
 
   };
+  // const handleWebsiteBlur = () => {
+  //   if (formData.website.trim()) {
+  //     verifyWebsite();
+  //   }
+  // };
+const handleWebsiteBlur = () => {
+  let url = formData.website.trim();
 
-  const handleWebsiteBlur = () => {
-    if (formData.website.trim()) {
-      verifyWebsite();
-    }
-  };
+  if (!url) return; // Nothing to do if empty
+
+  // Remove any duplicate or wrong protocols at the start
+  url = url.replace(/^(https?:\/\/)+/i, ''); // Remove all existing http:// or https:// at the start
+
+  // Prepend correct protocol
+  url = 'https://' + url;
+
+  setFormData((prev) => ({ ...prev, website: url }));
+
+  // Now validate
+  verifyWebsite(url);
+};
+
 
   const handleClose = () => {
+
     setStep(1);
     setKbName('');
     setFiles([]);
@@ -265,7 +282,10 @@ export default function BasicModal({ open, onClose, onSubmit, refresh, setAlert 
   const isAllSelected = sitemapUrls.length > 0 && selectedUrls.size === sitemapUrls.length;
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={(event, reason) => {
+      if (reason === "backdropClick") return;
+      handleClose();
+    }}>
       <MainCard title="Knowledge Base" modal darkTitle content={false} style={{ width: '50%' }}>
         <CardContent>
           {step === 1 && (
@@ -285,7 +305,7 @@ export default function BasicModal({ open, onClose, onSubmit, refresh, setAlert 
 
           {step === 2 && (
             <>
-              {/* File Upload */}
+
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Upload Files
@@ -315,7 +335,7 @@ export default function BasicModal({ open, onClose, onSubmit, refresh, setAlert 
                   </Typography>
                 )}
               </Box>
-              {/* Text Input */}
+
               <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Enter Text
@@ -331,7 +351,7 @@ export default function BasicModal({ open, onClose, onSubmit, refresh, setAlert 
                 />
               </Box>
 
-              {/* URL Input */}
+
               <Box sx={{ mb: 2, position: 'relative' }}>
                 <Typography variant="subtitle2" gutterBottom>
                   Enter URL
@@ -380,29 +400,32 @@ export default function BasicModal({ open, onClose, onSubmit, refresh, setAlert 
                   onBlur={handleWebsiteBlur}
                 />
                 {formData.website && (
-                  <Box sx={{ position: 'absolute', right: 8, top: 50 }}>
+                  <Box sx={{ position: 'absolute', right: 8, top: 40 }}>
                     {isVerifying ? (
                       <CircularProgress size={20} />
                     ) : isWebsiteValid === true ? (
                       <Typography variant="body2" color="success.main">
-                        ✓ Valid
+                        ✓ 
                       </Typography>
                     ) : isWebsiteValid === false ? (
                       <Typography variant="body2" style={{ marginTop: "-10px" }} color="error.main">
-                        ✗ Invalid
+                        ✗ 
                       </Typography>
                     ) : null}
                   </Box>
                 )}
               </Box>
 
-              {/* Sitemap URLs Selection */}
+
               {showSitemap && sitemapUrls.length > 0 && (
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle2" gutterBottom>
                     Select Pages to Include
                   </Typography>
-                  <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
+                  <Box sx={{
+                    maxHeight: 200, overflow: 'auto', p: 1,
+                    ml: 0,
+                  }}>
                     <List>
                       <ListItem
                         secondaryAction={
