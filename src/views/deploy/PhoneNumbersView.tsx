@@ -68,11 +68,11 @@ const OptionSelectionModal = ({ open, onClose, onSelect }) => {
 
           <Stack spacing={2} sx={{ width: '100%' }}>
             {/* SIP Option */}
-            <Paper
+            {/* <Paper
               sx={{
                 p: 3,
                 borderRadius: 2,
-                cursor: 'pointer',
+                   cursor: 'not-allowed',
                 transition: 'all 0.2s',
                 '&:hover': {
                   boxShadow: 4,
@@ -110,7 +110,86 @@ const OptionSelectionModal = ({ open, onClose, onSelect }) => {
                 </Box>
                 <CheckCircleIcon sx={{ fontSize: 24, color: 'success.main' }} />
               </Stack>
+            </Paper> */}
+            <Paper
+              sx={{
+                p: 3,
+                borderRadius: 2,
+                cursor: 'not-allowed',
+                opacity: 0.6,
+                position: 'relative',
+                transition: 'all 0.2s',
+                border: '2px solid transparent',
+                '&:hover .overlay': {
+                  opacity: 1,
+                },
+              }}
+            >
+              {/* Content */}
+              <Stack direction="row" alignItems="center" spacing={3}>
+                <Box
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <SipIcon sx={{ fontSize: 28, color: 'white' }} />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="h6" fontWeight="bold" mb={0.5}>
+                    SIP Trunk Configuration
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Connect to existing SIP provider or configure new SIP trunk
+                  </Typography>
+                  <Stack direction="row" spacing={1} mt={1}>
+                    <Chip
+                      label="Advanced Setup"
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                    />
+                    <Chip
+                      label="Customizable"
+                      size="small"
+                      color="secondary"
+                      variant="outlined"
+                    />
+                  </Stack>
+                </Box>
+                <CheckCircleIcon sx={{ fontSize: 24, color: 'success.main' }} />
+              </Stack>
+
+              {/* Overlay */}
+              <Box
+                className="overlay"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  bgcolor: 'rgba(0,0,0,0.6)',
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: 0,
+                  transition: 'opacity 0.3s',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                }}
+              >
+                Coming Soon
+              </Box>
             </Paper>
+
 
             {/* Number Purchase Option */}
             <Paper

@@ -1,6 +1,6 @@
-"use client";
-import { useState, useEffect, useRef } from "react";
-import avatars from "lib/avatars";
+'use client';
+import { useState, useEffect, useRef } from 'react';
+import avatars from 'lib/avatars';
 import {
   Grid,
   TextField,
@@ -16,208 +16,175 @@ import {
   StepLabel,
   Box,
   Alert,
-
   IconButton,
   Checkbox,
   ListItemText,
   CircularProgress,
   AlertColor,
   Tooltip
-} from "@mui/material";
+} from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Paper, Divider, Chip } from "@mui/material";
+import { Paper, Divider, Chip } from '@mui/material';
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 // import PauseIcon from "@mui/icons-material/Pause";
-import MainCard from "components/MainCard";
-import { GRID_COMMON_SPACING } from "config";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
-import decodeToke from "../../lib/decodeToken"
-import { getAvailableMinutes, validateWebsite } from "../../../Services/auth";
-import { Snackbar } from "@mui/material";
+import MainCard from 'components/MainCard';
+import { GRID_COMMON_SPACING } from 'config';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CloseIcon from '@mui/icons-material/Close';
+import axios from 'axios';
+import decodeToke from '../../lib/decodeToken';
+import { getAvailableMinutes, validateWebsite } from '../../../Services/auth';
+import { Snackbar } from '@mui/material';
+import KnowledgeBase from './KnowledgeBase';
+import AddressAutocomplete from 'components/AddressAutocomplete';
+import PauseIcon from '@mui/icons-material/Pause';
 // ---------------- Business Data ----------------
 const allBusinessTypes = [
   {
-    type: "Electronics & Home Appliances",
-    subtype: "Consumer Electronics Retailer",
-    icon: "svg/Electronics-icon.svg",
+    type: 'Electronics & Home Appliances',
+    subtype: 'Consumer Electronics Retailer',
+    icon: 'svg/Electronics-icon.svg'
   },
   {
-    type: "Banking",
-    subtype: "Financial Institution",
-    icon: "svg/Banking-icon.svg",
+    type: 'Banking',
+    subtype: 'Financial Institution',
+    icon: 'svg/Banking-icon.svg'
   },
   {
-    type: "D2C E-commerce",
-    subtype: "Direct to Consumer Online Brand",
-    icon: "svg/Ecommerce-icon.svg",
+    type: 'D2C E-commerce',
+    subtype: 'Direct to Consumer Online Brand',
+    icon: 'svg/Ecommerce-icon.svg'
   },
   {
-    type: "B2B/B2C Marketplace",
-    subtype: "Online Wholesale/Retail Platform",
-    icon: "svg/Marketplace-icon.svg",
+    type: 'B2B/B2C Marketplace',
+    subtype: 'Online Wholesale/Retail Platform',
+    icon: 'svg/Marketplace-icon.svg'
   },
   {
-    type: "Insurance",
-    subtype: "Risk & Coverage Services",
-    icon: "svg/Insurance-icon.svg",
-  },
-
-
+    type: 'Insurance',
+    subtype: 'Risk & Coverage Services',
+    icon: 'svg/Insurance-icon.svg'
+  }
 ];
 
 const businessServices = [
   {
-    type: "Electronics & Home Appliances",
-    services: [
-      "Mobile Phones",
-      "Air Conditioners",
-      "Refrigerators",
-      "Washing Machines",
-      "Smart TVs",
-      "Laptops",
-    ],
+    type: 'Electronics & Home Appliances',
+    services: ['Mobile Phones', 'Air Conditioners', 'Refrigerators', 'Washing Machines', 'Smart TVs', 'Laptops']
   },
   {
-    type: "Banking",
-    services: [
-      "Savings Account",
-      "Credit Cards",
-      "Loans",
-      "Fixed Deposits",
-      "Net Banking/UPI",
-      "Wealth Management",
-
-    ],
+    type: 'Banking',
+    services: ['Savings Account', 'Credit Cards', 'Loans', 'Fixed Deposits', 'Net Banking/UPI', 'Wealth Management']
   },
   {
-    type: "D2C E-commerce",
+    type: 'D2C E-commerce',
     services: [
-      "Fashion & Apparel",
-      "Footwear",
-      "Skincare & Beauty",
-      "Electronics Accessories",
-      "Home & Kitchen Essentials",
-      "Nutritional Supplements",
-
-    ],
+      'Fashion & Apparel',
+      'Footwear',
+      'Skincare & Beauty',
+      'Electronics Accessories',
+      'Home & Kitchen Essentials',
+      'Nutritional Supplements'
+    ]
   },
   {
-    type: "B2B/B2C Marketplace",
-    services: [
-      "Wholesale Electronics",
-      "Industrial Equipment",
-      "Office Supplies",
-      "Furniture",
-      "FMCG Products",
-      "Agricultural Goods",
-
-    ],
+    type: 'B2B/B2C Marketplace',
+    services: ['Wholesale Electronics', 'Industrial Equipment', 'Office Supplies', 'Furniture', 'FMCG Products', 'Agricultural Goods']
   },
   {
-    type: "Insurance",
-    services: [
-      "Health Insurance",
-      "Life Insurance",
-      "Vehicle Insurance",
-      "Travel Insurance",
-      "Property Insurance",
-      "Business Insurance",
-
-    ],
-  },
-
+    type: 'Insurance',
+    services: ['Health Insurance', 'Life Insurance', 'Vehicle Insurance', 'Travel Insurance', 'Property Insurance', 'Business Insurance']
+  }
 ];
 
 // ---------------- Languages Data ----------------
 const languages = [
   /* English family */
   {
-    name: "English (US)",
-    locale: "en-US",
-    flag: "/images/en-US.png",
-    percentage: "4.76%",
-    stats: "390 million native speakers",
+    name: 'English (US)',
+    locale: 'en-US',
+    flag: '/images/en-US.png',
+    percentage: '4.76%',
+    stats: '390 million native speakers'
   },
   {
-    name: "English (India)",
-    locale: "en-IN",
-    flag: "/images/en-IN.png",
-    percentage: "4.76%",
-    stats: "390 million native speakers",
+    name: 'English (India)',
+    locale: 'en-IN',
+    flag: '/images/en-IN.png',
+    percentage: '4.76%',
+    stats: '390 million native speakers'
   },
   {
-    name: "English (UK)",
-    locale: "en-GB",
-    flag: "/images/en-GB.png",
-    percentage: "4.76%",
-    stats: "390 million native speakers",
+    name: 'English (UK)',
+    locale: 'en-GB',
+    flag: '/images/en-GB.png',
+    percentage: '4.76%',
+    stats: '390 million native speakers'
   },
   {
-    name: "English (Australia)",
-    locale: "en-AU",
-    flag: "/images/en-AU.png",
-    percentage: "4.76%",
-    stats: "390 million native speakers",
+    name: 'English (Australia)',
+    locale: 'en-AU',
+    flag: '/images/en-AU.png',
+    percentage: '4.76%',
+    stats: '390 million native speakers'
   },
   {
-    name: "English (New Zealand)",
-    locale: "en-NZ",
-    flag: "/images/en-NZ.png",
-    percentage: "4.76%",
-    stats: "390 million native speakers",
+    name: 'English (New Zealand)',
+    locale: 'en-NZ',
+    flag: '/images/en-NZ.png',
+    percentage: '4.76%',
+    stats: '390 million native speakers'
   },
   /* Germanic & Nordic */
   {
-    name: "German",
-    locale: "de-DE",
-    flag: "/images/de-DE.png",
-    percentage: "0.93%",
-    stats: "76 million native speakers",
+    name: 'German',
+    locale: 'de-DE',
+    flag: '/images/de-DE.png',
+    percentage: '0.93%',
+    stats: '76 million native speakers'
   },
   {
-    name: "Dutch",
-    locale: "nl-NL",
-    flag: "/images/nl-NL.png",
-    percentage: "0.30%",
-    stats: "25 million native speakers",
+    name: 'Dutch',
+    locale: 'nl-NL',
+    flag: '/images/nl-NL.png',
+    percentage: '0.30%',
+    stats: '25 million native speakers'
   },
   {
-    name: "Danish",
-    locale: "da-DK",
-    flag: "/images/da-DK.png",
-    percentage: "0.07%",
-    stats: "5.5 million native speakers",
+    name: 'Danish',
+    locale: 'da-DK',
+    flag: '/images/da-DK.png',
+    percentage: '0.07%',
+    stats: '5.5 million native speakers'
   },
   {
-    name: "Finnish",
-    locale: "fi-FI",
-    flag: "/images/fi-FI.png",
-    percentage: "0.07%",
-    stats: "5.4 million native speakers",
+    name: 'Finnish',
+    locale: 'fi-FI',
+    flag: '/images/fi-FI.png',
+    percentage: '0.07%',
+    stats: '5.4 million native speakers'
   },
   {
-    name: "Norwegian",
-    locale: "no-NO",
-    flag: "/images/no-NO.png",
-    percentage: "0.06%",
-    stats: "5.2 million native speakers",
+    name: 'Norwegian',
+    locale: 'no-NO',
+    flag: '/images/no-NO.png',
+    percentage: '0.06%',
+    stats: '5.2 million native speakers'
   },
   {
-    name: "Swedish",
-    locale: "sv-SE",
-    flag: "/images/sv-SE.png",
-    percentage: "0.11%",
-    stats: "9.2 million native speakers",
+    name: 'Swedish',
+    locale: 'sv-SE',
+    flag: '/images/sv-SE.png',
+    percentage: '0.11%',
+    stats: '9.2 million native speakers'
   },
   /* Romance */
   {
-    name: "Spanish (Spain)",
-    locale: "es-ES",
-    flag: "/images/es-ES.png",
-    percentage: "5.90%",
-    stats: "484 million native speakers",
+    name: 'Spanish (Spain)',
+    locale: 'es-ES',
+    flag: '/images/es-ES.png',
+    percentage: '5.90%',
+    stats: '484 million native speakers'
   },
   // {
   //   name: "Spanish (LatAm)",
@@ -227,157 +194,157 @@ const languages = [
   //   stats: "484 million native speakers",
   // },
   {
-    name: "French (France)",
-    locale: "fr-FR",
-    flag: "/images/fr-FR.png",
-    percentage: "0.90%",
-    stats: "74 million native speakers",
+    name: 'French (France)',
+    locale: 'fr-FR',
+    flag: '/images/fr-FR.png',
+    percentage: '0.90%',
+    stats: '74 million native speakers'
   },
   {
-    name: "French (Canada)",
-    locale: "fr-CA",
-    flag: "/images/fr-CA.png",
-    percentage: "0.90%",
-    stats: "74 million native speakers",
+    name: 'French (Canada)',
+    locale: 'fr-CA',
+    flag: '/images/fr-CA.png',
+    percentage: '0.90%',
+    stats: '74 million native speakers'
   },
   {
-    name: "Italian",
-    locale: "it-IT",
-    flag: "/images/it-IT.png",
-    percentage: "0.77%",
-    stats: "63 million native speakers",
+    name: 'Italian',
+    locale: 'it-IT',
+    flag: '/images/it-IT.png',
+    percentage: '0.77%',
+    stats: '63 million native speakers'
   },
   {
-    name: "Portuguese (Portugal)",
-    locale: "pt-PT",
-    flag: "/images/pt-PT.png",
-    percentage: "3.05%",
-    stats: "250 million native speakers",
+    name: 'Portuguese (Portugal)',
+    locale: 'pt-PT',
+    flag: '/images/pt-PT.png',
+    percentage: '3.05%',
+    stats: '250 million native speakers'
   },
   {
-    name: "Portuguese (Brazil)",
-    locale: "pt-BR",
-    flag: "/images/pt-BR.png",
-    percentage: "3.05%",
-    stats: "250 million native speakers",
+    name: 'Portuguese (Brazil)',
+    locale: 'pt-BR',
+    flag: '/images/pt-BR.png',
+    percentage: '3.05%',
+    stats: '250 million native speakers'
   },
   {
-    name: "Catalan",
-    locale: "ca-ES",
-    flag: "/images/ca-ES.png",
-    percentage: "0.05%",
-    stats: "4.1 million native speakers",
+    name: 'Catalan',
+    locale: 'ca-ES',
+    flag: '/images/ca-ES.png',
+    percentage: '0.05%',
+    stats: '4.1 million native speakers'
   },
   {
-    name: "Romanian",
-    locale: "ro-RO",
-    flag: "/images/ro-RO.png",
-    percentage: "0.29%",
-    stats: "24 million native speakers",
+    name: 'Romanian',
+    locale: 'ro-RO',
+    flag: '/images/ro-RO.png',
+    percentage: '0.29%',
+    stats: '24 million native speakers'
   },
   /* Slavic & Baltic */
   {
-    name: "Polish",
-    locale: "pl-PL",
-    flag: "/images/pl-PL.png",
-    percentage: "0.49%",
-    stats: "40 million native speakers",
+    name: 'Polish',
+    locale: 'pl-PL',
+    flag: '/images/pl-PL.png',
+    percentage: '0.49%',
+    stats: '40 million native speakers'
   },
   {
-    name: "Russian",
-    locale: "ru-RU",
-    flag: "/images/ru-RU.png",
-    percentage: "1.77%",
-    stats: "145 million native speakers",
+    name: 'Russian',
+    locale: 'ru-RU',
+    flag: '/images/ru-RU.png',
+    percentage: '1.77%',
+    stats: '145 million native speakers'
   },
   {
-    name: "Bulgarian",
-    locale: "bg-BG",
-    flag: "/images/bg-BG.png",
-    percentage: "0.09%",
-    stats: "7 million native speakers",
+    name: 'Bulgarian',
+    locale: 'bg-BG',
+    flag: '/images/bg-BG.png',
+    percentage: '0.09%',
+    stats: '7 million native speakers'
   },
   {
-    name: "Slovak",
-    locale: "sk-SK",
-    flag: "/images/sk-SK.png",
-    percentage: "0.06%",
-    stats: "5.2 million native speakers",
+    name: 'Slovak',
+    locale: 'sk-SK',
+    flag: '/images/sk-SK.png',
+    percentage: '0.06%',
+    stats: '5.2 million native speakers'
   },
   /* Hellenic & Uralic */
   {
-    name: "Greek",
-    locale: "el-GR",
-    flag: "/images/el-GR.png",
-    percentage: "0.16%",
-    stats: "13 million native speakers",
+    name: 'Greek',
+    locale: 'el-GR',
+    flag: '/images/el-GR.png',
+    percentage: '0.16%',
+    stats: '13 million native speakers'
   },
   {
-    name: "Hungarian",
-    locale: "hu-HU",
-    flag: "/images/hu-HU.png",
-    percentage: "0.16%",
-    stats: "13 million native speakers",
+    name: 'Hungarian',
+    locale: 'hu-HU',
+    flag: '/images/hu-HU.png',
+    percentage: '0.16%',
+    stats: '13 million native speakers'
   },
   /* Asian */
   {
-    name: "Hindi",
-    locale: "hi-IN",
-    flag: "/images/hi-IN.png",
-    percentage: "4.21%",
-    stats: "345 million native speakers",
+    name: 'Hindi',
+    locale: 'hi-IN',
+    flag: '/images/hi-IN.png',
+    percentage: '4.21%',
+    stats: '345 million native speakers'
   },
   {
-    name: "Japanese",
-    locale: "ja-JP",
-    flag: "/images/ja-JP.png",
-    percentage: "1.51%",
-    stats: "124 million native speakers",
+    name: 'Japanese',
+    locale: 'ja-JP',
+    flag: '/images/ja-JP.png',
+    percentage: '1.51%',
+    stats: '124 million native speakers'
   },
   {
-    name: "Korean",
-    locale: "ko-KR",
-    flag: "/images/ko-KR.png",
-    percentage: "0.99%",
-    stats: "81 million native speakers",
+    name: 'Korean',
+    locale: 'ko-KR',
+    flag: '/images/ko-KR.png',
+    percentage: '0.99%',
+    stats: '81 million native speakers'
   },
   {
-    name: "Chinese (Mandarin)",
-    locale: "zh-CN",
-    flag: "/images/zh-CN.png",
-    percentage: "12.07%",
-    stats: "990 million native speakers",
+    name: 'Chinese (Mandarin)',
+    locale: 'zh-CN',
+    flag: '/images/zh-CN.png',
+    percentage: '12.07%',
+    stats: '990 million native speakers'
   },
   {
-    name: "Vietnamese",
-    locale: "vi-VN",
-    flag: "/images/vi-VN.png",
-    percentage: "1.05%",
-    stats: "86 million native speakers",
+    name: 'Vietnamese',
+    locale: 'vi-VN',
+    flag: '/images/vi-VN.png',
+    percentage: '1.05%',
+    stats: '86 million native speakers'
   },
   {
-    name: "Indonesian",
-    locale: "id-ID",
-    flag: "/images/id-ID.png",
-    percentage: "0.94%",
-    stats: "77 million native speakers",
+    name: 'Indonesian',
+    locale: 'id-ID',
+    flag: '/images/id-ID.png',
+    percentage: '0.94%',
+    stats: '77 million native speakers'
   },
   /* Turkic */
   {
-    name: "Turkish",
-    locale: "tr-TR",
-    flag: "/images/tr-TR.png",
-    percentage: "1.04%",
-    stats: "85 million native speakers",
+    name: 'Turkish',
+    locale: 'tr-TR',
+    flag: '/images/tr-TR.png',
+    percentage: '1.04%',
+    stats: '85 million native speakers'
   },
   /* Universal / Mixed set */
   {
-    name: "Multilingual",
-    locale: "multi",
-    flag: "/images/multi.png",
-    percentage: "—",
-    stats: "—",
-  },
+    name: 'Multilingual',
+    locale: 'multi',
+    flag: '/images/multi.png',
+    percentage: '—',
+    stats: '—'
+  }
 ];
 
 // ---------------- Helper Function ----------------
@@ -385,13 +352,39 @@ function getServicesByType(type) {
   const found = businessServices.find((b) => b.type === type);
   return found ? found.services : [];
 }
-// --- INTENT OPTIONS ---
-const intentOptions = [
-  "Billing and Invoice",
-  "Complaint Feedback",
-  "Customer Support and General",
-  "Other",
-]
+const allowedFileTypes = [
+  '.bmp',
+  '.csv',
+  '.doc',
+  '.docx',
+  '.eml',
+  '.epub',
+  '.heic',
+  '.html',
+  '.jpeg',
+  '.jpg',
+  '.png',
+  '.md',
+  '.msg',
+  '.odt',
+  '.org',
+  '.p7s',
+  '.pdf',
+  '.ppt',
+  '.pptx',
+  '.rst',
+  '.rtf',
+  '.tiff',
+  '.txt',
+  '.tsv',
+  '.xls',
+  '.xlsx',
+  '.xml'
+];
+const maxFilesPerKB = 25;
+const maxFileSizeMB = 50; // 50MB
+const maxCsvRows = 1000;
+const maxCsvCols = 50;
 
 // ---------------- Main Component ----------------
 export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
@@ -406,35 +399,49 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     }
   }, [open]);
   const [formData, setFormData] = useState({
-    agentName: "",
-    corePurpose: "",
-    industry: "",
+    agentName: '',
+    corePurpose: '',
+    industry: '',
     service: [],
-    customService: "",
-    businessName: "",
-    agentType: "",
-    agentGender: "",
-    agentAvatar: "",
-    agentLanguage: "",
-    agentLanguageCode: "",
-    agentVoice: "",
+    customService: '',
+    businessName: '',
+    businessAddress: [],
+    agentType: '',
+    agentGender: '',
+    agentAvatar: '',
+    agentLanguage: '',
+    agentLanguageCode: '',
+    agentVoice: '',
     customServices: [''],
-    agentAccent: "",
-    assignMinutes: "",
-    intents: [] // [{ type: "Billing and Invoice", name: "", description: "", file: null }]
-
+    agentAccent: '',
+    assignMinutes: '',
+    intents: [],
+    KnowledgeBase: [
+      {
+        title: '',
+        description: '',
+        files: {
+          brochure: [],
+          tutorial: [],
+          troubleshooting: [],
+          other: []
+        },
+        urls: []
+      }
+    ]
   });
+  console.log(formData, 'formDataformData');
   const [errors, setErrors] = useState({});
   const [activeStep, setActiveStep] = useState(0);
   const [apiStatus, setApiStatus] = useState({ status: null, message: null });
   const [voices, setVoices] = useState([]);
   const [playingVoiceId, setPlayingVoiceId] = useState(null);
-  const [audio, setAudio] = useState(null); // Track current audio instance
+  const [audio, setAudio] = useState(null);
   const audioRef = useRef(null);
   const [filteredVoices, setFilteredVoices] = useState([]);
-  const token = localStorage.getItem("authToken")
-  const userDetails = decodeToke(token)
-  const [minute, setMinute] = useState("")
+  const token = localStorage.getItem('authToken');
+  const userDetails = decodeToke(token);
+  const [minute, setMinute] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -445,19 +452,10 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     message: '',
     severity: 'info'
   });
-  const purposes = [
-    "Customer Support",
-    "Lead Qualifier",
-    "Survey Agent",
-    "Technical Support",
-    "General Receptionist",
-  ];
-  const agentTypes = ["Inbound", "Outbound", "Both"];
-  const genders = ["Male", "Female"];
-  const steps = ["Agent Details", "Business Details", "Intents", "Agent Configuration", "Agent Minutes"];
-
+  const agentTypes = ['Inbound', 'Outbound', 'Both'];
+  const genders = ['Male', 'Female'];
+  const steps = ['Agent Details', 'Business Details', 'Knowledge Base', 'Agent Configuration', 'Agent Minutes'];
   const CustomPlayIcon = () => (
-
     <svg
       xmlns="http://www.w3.org/2000/svg"
       height="24"
@@ -472,12 +470,10 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   useEffect(() => {
     if (voices && formData.agentGender) {
       const filtered = voices.filter(
-        (voice) =>
-          voice.provider === "elevenlabs" &&
-          voice?.gender?.toLocaleLowerCase() === formData?.agentGender?.toLocaleLowerCase()
+        (voice) => voice.provider === 'elevenlabs' && voice?.gender?.toLocaleLowerCase() === formData?.agentGender?.toLocaleLowerCase()
       );
 
-      setFilteredVoices(filtered || [])
+      setFilteredVoices(filtered || []);
     }
   }, [formData.agentGender, voices]);
   // Fetch voices when gender or language changes
@@ -485,18 +481,14 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     if (formData.agentGender && formData.agentLanguage) {
       const fetchVoices = async () => {
         try {
-          const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/enterprise/fetchAgentVoiceDetailsFromRetell2`,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/enterprise/fetchAgentVoiceDetailsFromRetell2`, {
+            headers: {
+              'Content-Type': 'application/json'
             }
-          );
+          });
 
           setVoices(response?.data || []);
           setApiStatus({ status: 'success', message: '' });
-
         } catch (error) {
           setVoices([]);
           setApiStatus({ status: 'error', message: 'Failed to fetch voices' });
@@ -508,7 +500,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       setApiStatus({ status: null, message: '' });
     }
   }, [formData.agentGender, formData.agentLanguage]);
-
   const handlePlayVoice = (voiceId, audioUrl) => {
     if (playingVoiceId === voiceId) {
       // Pause if the same voice is playing
@@ -531,7 +522,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       setPlayingVoiceId(voiceId);
     }
   };
-
   // Clean up audio on component unmount
   const handleCustomServiceChange = (event, index) => {
     const newCustomServices = [...formData.customServices];
@@ -543,7 +533,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     newErrors[index] = validateCustomService(event.target.value);
     setErrors({ ...errors, customServices: newErrors });
   };
-
   const handleAddCustomService = () => {
     setFormData({
       ...formData,
@@ -551,12 +540,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     });
     setErrors({
       ...errors,
-      customServices: Array.isArray(errors.customServices)
-        ? [...errors.customServices, '']
-        : ['']
+      customServices: Array.isArray(errors.customServices) ? [...errors.customServices, ''] : ['']
     });
   };
-
   const handleRemoveCustomService = (index) => {
     const newCustomServices = formData.customServices.filter((_, i) => i !== index);
     const newErrors = Array.isArray(errors.customServices)
@@ -576,35 +562,34 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-
-    if (name === "agentVoice") {
+    if (name === 'agentVoice') {
       // Find the selected voice object
       const selectedVoice = voices.find((v) => v.voice_id === value);
       // Update formData with voice details including accent
       setFormData({
         ...formData,
 
-        agentVoice: selectedVoice?.voice_id || "", // readable name
-        agentAccent: selectedVoice?.accent || "",    // store accent
+        agentVoice: selectedVoice?.voice_id || '', // readable name
+        agentAccent: selectedVoice?.accent || '' // store accent
       });
       return;
     }
 
-    if (name === "agentLanguage") {
+    if (name === 'agentLanguage') {
       const selectedLang = languages.find((lang) => lang.locale === value);
 
       setFormData({
         ...formData,
-        agentLanguage: selectedLang?.name || "",
-        agentLanguageCode: selectedLang?.locale || "",
-        agentVoice: "", // reset voice if language changes
-        agentAccent: "", // reset accent
+        agentLanguage: selectedLang?.name || '',
+        agentLanguageCode: selectedLang?.locale || '',
+        agentVoice: '', // reset voice if language changes
+        agentAccent: '' // reset accent
       });
     } else {
       setFormData({
         ...formData,
         [name]: value,
-        ...(name === "agentGender" ? { agentAvatar: "", agentVoice: "", agentAccent: "" } : {}),
+        ...(name === 'agentGender' ? { agentAvatar: '', agentVoice: '', agentAccent: '' } : {})
       });
     }
   };
@@ -624,27 +609,23 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       customServices: value.includes('Other') ? formData.customServices.map(validateCustomService) : []
     });
   };
-
   const handleAvatarSelect = (avatarImg) => {
     setFormData({
       ...formData,
-      agentAvatar: avatarImg,
+      agentAvatar: avatarImg
     });
   };
-
   const validateStep = (step) => {
     let newErrors = {};
     if (step === 0) {
-      if (!formData.agentName) newErrors.agentName = "Agent Name is required";
-      // if (!formData.corePurpose) newErrors.corePurpose = "Core Purpose is required";
-      if (!formData.agentGender) newErrors.agentGender = "Agent Gender is required";
-      if (!formData.agentAvatar) newErrors.agentAvatar = "Please select an avatar";
+      if (!formData.agentName) newErrors.agentName = 'Agent Name is required';
+      if (!formData.agentGender) newErrors.agentGender = 'Agent Gender is required';
+      if (!formData.agentAvatar) newErrors.agentAvatar = 'Please select an avatar';
     } else if (step === 1) {
-      if (!formData.industry) newErrors.industry = "Industry is required";
-      if (formData.service.length === 0)
-        newErrors.service = "At least one Business Service/Product is required";
-      if (formData.service.includes("Other") && !formData.customServices) {
-        newErrors.customServices = "Please specify your service";
+      if (!formData.industry) newErrors.industry = 'Industry is required';
+      if (formData.service.length === 0) newErrors.service = 'At least one Business Service/Product is required';
+      if (formData.service.includes('Other') && !formData.customServices) {
+        newErrors.customServices = 'Please specify your service';
       }
     }
     // else if (step === 2) {
@@ -654,7 +635,21 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     //     formData.intents.forEach((intent, idx) => {
     //       if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
     //       if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
-    //       if (!intent.file) newErrors[`intent_${idx}_file`] = `${intent.type} - File is required`;
+
+    //       // ✅ Multiple file validation
+    //       if (!intent.files || intent.files.length === 0) {
+    //         newErrors[`intent_${idx}_files`] = `${intent.type} - At least one file is required`;
+    //       } else {
+    //         if (intent.files.length > 5) {
+    //           newErrors[`intent_${idx}_files`] = `${intent.type} - Max 5 files allowed`;
+    //         }
+    //         intent.files.forEach((file) => {
+    //           if (file.size > 10 * 1024 * 1024) {
+    //             newErrors[`intent_${idx}_files`] = `${intent.type} - File "${file.name}" exceeds 10MB`;
+    //           }
+    //         });
+    //       }
+
     //       if (!intent.urls || intent.urls.length === 0) {
     //         newErrors[`intent_${idx}_urls`] = `${intent.type} - At least one URL is required`;
     //       }
@@ -662,45 +657,51 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     //   }
     // }
     else if (step === 2) {
-      if (formData.intents.length === 0) {
-        newErrors.intents = "At least one intent is required";
+      if (formData.service.length === 0) {
+        newErrors.service = 'At least one Business Service/Product is required';
       } else {
-        formData.intents.forEach((intent, idx) => {
-          if (!intent.name) newErrors[`intent_${idx}_name`] = `${intent.type} - Name is required`;
-          if (!intent.description) newErrors[`intent_${idx}_description`] = `${intent.type} - Description is required`;
+        // ✅ Validate only the first service
+        const idx = 0; // first service index
+        const service = formData.service[idx];
+        const kb = formData.KnowledgeBase[idx] || {};
 
-          // ✅ Multiple file validation
-          if (!intent.files || intent.files.length === 0) {
-            newErrors[`intent_${idx}_files`] = `${intent.type} - At least one file is required`;
-          } else {
-            if (intent.files.length > 5) {
-              newErrors[`intent_${idx}_files`] = `${intent.type} - Max 5 files allowed`;
-            }
-            intent.files.forEach((file) => {
-              if (file.size > 10 * 1024 * 1024) {
-                newErrors[`intent_${idx}_files`] = `${intent.type} - File "${file.name}" exceeds 10MB`;
-              }
-            });
-          }
+        let serviceHasError = false;
 
-          if (!intent.urls || intent.urls.length === 0) {
-            newErrors[`intent_${idx}_urls`] = `${intent.type} - At least one URL is required`;
-          }
-        });
+        // Description
+        if (!kb.description || kb.description.trim() === '') {
+          serviceHasError = true;
+          newErrors[`service_${idx}_description`] = `${service} - Description is required`;
+        }
+
+        // Files
+        const hasFiles = kb.files && Object.values(kb.files).some((arr) => arr.length > 0);
+        if (!hasFiles) {
+          serviceHasError = true;
+          newErrors[`service_${idx}_files`] = `${service} - At least one file is required`;
+        }
+
+        // URLs
+        const hasUrls = kb.urls && kb.urls.length > 0;
+        if (!hasUrls) {
+          serviceHasError = true;
+          newErrors[`service_${idx}_urls`] = `${service} - At least one URL is required`;
+        }
+
+        if (serviceHasError) {
+          newErrors.generalService = 'Please complete all fields for the selected service';
+        }
       }
-    }
 
-
-    else if (step === 3) {
-      if (!formData.agentType) newErrors.agentType = "Agent Type is required";
-      if (!formData.agentLanguage) newErrors.agentLanguage = "Agent Language is required";
-      if (!formData.agentVoice) newErrors.agentVoice = "Agent Voice is required";
-    }
-    else if (step === 4) {
+      setErrors(newErrors);
+    } else if (step === 3) {
+      if (!formData.agentType) newErrors.agentType = 'Agent Type is required';
+      if (!formData.agentLanguage) newErrors.agentLanguage = 'Agent Language is required';
+      if (!formData.agentVoice) newErrors.agentVoice = 'Agent Voice is required';
+    } else if (step === 4) {
       if (!formData.assignMinutes) {
-        newErrors.assignMinutes = "Agent Minutes is required";
+        newErrors.assignMinutes = 'Agent Minutes is required';
       } else if (minute <= 0) {
-        newErrors.assignMinutes = "You don’t have enough minutes to assign";
+        newErrors.assignMinutes = 'You don’t have enough minutes to assign';
       } else if (formData.assignMinutes > minute) {
         newErrors.assignMinutes = `You cannot assign more than ${minute.toLocaleString()} minutes`;
       }
@@ -718,40 +719,37 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       const finalData = {
         ...formData,
         userId: userDetails?.user?.id,
-        agentAccent: "",
-        service: formData.service.map((s) =>
-          s === "Other" ? formData.customService : s
-        ),
+        agentAccent: '',
+        service: formData.service.map((s) => (s === 'Other' ? formData.customService : s)),
         agentAccent: formData.agentAccent
       };
-      console.log(finalData, "HELO")
-      // return
       try {
         setApiStatus({ status: null, message: null });
         setIsSubmitting(true);
         const formDataToSend = new FormData();
 
         // Normal fields (direct req.body me milenge)
-        formDataToSend.append("agentName", formData.agentName);
-        formDataToSend.append("businessName", formData.businessName);
-        formDataToSend.append("agentType", formData.agentType);
-        formDataToSend.append("agentGender", formData.agentGender);
-        formDataToSend.append("agentAvatar", formData.agentAvatar);
-        formDataToSend.append("agentLanguage", formData.agentLanguage);
-        formDataToSend.append("agentLanguageCode", formData.agentLanguageCode);
-        formDataToSend.append("agentVoice", formData.agentVoice);
-        formDataToSend.append("agentAccent", formData.agentAccent);
-        formDataToSend.append("assignMinutes", formData.assignMinutes);
-        formDataToSend.append("industry", formData.industry);
-        formDataToSend.append("service", JSON.stringify(formData.service));
-        formDataToSend.append("customService", formData.customService);
-        formDataToSend.append("customServices", formData.customServices);
-        formDataToSend.append("corePurpose", formData.corePurpose);
-        formDataToSend.append("userId", userDetails?.user?.id);
+        formDataToSend.append('agentName', formData.agentName);
+        formDataToSend.append('businessName', formData.businessName);
+        formDataToSend.append('businessAddress', JSON.stringify(formData.businessAddress));
+        formDataToSend.append('agentType', formData.agentType);
+        formDataToSend.append('agentGender', formData.agentGender);
+        formDataToSend.append('agentAvatar', formData.agentAvatar);
+        formDataToSend.append('agentLanguage', formData.agentLanguage);
+        formDataToSend.append('agentLanguageCode', formData.agentLanguageCode);
+        formDataToSend.append('agentVoice', formData.agentVoice);
+        formDataToSend.append('agentAccent', formData.agentAccent);
+        formDataToSend.append('assignMinutes', formData.assignMinutes);
+        formDataToSend.append('industry', formData.industry);
+        formDataToSend.append('service', JSON.stringify(formData.service));
+        formDataToSend.append('customService', formData.customService);
+        formDataToSend.append('customServices', formData.customServices);
+        formDataToSend.append('corePurpose', formData.corePurpose);
+        formDataToSend.append('userId', userDetails?.user?.id);
 
         //Intents (without files)
         const intentsWithoutFiles = formData.intents.map(({ file, ...rest }) => rest);
-        formDataToSend.append("intents", JSON.stringify(intentsWithoutFiles));
+        formDataToSend.append('intents', JSON.stringify(intentsWithoutFiles));
 
         //  Intent files
         formData.intents.forEach((intent, idx) => {
@@ -762,17 +760,39 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           }
         });
 
-        for (let [key, value] of formDataToSend.entries()) {
-          console.log("FormData entry:", key, value);
+        // --- KnowledgeBase metadata ---
+        const kbWithoutFiles = formData.KnowledgeBase.map(({ files, ...rest }) => rest);
+        formDataToSend.append('KnowledgeBase', JSON.stringify(kbWithoutFiles));
+
+        // --- KnowledgeBase files with readable names ---
+        function sanitizeName(name: string) {
+          return name.replace(/\s+/g, '_').replace(/[^\w.-]/g, '');
         }
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/enterpriseAgent/createEnterpriseAgent`, formDataToSend,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+
+        formData.KnowledgeBase.forEach((kbItem, kbIdx) => {
+          const kbName = sanitizeName(kbItem.title); // "Mobile Phones" -> "Mobile_Phones"
+
+          if (kbItem.files) {
+            Object.entries(kbItem.files).forEach(([fileType, fileArray]) => {
+              fileArray.forEach((file, fileIdx) => {
+                const readableName = `${kbName}-${fileType}-${sanitizeName(file.name)}`;
+                const renamedFile = new File([file], readableName, { type: file.type });
+
+                // Append with KB title in fieldname
+                formDataToSend.append(`knowledgeBaseFiles[${kbName}][${fileType}][${fileIdx}]`, renamedFile);
+              });
+            });
           }
-        );
+        });
+
+        for (let [key, value] of formDataToSend.entries()) {
+          console.log('FormData entry:', key, value);
+        }
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/enterpriseAgent/createEnterpriseAgent`, formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
 
         if (response) {
           setSnackbar({
@@ -783,25 +803,23 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           setTimeout(() => {
             handleClose();
           }, 1500);
-          setApiStatus({ status: "success", message: response?.data?.message });
-          getUserMinutes()
+          setApiStatus({ status: 'success', message: response?.data?.message });
+          getUserMinutes();
           setTimeout(() => {
-            onClose()
+            onClose();
             setIsSubmitting(false);
-            onSubmit()
+            onSubmit();
           }, 1000);
-
         }
-        console.log(response, "response")
+        console.log(response, 'response');
         // setApiStatus({ status: "success", message: "Data submitted successfully!" });
         // onNext(finalData);
       } catch (error) {
         setApiStatus({
-          status: "error",
-          message: error.message || "An error occurred during submission",
+          status: 'error',
+          message: error.message || 'An error occurred during submission'
         });
-      }
-      finally {
+      } finally {
         //  Re-enable button
         setIsSubmitting(false);
       }
@@ -813,28 +831,25 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
 
     const updatedIntents = selected.map((intent) => {
       // Prevent adding "Other" from dropdown if it already exists
-      if (intent === "Other") {
-        const existingOther = formData.intents.find(i => i.type === "Other");
-        return existingOther || { type: "Other", name: "", description: "", file: null, urls: [] };
+      if (intent === 'Other') {
+        const existingOther = formData.intents.find((i) => i.type === 'Other');
+        return existingOther || { type: 'Other', name: '', description: '', file: null, urls: [] };
       }
 
       // For normal intents
       const existing = formData.intents.find((i) => i.type === intent);
-      return existing || { type: intent, name: "", description: "", file: null, urls: [] };
+      return existing || { type: intent, name: '', description: '', file: null, urls: [] };
     });
 
     setFormData((prev) => ({
       ...prev,
-      intents: updatedIntents,
+      intents: updatedIntents
     }));
   };
   const handleAddOther = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      intents: [
-        ...prev.intents,
-        { type: "Other", id: Date.now(), name: "", description: "", file: null, urls: [] }
-      ]
+      intents: [...prev.intents, { type: 'Other', id: Date.now(), name: '', description: '', file: null, urls: [] }]
     }));
   };
   const handleIntentFieldChange = (index, field, value) => {
@@ -861,11 +876,11 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     if (!rawUrl) return;
 
     // Start verification
-    handleIntentFieldChange(intentIndex, "verifying", true);
-    handleIntentFieldChange(intentIndex, "errorMsg", "");
-    handleIntentFieldChange(intentIndex, "currentUrlValid", false);
+    handleIntentFieldChange(intentIndex, 'verifying', true);
+    handleIntentFieldChange(intentIndex, 'errorMsg', '');
+    handleIntentFieldChange(intentIndex, 'currentUrlValid', false);
 
-    let url = rawUrl.replace(/^https?:\/\//i, "");
+    let url = rawUrl.replace(/^https?:\/\//i, '');
     url = `https://${url}`;
 
     try {
@@ -880,9 +895,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           if (!currentIntent.urls.includes(rawUrl)) {
             currentIntent.urls.push(rawUrl);
           }
-          currentIntent.newUrl = "";
+          currentIntent.newUrl = '';
           currentIntent.currentUrlValid = false;
-          currentIntent.errorMsg = "";
+          currentIntent.errorMsg = '';
           return { ...prev, intents: updatedIntents };
         });
 
@@ -894,14 +909,14 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         });
       } else {
         // URL invalid → Show error
-        handleIntentFieldChange(intentIndex, "currentUrlValid", false);
-        handleIntentFieldChange(intentIndex, "errorMsg", "Your URL is wrong");
+        handleIntentFieldChange(intentIndex, 'currentUrlValid', false);
+        handleIntentFieldChange(intentIndex, 'errorMsg', 'Your URL is wrong');
       }
     } catch (err) {
-      handleIntentFieldChange(intentIndex, "currentUrlValid", false);
-      handleIntentFieldChange(intentIndex, "errorMsg", "Error verifying URL");
+      handleIntentFieldChange(intentIndex, 'currentUrlValid', false);
+      handleIntentFieldChange(intentIndex, 'errorMsg', 'Error verifying URL');
     } finally {
-      handleIntentFieldChange(intentIndex, "verifying", false);
+      handleIntentFieldChange(intentIndex, 'verifying', false);
     }
   };
 
@@ -911,7 +926,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       updatedIntents[intentIndex].urls.splice(urlIndex, 1);
       return { ...prev, intents: updatedIntents };
     });
-  }
+  };
   const handleNext = () => {
     if (validateStep(activeStep)) {
       if (activeStep === steps.length - 1) {
@@ -929,7 +944,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   };
   useEffect(() => {
     const updatedIntents = formData.intents.map((intent) => {
-      if (intent.type !== "Other") {
+      if (intent.type !== 'Other') {
         return { ...intent, name: intent.type };
       }
       return intent;
@@ -943,9 +958,299 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     }
   }, [formData.intents]);
 
-  const selectedIndustryData = allBusinessTypes.find(
-    (i) => i.type === formData.industry
-  );
+  const selectedIndustryData = allBusinessTypes.find((i) => i.type === formData.industry);
+  const handleIndustryChange = (e) => {
+    const selectedIndustry = e.target.value;
+
+    if (selectedIndustry !== 'Electronics & Home Appliances') {
+      setSnackbar({
+        open: true,
+        message: 'Coming Soon!',
+        severity: 'info'
+      });
+      return;
+    }
+    // If Electronics & Home Appliances, update form data normally
+    handleChange(e);
+    setFormData({
+      ...formData,
+      industry: selectedIndustry,
+      service: [],
+      customServices: ''
+    });
+  };
+  //MULTI AGENT FLOW
+  // File upload handler
+  // const handleFileUploadServices = (intentIndex, fileType, event) => {
+  //   const files = Array.from(event.target.files || []);
+  //   let errorMsg = "";
+
+  //   if (files.length > 5) {
+  //     errorMsg = "You can upload a maximum of 5 files.";
+  //   } else {
+  //     files.forEach(file => {
+  //       if (file.size > 10 * 1024 * 1024) {
+  //         errorMsg = `File "${file.name}" exceeds 10MB limit.`;
+  //       }
+  //     });
+  //   }
+
+  //   if (errorMsg) {
+  //     setSnackbar({ open: true, message: errorMsg, severity: "error" });
+  //     return;
+  //   }
+
+  //   setFormData(prev => {
+  //     const kbCopy = [...prev.KnowledgeBase];
+  //     kbCopy[intentIndex].files[fileType] = files;
+  //     return { ...prev, KnowledgeBase: kbCopy };
+  //   });
+  // };
+  const handleFileUploadServices = async (index, type, e) => {
+    const files = Array.from(e.target.files);
+    const kbCopy = [...formData.KnowledgeBase];
+    kbCopy[index].files = kbCopy[index].files || {};
+    kbCopy[index].files[type] = kbCopy[index].files[type] || [];
+
+    let newErrors = { ...errors };
+    newErrors[`service_${index}_files`] = '';
+
+    for (let file of files) {
+      const ext = '.' + file.name.split('.').pop().toLowerCase();
+
+      // File type check
+      if (!allowedFileTypes.includes(ext)) {
+        newErrors[`service_${index}_files`] = `File type not allowed: ${file.name}`;
+        continue;
+      }
+
+      // File size check
+      if (file.size / (1024 * 1024) > maxFileSizeMB) {
+        newErrors[`service_${index}_files`] = `File too large (max ${maxFileSizeMB}MB): ${file.name}`;
+        continue;
+      }
+
+      // Max files per KB check
+      if (kbCopy[index].files[type].length >= maxFilesPerKB) {
+        newErrors[`service_${index}_files`] = `Cannot upload more than ${maxFilesPerKB} files for ${type}`;
+        break;
+      }
+
+      // Optional CSV/XLS row & column validation
+      if (['.csv', '.tsv', '.xls', '.xlsx'].includes(ext)) {
+        try {
+          // Only CSV/TSV validation as example
+          if (ext === '.csv' || ext === '.tsv') {
+            const text = await file.text();
+            const rows = text.split(/\r?\n/).filter((r) => r.trim() !== '');
+            const rowCount = rows.length;
+            const colCount = rows[0]?.split(ext === '.csv' ? ',' : '\t').length || 0;
+
+            if (rowCount > maxCsvRows || colCount > maxCsvCols) {
+              newErrors[`service_${index}_files`] = `${file.name} exceeds max ${maxCsvRows} rows or ${maxCsvCols} columns`;
+              continue;
+            }
+          }
+          // XLS/XLSX validation can be added using libraries like 'xlsx' if needed
+        } catch (err) {
+          newErrors[`service_${index}_files`] = `Failed to read file: ${file.name}`;
+          continue;
+        }
+      }
+
+      // Add file if all validations pass
+      kbCopy[index].files[type].push(file);
+    }
+
+    setFormData((prev) => ({ ...prev, KnowledgeBase: kbCopy }));
+    setErrors(newErrors);
+  };
+  const ensureKnowledgeBase = (index, intent) => {
+    setFormData((prev) => {
+      const kbCopy = [...prev.KnowledgeBase];
+      if (!kbCopy[index]) {
+        kbCopy[index] = {
+          title: intent || '',
+          description: '',
+          files: {
+            brochure: [],
+            tutorial: [],
+            troubleshooting: [],
+            other: []
+          },
+          urls: [],
+          newUrl: ''
+        };
+      } else {
+        // Object already hai, sirf title update karo
+        kbCopy[index].title = intent || '';
+      }
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+  };
+  // URL add handler
+  // const handleAddUrlServices = async (intentIndex) => {
+  //   const kb = formData.KnowledgeBase[intentIndex];
+  //   const rawUrl = kb.newUrl?.trim();
+  //   if (!rawUrl) return;
+
+  //   // Start verification
+  //   setFormData(prev => {
+  //     const kbCopy = [...prev.KnowledgeBase];
+  //     kbCopy[intentIndex].verifying = true;
+  //     kbCopy[intentIndex].errorMsg = "";
+  //     kbCopy[intentIndex].currentUrlValid = false;
+  //     return { ...prev, KnowledgeBase: kbCopy };
+  //   });
+
+  //   // Normalize URL
+  //   let url = rawUrl.replace(/^https?:\/\//i, "");
+  //   url = `https://${url}`;
+
+  //   try {
+  //     // Replace this with your actual URL validation API call
+  //     const result = await validateWebsite(url);
+
+  //     setFormData(prev => {
+  //       const kbCopy = [...prev.KnowledgeBase];
+  //       const currentKB = kbCopy[intentIndex];
+
+  //       if (result.valid) {
+  //         if (!currentKB.urls.includes(url)) {
+  //           currentKB.urls.push(url);
+  //         }
+  //         currentKB.newUrl = "";
+  //         currentKB.errorMsg = "";
+  //         currentKB.currentUrlValid = true;
+  //       } else {
+  //         currentKB.errorMsg = "Your URL is invalid";
+  //         currentKB.currentUrlValid = false;
+  //       }
+
+  //       kbCopy[intentIndex] = currentKB;
+  //       return { ...prev, KnowledgeBase: kbCopy };
+  //     });
+  //   } catch (err) {
+  //     setFormData(prev => {
+  //       const kbCopy = [...prev.KnowledgeBase];
+  //       kbCopy[intentIndex].errorMsg = "Error verifying URL";
+  //       kbCopy[intentIndex].currentUrlValid = false;
+  //       return { ...prev, KnowledgeBase: kbCopy };
+  //     });
+  //   } finally {
+  //     setFormData(prev => {
+  //       const kbCopy = [...prev.KnowledgeBase];
+  //       kbCopy[intentIndex].verifying = false;
+  //       return { ...prev, KnowledgeBase: kbCopy };
+  //     });
+  //   }
+  // };
+  const handleAddUrlServices = async (intentIndex, inputValue) => {
+    let rawUrl = (inputValue || formData.KnowledgeBase[intentIndex]?.newUrl || '').trim();
+    if (!rawUrl) return;
+    if (!/^https?:\/\//i.test(rawUrl)) {
+      rawUrl = `https://${rawUrl.replace(/^https?:\/\//i, '')}`;
+    }
+
+    // Set verifying state
+    setFormData((prev) => {
+      const kbCopy = [...prev.KnowledgeBase];
+      kbCopy[intentIndex].verifying = true;
+      kbCopy[intentIndex].errorMsg = '';
+      kbCopy[intentIndex].currentUrlValid = false;
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+
+    try {
+      const result = await validateWebsite(rawUrl); // use normalized URL
+      console.log(result, 'result');
+      if (result) {
+        setFormData((prev) => {
+          const kbCopy = [...prev.KnowledgeBase];
+          const currentKB = kbCopy[intentIndex];
+
+          if (result.valid) {
+            if (!currentKB.urls.includes(rawUrl)) {
+              currentKB.urls.push(rawUrl);
+            }
+            currentKB.newUrl = '';
+            currentKB.errorMsg = '';
+            currentKB.currentUrlValid = true;
+          } else {
+            currentKB.errorMsg = 'Your URL is invalid';
+            currentKB.currentUrlValid = false;
+          }
+
+          kbCopy[intentIndex] = currentKB;
+          return { ...prev, KnowledgeBase: kbCopy };
+        });
+      }
+    } catch (err) {
+      setFormData((prev) => {
+        const kbCopy = [...prev.KnowledgeBase];
+        kbCopy[intentIndex].errorMsg = 'Error verifying URL';
+        kbCopy[intentIndex].currentUrlValid = false;
+        return { ...prev, KnowledgeBase: kbCopy };
+      });
+    } finally {
+      setFormData((prev) => {
+        const kbCopy = [...prev.KnowledgeBase];
+        kbCopy[intentIndex].verifying = false;
+        return { ...prev, KnowledgeBase: kbCopy };
+      });
+    }
+  };
+
+  // Remove URL
+  const handleRemoveUrlServices = (intentIndex, urlIndex) => {
+    setFormData((prev) => {
+      const kbCopy = [...prev.KnowledgeBase];
+      kbCopy[intentIndex].urls.splice(urlIndex, 1);
+      return { ...prev, KnowledgeBase: kbCopy };
+    });
+  };
+  // Remove intent
+  const handleRemoveServices = (intentIndex) => {
+    setFormData((prev) => {
+      const serviceCopy = [...prev.service];
+      const kbCopy = [...prev.KnowledgeBase];
+      serviceCopy.splice(intentIndex, 1);
+      kbCopy.splice(intentIndex, 1);
+      return { ...prev, service: serviceCopy, KnowledgeBase: kbCopy };
+    });
+  };
+  const parseAddressComponents = (place) => {
+    console.log(place, 'place');
+    const components = place.address_components || [];
+    const getComponent = (type) => {
+      const comp = components.find((c) => c.types.includes(type));
+      return comp ? comp.long_name : '';
+    };
+
+    return {
+      businessName: place.name || getComponent('premise'),
+      streetAddress: getComponent('route') || '', // route = street name
+      locality: getComponent('sublocality_level_1') || getComponent('locality') || '',
+      city: getComponent('administrative_area_level_3') || '',
+      district: getComponent('administrative_area_level_2') || '',
+      state: getComponent('administrative_area_level_1') || '',
+      country: getComponent('country') || '',
+      postalCode: getComponent('postal_code') || '',
+      formattedAddress: place.formatted_address || '',
+      placeId: place.place_id || '',
+      url: place.url || ''
+    };
+  };
+
+  // Example usage with React state
+  const handleAddressDataChange = (data) => {
+    setFormData((prev) => {
+      const updated = [...prev.businessAddress];
+      updated[0] = data; // replace the first element
+      return { ...prev, businessAddress: updated };
+    });
+  };
+
   const getStepContent = (step) => {
     switch (step) {
       case 0:
@@ -987,13 +1292,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             {/* Agent Gender */}
             <Stack spacing={1}>
               <InputLabel>Agent Gender</InputLabel>
-              <Select
-                name="agentGender"
-                value={formData.agentGender}
-                onChange={handleChange}
-                error={!!errors.agentGender}
-                fullWidth
-              >
+              <Select name="agentGender" value={formData.agentGender} onChange={handleChange} error={!!errors.agentGender} fullWidth>
                 {genders.map((g) => (
                   <MenuItem key={g} value={g}>
                     {g}
@@ -1013,14 +1312,11 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                       key={avatar.img} // Use avatar.img as unique key
                       onClick={() => handleAvatarSelect(avatar.img)}
                       sx={{
-                        cursor: "pointer",
-                        border:
-                          formData.agentAvatar === avatar.img
-                            ? "2px solid #1976d2"
-                            : "2px solid transparent",
+                        cursor: 'pointer',
+                        border: formData.agentAvatar === avatar.img ? '2px solid #1976d2' : '2px solid transparent',
                         borderRadius: 2,
                         p: 0.5,
-                        transition: "border 0.2s ease-in-out",
+                        transition: 'border 0.2s ease-in-out'
                       }}
                     >
                       <img
@@ -1028,7 +1324,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                         alt={`Avatar ${index + 1}`}
                         width={60}
                         height={60}
-                        style={{ borderRadius: 8, objectFit: "cover" }}
+                        style={{ borderRadius: 8, objectFit: 'cover' }}
                       />
                     </Box>
                   ))}
@@ -1044,21 +1340,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             {/* Industry */}
             <Stack spacing={1}>
               <InputLabel>Industry</InputLabel>
-              <Select
-                name="industry"
-                value={formData.industry}
-                onChange={(e) => {
-                  handleChange(e);
-                  setFormData({
-                    ...formData,
-                    industry: e.target.value,
-                    service: [],
-                    customServices: "",
-                  });
-                }}
-                error={!!errors.industry}
-                fullWidth
-              >
+              <Select name="industry" value={formData.industry} onChange={handleIndustryChange} error={!!errors.industry} fullWidth>
                 {allBusinessTypes.map((ind) => (
                   <MenuItem key={ind.type} value={ind.type}>
                     {ind.type}
@@ -1077,15 +1359,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                   sx={{
                     p: 1,
                     borderRadius: 2,
-                    bgcolor: "#f1f5f9",
+                    bgcolor: '#f1f5f9'
                   }}
                 >
-                  {/* <img
-                    src={selectedIndustryData.icon}
-                    alt=""
-                    width={28}
-                    height={28}
-                  /> */}
                   <Typography variant="body2" color="text.secondary">
                     {selectedIndustryData.subtype}
                   </Typography>
@@ -1121,7 +1397,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
               <FormHelperText error>{errors.service}</FormHelperText>
 
               {/* Custom services when "Other" is selected */}
-              {formData.service.includes("Other") && (
+              {formData.service.includes('Other') && (
                 <Stack spacing={1} sx={{ mt: 1 }}>
                   {formData.customServices.map((customService, index) => (
                     <Stack key={index} direction="row" spacing={1} alignItems="center">
@@ -1135,21 +1411,13 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                         helperText={errors.customServices?.[index]}
                       />
                       {index > 0 && (
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={() => handleRemoveCustomService(index)}
-                        >
+                        <Button variant="outlined" color="error" onClick={() => handleRemoveCustomService(index)}>
                           Remove
                         </Button>
                       )}
                     </Stack>
                   ))}
-                  <Button
-                    variant="contained"
-                    onClick={handleAddCustomService}
-                    sx={{ alignSelf: 'flex-start' }}
-                  >
+                  <Button variant="contained" onClick={handleAddCustomService} sx={{ alignSelf: 'flex-start' }}>
                     Add Another Service
                   </Button>
                 </Stack>
@@ -1157,13 +1425,28 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             </Stack>
             {/* Business Name (Optional) */}
             <Stack spacing={1}>
-              <InputLabel>Business Name</InputLabel>
+              <InputLabel>Busines Name</InputLabel>
               <TextField
                 name="businessName"
                 placeholder="E.g., Samsung, Amazon"
                 value={formData.businessName}
                 onChange={handleChange}
                 fullWidth
+              />
+            </Stack>
+            <Stack spacing={1}>
+              <InputLabel>Business Address</InputLabel>
+
+              <AddressAutocomplete
+                address={formData.businessAddress[0]?.formatted_address || ''}
+                setAddress={(value) => {
+                  setFormData((prev) => {
+                    const updated = [...prev.businessAddress];
+                    updated[0] = { ...updated[0], formatted_address: value };
+                    return { ...prev, businessAddress: updated };
+                  });
+                }}
+                onAddressDataChange={handleAddressDataChange}
               />
             </Stack>
           </Stack>
@@ -1173,27 +1456,25 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           <>
             {/* Intents */}
             <Stack spacing={1}>
-              <InputLabel>Intents</InputLabel>
-              <Select
+              <InputLabel>Knowledge Base</InputLabel>
+              {/* <Select
                 multiple
                 name="intents"
-                value={formData.intents.map((intent) => intent.type)}
+                value={formData.service.map((services) => services)}
                 onChange={handleIntentChange}
                 fullWidth
-                error={!!errors.intents}
                 renderValue={(selected) => selected.join(", ")}
               >
-                {intentOptions.map((intent) => (
+                {formData.service.map((intent) => (
                   <MenuItem key={intent} value={intent}>
-                    <Checkbox checked={formData.intents.some((i) => i.type === intent)} />
+                    <Checkbox checked={formData.intents.some((i) => i === intent)} />
                     <ListItemText primary={intent} />
                   </MenuItem>
                 ))}
-              </Select>
-              <FormHelperText error>{errors.intents}</FormHelperText>
+              </Select> */}
             </Stack>
-
-            {/* Extra fields for each selected intent */}
+            {/* CoversationFlow */}
+            {/*            
             {formData.intents.map((intent, index) => (
               <Paper key={intent.type} sx={{ p: 2, mt: 2 }} variant="outlined">
                 <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
@@ -1269,24 +1550,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                     </IconButton>
                   </Tooltip>
                 </Stack>
-                {/* <Button
-
-                  variant="outlined"
-                  component="label"
-                  startIcon={<UploadFileIcon />}
-                  sx={{ mt: 1 }}
-                >
-                  Upload File
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(e) =>
-                      handleIntentFieldChange(index, "file", e.target.files?.[0] || null)
-                    }
-                  />
-                </Button> */}
+             
                 <br />
-                {/* File Upload */}
+              
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
                   <Button
                     variant="outlined"
@@ -1352,7 +1618,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                   <FormHelperText error>{errors[`intent_${index}_files`]}</FormHelperText>
                 )}
                 <br />
-                {/* URLs Input & Add */}
+               
                 <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: "wrap", alignItems: "center" }}>
                   <TextField
                     label="Add URL"
@@ -1406,7 +1672,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                 )}
 
 
-                {/* Display URLs as Chips */}
+             
                 <br />
                 <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
                   {intent.urls?.map((url, urlIndex) => (
@@ -1427,9 +1693,139 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                   Remove
                 </Button>
               </Paper>
-            ))}
-          </>
+            ))} */}
+            {/* Multi Prompt Agent */}
+            {formData.service.map((intent, index) => {
+              return (
+                <Paper key={intent} sx={{ p: 2, mt: 2 }} variant="outlined">
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                    <Typography variant="subtitle1" sx={{ display: 'inline-block', mr: 2, wordBreak: 'break-word' }} gutterBottom>
+                      {intent}
+                    </Typography>
+                  </Stack>
 
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <TextField
+                      label="Description"
+                      multiline
+                      rows={3}
+                      value={formData.KnowledgeBase[index]?.description || ''}
+                      fullWidth
+                      margin="normal"
+                      error={!!errors[`service_${index}_description`]}
+                      helperText={errors[`service_${index}_description`] || ''}
+                      onChange={(e) => {
+                        ensureKnowledgeBase(index, intent);
+                        const value = e.target.value;
+                        setFormData((prev) => {
+                          const kbCopy = [...prev.KnowledgeBase];
+                          kbCopy[index].description = value;
+                          return { ...prev, KnowledgeBase: kbCopy };
+                        });
+                      }}
+                    />
+                    <Tooltip title="Explain in detail what this discription is for." arrow>
+                      <IconButton>
+                        <InfoOutlinedIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+                  <br />
+                  {/* File uploads */}
+                  {['brochure', 'tutorial', 'troubleshooting', 'other'].map((type) => (
+                    <Stack key={type} direction="row" alignItems="center" spacing={1} sx={{ mt: 1 }}>
+                      <Button variant="outlined" component="label" startIcon={<UploadFileIcon />}>
+                        Upload {type.charAt(0).toUpperCase() + type.slice(1)} File
+                        <input type="file" hidden multiple onChange={(e) => handleFileUploadServices(index, type, e)} />
+                      </Button>
+                      <Tooltip
+                        title={`Upload ${type} files (Allowed: ${allowedFileTypes.join(', ')}, Max: ${maxFilesPerKB} files, ≤ ${maxFileSizeMB}MB each${type === 'csv' || type === 'tsv' || type === 'xls' || type === 'xlsx' ? `, Max rows: ${maxCsvRows}, Max columns: ${maxCsvCols}` : ''})`}
+                        arrow
+                      >
+                        <IconButton>
+                          <InfoOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      {formData.KnowledgeBase[index]?.files[type]?.length > 0 && (
+                        <Typography variant="body2">
+                          Selected: {formData.KnowledgeBase[index].files[type].map((f) => f.name).join(', ')}
+                        </Typography>
+                      )}
+                    </Stack>
+                  ))}
+                  {errors[`service_${index}_files`] && (
+                    <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                      {errors[`service_${index}_files`]}
+                    </Typography>
+                  )}
+
+                  <br />
+                  {/* //GMB SECTION */}
+                  {/* URL Section */}
+                  <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <TextField
+                      label="Add URL"
+                      size="small"
+                      value={formData.KnowledgeBase[index]?.newUrl || ''}
+                      sx={{ height: '40px', minWidth: '300px' }}
+                      onChange={(e) => {
+                        let value = e.target.value;
+
+                        if (value && !/^https?:\/\//i.test(value)) {
+                          value = `https://${value.replace(/^https?:\/\//i, '')}`;
+                        }
+                        setFormData((prev) => {
+                          const kbCopy = [...prev.KnowledgeBase];
+                          kbCopy[index].newUrl = value;
+                          return { ...prev, KnowledgeBase: kbCopy };
+                        });
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddUrlServices(index, e.currentTarget.value); //  use current input
+                        }
+                      }}
+                      error={!!formData.KnowledgeBase[index]?.errorMsg || !!errors[`service_${index}_urls`]}
+                      helperText={formData.KnowledgeBase[index]?.errorMsg || errors[`service_${index}_urls`] || ''}
+                    />
+                    <Tooltip title="Add a URL the agent can reference." arrow>
+                      <IconButton>
+                        <InfoOutlinedIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Button
+                      variant="contained"
+                      sx={{ height: '40px', minWidth: '80px' }}
+                      disabled={!formData.KnowledgeBase[index]?.newUrl?.trim()}
+                      onClick={() => handleAddUrlServices(index)}
+                    >
+                      Add
+                    </Button>
+                  </Stack>
+                  <br />
+                  <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap' }}>
+                    {formData.KnowledgeBase[index]?.urls?.map((url, urlIndex) => (
+                      <Chip key={urlIndex} label={url} onDelete={() => handleRemoveUrlServices(index, urlIndex)} sx={{ mb: 1 }} />
+                    ))}
+                  </Stack>
+                  {/* <Button
+                  variant="text"
+                  color="error"
+                  sx={{ mt: 1 }}
+                  onClick={() => handleRemoveServices(index)}
+                >
+                  Remove
+                </Button> */}
+                </Paper>
+              );
+            })}
+            {errors.generalService && (
+              <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+                {errors.generalService}
+              </Typography>
+            )}
+          </>
         );
       case 3:
         return (
@@ -1437,13 +1833,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             {/* Agent Type */}
             <Stack spacing={1}>
               <InputLabel>Agent Type</InputLabel>
-              <Select
-                name="agentType"
-                value={formData.agentType}
-                onChange={handleChange}
-                error={!!errors.agentType}
-                fullWidth
-              >
+              <Select name="agentType" value={formData.agentType} onChange={handleChange} error={!!errors.agentType} fullWidth>
                 {agentTypes.map((t) => (
                   <MenuItem key={t} value={t}>
                     {t}
@@ -1457,26 +1847,30 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             <InputLabel>Agent Language</InputLabel>
             <Select
               name="agentLanguage"
-              value={formData.agentLanguageCode || ""}
+              value={formData.agentLanguageCode || ''}
               onChange={handleChange}
               error={!!errors.agentLanguage}
               fullWidth
             >
-              {
-                languages.map((lang) => (
-                  <MenuItem key={lang.locale} value={lang.locale}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <img src={`https://flagcdn.com/w20/${lang.locale.split("-")[1]?.toLowerCase() || "us"}.png`}
-                        alt="flag" className="w-5 h-5" onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          if (lang.locale == "es-419") { target.src = "https://flagcdn.com/w80/es.png"; }
-                        }} />
-                      <Typography>{lang.name}</Typography>
-                    </Stack>
-                  </MenuItem>
-                ))}
+              {languages.map((lang) => (
+                <MenuItem key={lang.locale} value={lang.locale}>
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <img
+                      src={`https://flagcdn.com/w20/${lang.locale.split('-')[1]?.toLowerCase() || 'us'}.png`}
+                      alt="flag"
+                      className="w-5 h-5"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (lang.locale == 'es-419') {
+                          target.src = 'https://flagcdn.com/w80/es.png';
+                        }
+                      }}
+                    />
+                    <Typography>{lang.name}</Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
             </Select>
-
 
             {/* Agent Voice */}
             <Stack spacing={1}>
@@ -1491,14 +1885,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
               >
                 {filteredVoices?.map((voice) => (
                   <MenuItem key={voice.voice_id} value={voice.voice_id}>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ width: '100%' }}
-                    >
+                    <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
                       <Stack direction="row" alignItems="center" spacing={1}>
-                        <Typography >{voice.voice_name}</Typography>
+                        <Typography>{voice.voice_name}</Typography>
                         <Typography variant="body2" color="text.secondary">
                           ({voice.accent}, {voice.age})
                         </Typography>
@@ -1509,14 +1898,9 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent selecting the MenuItem
                             handlePlayVoice(voice.voice_id, voice.preview_audio_url);
-
                           }}
                         >
-                          {playingVoiceId === voice.voice_id ? (
-                            <CustomPlayIcon fontSize="small" />
-                          ) : (
-                            <CustomPlayIcon />
-                          )}
+                          {playingVoiceId === voice.voice_id ? <PauseIcon fontSize="small" /> : <CustomPlayIcon fontSize="small" />}
                         </IconButton>
                       )}
                     </Stack>
@@ -1526,22 +1910,13 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
               <FormHelperText error>{errors.agentVoice || apiStatus.message}</FormHelperText>
             </Stack>
           </Stack>
-
         );
       case 4:
         return (
-
           <Stack spacing={3}>
-            <fieldset disabled={isSubmitting} style={{ border: "none", padding: 0, margin: 0 }}>
+            <fieldset disabled={isSubmitting} style={{ border: 'none', padding: 0, margin: 0 }}>
               {/* Available Bulk Minutes */}
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                p={2}
-                borderRadius={2}
-                bgcolor="action.hover"
-              >
+              <Box display="flex" alignItems="center" justifyContent="space-between" p={2} borderRadius={2} bgcolor="action.hover">
                 <Box>
                   <Typography variant="subtitle1" fontWeight="600">
                     Available Minutes
@@ -1550,11 +1925,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                     Total minutes in your account
                   </Typography>
                 </Box>
-                <Chip
-                  label={`${minute?.toLocaleString() || 0} minutes`}
-                  variant="outlined"
-                  sx={{ fontSize: "1rem", px: 2, py: 1 }}
-                />
+                <Chip label={`${minute?.toLocaleString() || 0} minutes`} variant="outlined" sx={{ fontSize: '1rem', px: 2, py: 1 }} />
               </Box>
               <br />
               {/* Assign Minutes Input */}
@@ -1563,7 +1934,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                 <TextField
                   type="number"
                   name="assignMinutes"
-                  value={formData.assignMinutes || ""}
+                  value={formData.assignMinutes || ''}
                   onChange={(e) => {
                     const value = Number(e.target.value);
                     setFormData({ ...formData, assignMinutes: value });
@@ -1572,19 +1943,17 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                     if (value > minute) {
                       setErrors({
                         ...errors,
-                        assignMinutes: `You cannot assign more than ${minute.toLocaleString()} minutes`,
+                        assignMinutes: `You cannot assign more than ${minute.toLocaleString()} minutes`
                       });
                     } else {
                       setErrors({
                         ...errors,
-                        assignMinutes: "",
+                        assignMinutes: ''
                       });
                     }
                   }}
                   error={!!errors.assignMinutes}
-                  helperText={
-                    errors.assignMinutes
-                  }
+                  helperText={errors.assignMinutes}
                   fullWidth
                   placeholder="Enter minutes"
                   InputProps={{ inputProps: { min: 1, max: minute } }}
@@ -1599,21 +1968,15 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                       <Typography fontWeight="600">Minutes Assignment</Typography>
                     </Box>
                     <Typography variant="body2">
-                      Assigning{" "}
-                      <strong>{formData.assignMinutes.toLocaleString()}</strong> minutes to
-                      this agent.
+                      Assigning <strong>{formData.assignMinutes.toLocaleString()}</strong> minutes to this agent.
                       <br />
-                      Remaining bulk minutes:{" "}
-                      <strong>
-                        {(minute - formData.assignMinutes).toLocaleString()}
-                      </strong>
+                      Remaining bulk minutes: <strong>{(minute - formData.assignMinutes).toLocaleString()}</strong>
                     </Typography>
                   </Box>
                 </div>
               )}
             </fieldset>
           </Stack>
-
         );
       default:
         return null;
@@ -1621,43 +1984,41 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   };
   const getUserMinutes = async () => {
     try {
-      const response = await getAvailableMinutes(userDetails?.user?.id)
-      console.log(response, "responseresponse")
+      const response = await getAvailableMinutes(userDetails?.user?.id);
+      console.log(response, 'responseresponse');
       if (response) {
-        setMinute(response?.data?.remainingMinutes)
+        setMinute(response?.data?.remainingMinutes);
       }
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const handleClose = () => {
-    onClose()
-  }
+    onClose();
+  };
   useEffect(() => {
-    getUserMinutes()
-  }, [])
+    getUserMinutes();
+  }, []);
   return (
-
-    <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: "100%" }}>
+    <Grid justifyContent="center" sx={{ mt: 3, mb: 5 }} style={{ width: '100%' }}>
       <Grid item xs={12} sm={12} md={12} lg={10}>
         <Paper
           elevation={3}
           sx={{
             p: { xs: 2, sm: 3, md: 4 },
             borderRadius: 3,
-            backgroundColor: "transparent", // 👈 background remove
-            boxShadow: "none" // 👈 optional: shadow bhi remove karne ke liye
+            backgroundColor: 'transparent',
+            boxShadow: 'none'
           }}
         >
           <IconButton
             aria-label="close"
             onClick={handleClose}
             sx={{
-              position: "absolute",
+              position: 'absolute',
               top: 8,
               right: 8,
-              color: (theme) => theme.palette.grey[600],
+              color: (theme) => theme.palette.grey[600]
             }}
           >
             <CloseIcon />
@@ -1688,21 +2049,11 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
           </Stepper>
 
           {/* Step Content */}
-          <Box sx={{ minHeight: { xs: 300, sm: 350, md: 400 } }}>
-            {getStepContent(activeStep)}
-          </Box>
+          <Box sx={{ minHeight: { xs: 300, sm: 350, md: 400 } }}>{getStepContent(activeStep)}</Box>
 
           {/* Navigation Buttons */}
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            sx={{ mt: 1 }}
-          >
-            <Button
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              sx={{ textTransform: "none" }}
-            >
+          <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
+            <Button disabled={activeStep === 0} onClick={handleBack} sx={{ textTransform: 'none' }}>
               Back
             </Button>
             <Button
@@ -1713,15 +2064,11 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
                 px: 4,
                 py: 1,
                 borderRadius: 2,
-                textTransform: "none",
-                fontWeight: "bold",
+                textTransform: 'none',
+                fontWeight: 'bold'
               }}
             >
-              {isSubmitting && activeStep === steps.length - 1
-                ? "Submitting..."
-                : activeStep === steps.length - 1
-                  ? "Submit"
-                  : "Next"}
+              {isSubmitting && activeStep === steps.length - 1 ? 'Submitting...' : activeStep === steps.length - 1 ? 'Submit' : 'Next'}
             </Button>
           </Stack>
           <Snackbar
@@ -1737,6 +2084,5 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         </Paper>
       </Grid>
     </Grid>
-
   );
 }

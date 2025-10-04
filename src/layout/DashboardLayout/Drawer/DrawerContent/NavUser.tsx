@@ -47,7 +47,8 @@ const ExpandMore = styled(IconButton, {
 
 export default function UserList() {
   const router = useRouter();
-  const user = useUser();
+  // const user = useUser();
+const user = JSON.parse(sessionStorage.getItem('user') || '{}');
 
   const { menuMaster } = useGetMenuMaster();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
@@ -79,7 +80,6 @@ export default function UserList() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   return (
     <Box sx={{ p: 1.25, px: !drawerOpen ? 1.25 : 3, borderTop: '2px solid ', borderTopColor: 'divider' }}>
       <List disablePadding>

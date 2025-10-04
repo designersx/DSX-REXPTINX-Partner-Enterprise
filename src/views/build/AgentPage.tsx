@@ -55,6 +55,7 @@ import { useConversation } from '@elevenlabs/react';
 import { getUserId } from 'utils/auth';
 
 import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
+import { formatTimeAgo } from 'lib/formatTimeAgo';
 const Avatar1 = '/assets/images/avatrs/Female-01.png';
 const Avatar2 = '/assets/images/avatrs/male-01.png';
 const Avatar3 = '/assets/images/avatrs/Female-02.png';
@@ -82,13 +83,6 @@ const getValidColor = (color: string): ChipColor => {
   return validColors.includes(color as ChipColor) ? (color as ChipColor) : 'default';
 };
 
-const rows = [
-  createData('Airi Satou', Avatar1, 'Samsung', '2023/02/07', '09:05 PM', 950, 'Active', 'success'),
-  createData('Ashton Cox', Avatar2, 'Microsoft', '2023/02/01', '02:14 PM', 520, 'Active', 'success'),
-  createData('Bradley Greer', Avatar3, 'You Tube ', '2023/01/22', '10:32 AM', 100, 'Active', 'success'),
-  createData('Brielle Williamson', Avatar4, 'Amazon', '2023/02/07', '09:05 PM', 760, 'Inactive', 'error'),
-  createData('Airi Satou', Avatar5, 'Spotify', '2023/02/07', '09:05 PM', 60, 'Inactive', 'error')
-];
 
 const agentdataa = [
   {
@@ -160,7 +154,7 @@ export default function TransactionHistoryCard() {
   useEffect(() => {
     const loadAgents = async () => {
       try {
-        const res = await fetchAgent(); // ✅ call your API function
+        const res = await fetchAgent();
         let agentsData = res?.agents || [];
         setAgents(agentsData);
       } catch (err) {
@@ -520,9 +514,9 @@ export default function TransactionHistoryCard() {
             {loading ? (
               <Loader />
             ) : [
-                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-              ].length === 0 ? (
+              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+            ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
@@ -569,11 +563,11 @@ export default function TransactionHistoryCard() {
                                       <Eye />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip title="Edit agent">
+                                  {/* <Tooltip title="Edit agent">
                                     <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
                                       <UserEdit />
                                     </IconButton>
-                                  </Tooltip>
+                                  </Tooltip> */}
                                 </>
                               ) : null
                             }
@@ -584,9 +578,13 @@ export default function TransactionHistoryCard() {
                             <ListItemText
                               primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
                               secondary={
-                                <Typography sx={{ color: 'text.secondary' }}>
-                                  {agent?.businessDetails?.name || agent?.businessname}
-                                </Typography>
+                                <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
+                                    {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
+                                  </Typography>
+                                </Tooltip>
+
                               }
                             />
                           </ListItem>
@@ -655,7 +653,7 @@ export default function TransactionHistoryCard() {
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}>{Math.floor(agent?.mins_left / 60)}</Typography>}
+                                  primary={<Typography sx={{ color: 'text.secondary' }}> {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min</Typography>}
                                 />
                               </ListItem>
                             </List>
@@ -739,7 +737,7 @@ export default function TransactionHistoryCard() {
                         sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
                       >
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          Updated 3 days ago
+                          Updated {formatTimeAgo(agent?.createdAt)}
                         </Typography>
 
                         <Button
