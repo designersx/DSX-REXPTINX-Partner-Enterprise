@@ -441,7 +441,7 @@ export default function TransactionHistoryCard() {
     filteredAgents = agents
       .filter((agent) => {
         const plan = agent.agentPlan?.toLowerCase();
-// 
+        // 
         // if (planFilter === 'enterprise') return plan === 'enterprise';
         if (planFilter === 'OwnAgents') return plan === 'partner';
 
@@ -489,8 +489,8 @@ export default function TransactionHistoryCard() {
                     <MenuItem value="all">All</MenuItem>
                     {/* <MenuItem value="smb">SMB</MenuItem> */}
                     {/* <MenuItem value="Enterprise">Enterprise</MenuItem> */}
-                 {userId=="RXQ1NM1759328246" ? <MenuItem value="Regional">Regional</MenuItem>:null
-                 } 
+                    {userId == "RXQ1NM1759328246" ? <MenuItem value="Regional">Regional</MenuItem> : null
+                    }
                     <MenuItem value="OwnAgents">My Own Agents</MenuItem>
                   </Select>
                 </FormControl>
@@ -570,7 +570,7 @@ export default function TransactionHistoryCard() {
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
-                                
+
                                 </>
                               ) : null
                             }
@@ -596,15 +596,22 @@ export default function TransactionHistoryCard() {
                       <Grid size={12}>
                         <Divider />
                       </Grid>
-                            {agent.agentPlan === 'partner' ? (
-  <Grid item xs={12}>
-    <Typography>Hello, {agent.agentName}</Typography>
-  </Grid>
-) : (
-  <Grid item xs={12}>
-    <Label>Partner</Label>
-  </Grid>
-)}
+                      {agent.agentPlan == 'partner' ? (
+                        <Grid item xs={12}>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Label sx={{ fontWeight: 500, color: "text.secondary" }}>Type:</Label>
+                            <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                              My Own Agent
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      ) : (
+                        <>
+                          <Grid item xs={12}>
+                            <Typography>Hello, {agent.agentName}</Typography>
+                          </Grid>
+                        </>
+                      )}
                       <Grid size={12}>
                         <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
                           <Grid size={6}>
