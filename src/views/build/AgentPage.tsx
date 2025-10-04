@@ -93,13 +93,12 @@ const rows = [
 const agentdataa = [
   {
     id: 'agent_3501k6mvqwpyf1gs5v3mn9txe9g3',
-    businessname: 'Designersx Pvt ltd.',
+    businessname: 'Rexpt Pvt ltd.',
     agentPlan: 'Regional',
     mins_left: '1200',
     avatar: '/images/Male-01.png',
-
     agentName: 'REX',
-    businessType: 'Website design Agency',
+    businessType: 'AI Receptionist Service',
     agentLanguage: 'Hindi + Multi',
     agentGender: 'male',
     agentAccent: 'American',
