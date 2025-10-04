@@ -92,7 +92,7 @@ const rows = [
 
 const agentdataa = [
   {
-    id: 'agent_3501k6mvqwpyf1gs5v3mn9txe9g3',
+    id: 'agent_7801k6q89jegf5pvgpaq9awwvz0q',
     businessname: 'Rexpt Pvt ltd.',
     agentPlan: 'Regional',
     mins_left: '1200',
@@ -107,7 +107,7 @@ const agentdataa = [
     userId: 'RXQ1NM1759328246'
   },
   {
-    id: 'agent_3301k6mw8v5yewht9gdq6gy4gtmx',
+    id: 'agent_2101k6qb02psethsw45h9h6b9zce',
     businessname: 'State Bank of India',
     agentPlan: 'Regional',
     mins_left: '1200',
