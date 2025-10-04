@@ -502,19 +502,21 @@ export default function TransactionHistoryCard() {
             </>
           }
         >
-
-          <Grid container spacing={5} sx={{
-            alignItems: 'stretch',
-            display: 'flex',
-            p: 3
-          }}>
-
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'stretch',
+              display: 'flex',
+              p: 3
+            }}
+          >
             {loading ? (
               <Loader />
             ) : [
-                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-              ].length === 0 ? (
+              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+            ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
@@ -536,10 +538,8 @@ export default function TransactionHistoryCard() {
                     style={{
                       alignItems: 'stretch',
                       display: 'flex',
-
-                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled,
-                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto', // prevent clicks
-
+                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled
+                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto' // prevent clicks
                     }}
                   >
                     <Grid
@@ -553,20 +553,23 @@ export default function TransactionHistoryCard() {
                           <ListItem
                             disablePadding
                             secondaryAction={
-
-                              <>
-                                <Tooltip title="View call history">
-                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}>
-                                    <Eye />
-                                  </IconButton>
-                                </Tooltip>
-                                {/* <Tooltip title="Edit agent">
-                                  <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
-                                    <UserEdit />
-                                  </IconButton>
-                                </Tooltip> */}
-                              </>
-
+                              agent.source == 'filtered' ? (
+                                <>
+                                  <Tooltip title="View call history">
+                                    <IconButton
+                                      color="secondary"
+                                      onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
+                                    >
+                                      <Eye />
+                                    </IconButton>
+                                  </Tooltip>
+                                  {/* <Tooltip title="Edit agent">
+                                    <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
+                                      <UserEdit />
+                                    </IconButton>
+                                  </Tooltip> */}
+                                </>
+                              ) : null
                             }
                           >
                             <ListItemAvatar>
@@ -575,9 +578,13 @@ export default function TransactionHistoryCard() {
                             <ListItemText
                               primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
                               secondary={
-                                <Typography sx={{ color: 'text.secondary' }}>
-                                  {agent?.businessDetails?.name || agent?.businessname}
-                                </Typography>
+                                <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
+                                    {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
+                                  </Typography>
+                                </Tooltip>
+
                               }
                             />
                           </ListItem>
@@ -646,7 +653,7 @@ export default function TransactionHistoryCard() {
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}>{Math.floor(agent?.mins_left / 60)}</Typography>}
+                                  primary={<Typography sx={{ color: 'text.secondary' }}> {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min</Typography>}
                                 />
                               </ListItem>
                             </List>
@@ -713,12 +720,8 @@ export default function TransactionHistoryCard() {
                                 <ListItemIcon style={{ marginTop: '3px' }}>
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
-
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
-                                </Typography>} />
-                              </ListItem>
-
-                       
+                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
+                              </ListItem> */}
                             </List>
                           </Grid>
                         </Grid>
@@ -807,11 +810,6 @@ export default function TransactionHistoryCard() {
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
-
-
-
-
-
       </Snackbar>
     </>
   );
