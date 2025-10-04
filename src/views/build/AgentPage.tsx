@@ -56,6 +56,7 @@ import { getUserId } from 'utils/auth';
 
 import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
 import { formatTimeAgo } from 'lib/formatTimeAgo';
+import { Label } from '@mui/icons-material';
 const Avatar1 = '/assets/images/avatrs/Female-01.png';
 const Avatar2 = '/assets/images/avatrs/male-01.png';
 const Avatar3 = '/assets/images/avatrs/Female-02.png';
@@ -440,9 +441,9 @@ export default function TransactionHistoryCard() {
     filteredAgents = agents
       .filter((agent) => {
         const plan = agent.agentPlan?.toLowerCase();
-
-        if (planFilter === 'enterprise') return plan === 'enterprise';
-        if (planFilter === 'smb') return plan === 'smb';
+// 
+        // if (planFilter === 'enterprise') return plan === 'enterprise';
+        if (planFilter === 'OwnAgents') return plan === 'partner';
 
         return true; // default fallback
       })
@@ -486,10 +487,11 @@ export default function TransactionHistoryCard() {
                   <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
                   <Select labelId="agent-plan-filter" value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
                     <MenuItem value="all">All</MenuItem>
-                    <MenuItem value="smb">SMB</MenuItem>
-                    <MenuItem value="Enterprise">Enterprise</MenuItem>
-                    <MenuItem value="Regional">Regional</MenuItem>
-                    {/* <MenuItem value="other">Other</MenuItem> */}
+                    {/* <MenuItem value="smb">SMB</MenuItem> */}
+                    {/* <MenuItem value="Enterprise">Enterprise</MenuItem> */}
+                 {userId=="RXQ1NM1759328246" ? <MenuItem value="Regional">Regional</MenuItem>:null
+                 } 
+                    <MenuItem value="OwnAgents">My Own Agents</MenuItem>
                   </Select>
                 </FormControl>
 
@@ -568,6 +570,7 @@ export default function TransactionHistoryCard() {
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
+                                
                                 </>
                               ) : null
                             }
@@ -593,9 +596,15 @@ export default function TransactionHistoryCard() {
                       <Grid size={12}>
                         <Divider />
                       </Grid>
-                      <Grid size={12}>
-                        <Typography>Hello, {agent.agentName}</Typography>
-                      </Grid>
+                            {agent.agentPlan === 'partner' ? (
+  <Grid item xs={12}>
+    <Typography>Hello, {agent.agentName}</Typography>
+  </Grid>
+) : (
+  <Grid item xs={12}>
+    <Label>Partner</Label>
+  </Grid>
+)}
                       <Grid size={12}>
                         <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
                           <Grid size={6}>
