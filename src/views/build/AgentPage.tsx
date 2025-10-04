@@ -53,6 +53,7 @@ import Loader from 'components/Loader';
 import Grid from '@mui/material/Grid';
 
 import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
+import { formatTimeAgo } from 'lib/formatTimeAgo';
 const Avatar1 = '/assets/images/avatrs/Female-01.png';
 const Avatar2 = '/assets/images/avatrs/male-01.png';
 const Avatar3 = '/assets/images/avatrs/Female-02.png';
@@ -80,13 +81,6 @@ const getValidColor = (color: string): ChipColor => {
   return validColors.includes(color as ChipColor) ? (color as ChipColor) : 'default';
 };
 
-const rows = [
-  createData('Airi Satou', Avatar1, 'Samsung', '2023/02/07', '09:05 PM', 950, 'Active', 'success'),
-  createData('Ashton Cox', Avatar2, 'Microsoft', '2023/02/01', '02:14 PM', 520, 'Active', 'success'),
-  createData('Bradley Greer', Avatar3, 'You Tube ', '2023/01/22', '10:32 AM', 100, 'Active', 'success'),
-  createData('Brielle Williamson', Avatar4, 'Amazon', '2023/02/07', '09:05 PM', 760, 'Inactive', 'error'),
-  createData('Airi Satou', Avatar5, 'Spotify', '2023/02/07', '09:05 PM', 60, 'Inactive', 'error')
-];
 
 export default function TransactionHistoryCard() {
   const router = useRouter();
@@ -391,7 +385,6 @@ export default function TransactionHistoryCard() {
             </>
           }
         >
-
           <Grid container spacing={5} sx={{
             alignItems: 'stretch',
             display: 'flex',
@@ -417,11 +410,8 @@ export default function TransactionHistoryCard() {
                       display: 'flex',
                       opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled,
                       pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto', // prevent clicks
-
-
                     }}
                   >
-
                     <Grid
                       id="print"
                       key={index}
@@ -566,7 +556,8 @@ export default function TransactionHistoryCard() {
                                 <ListItemIcon style={{ marginTop: '3px' }}>
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
+                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
+                                </Typography>} />
                               </ListItem>
                             </List>
                           </Grid>
@@ -584,7 +575,7 @@ export default function TransactionHistoryCard() {
                         sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
                       >
                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          Updated 3 days ago
+                          Updated {formatTimeAgo(agent?.createdAt)}
                         </Typography>
 
                         <Button
@@ -661,7 +652,7 @@ export default function TransactionHistoryCard() {
 
 
 
-        
+
       </Snackbar>
     </>
   );

@@ -3,7 +3,8 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Typography, Stack, Paper, FormControl, InputLabel, Select, MenuItem,
     RadioGroup, FormControlLabel, Radio, Box, TextField, Button, Alert, CircularProgress,
-    Snackbar
+    Snackbar,
+    Tooltip
 } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -195,14 +196,39 @@ const BuyPhoneNumberModal = ({ open, onClose, onSubmit, countries }) => {
                                     onChange={handleChange}
                                     label="Country"
                                 >
-                                    {countries.map((country) => (
+                                    {/* {countries.map((country) => (
                                         <MenuItem key={country.value} value={country.value}>
                                             <Stack direction="row" alignItems="center" spacing={1}>
                                                 <span>{country.flag}</span>
                                                 <span>{country.label}</span>
                                             </Stack>
                                         </MenuItem>
-                                    ))}
+                                    ))} */}
+                                    {countries.map((country) => {
+                                        if (country.value === "GB") {
+                                            return (
+                                                <Tooltip key={country.value} title="Coming Soon" placement="right">
+                                                    <span>
+                                                        <MenuItem value={country.value} disabled>
+                                                            <Stack direction="row" alignItems="center" spacing={1}>
+                                                                <span>{country.flag}</span>
+                                                                <span>{country.label}</span>
+                                                            </Stack>
+                                                        </MenuItem>
+                                                    </span>
+                                                </Tooltip>
+                                            );
+                                        }
+
+                                        return (
+                                            <MenuItem key={country.value} value={country.value}>
+                                                <Stack direction="row" alignItems="center" spacing={1}>
+                                                    <span>{country.flag}</span>
+                                                    <span>{country.label}</span>
+                                                </Stack>
+                                            </MenuItem>
+                                        );
+                                    })}
                                 </Select>
                             </FormControl>
                         </Paper>

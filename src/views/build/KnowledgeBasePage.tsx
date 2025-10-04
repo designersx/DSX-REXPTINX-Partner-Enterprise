@@ -32,6 +32,8 @@ import { deleteKnowledgeBase, getKbListByUserId } from "../../../Services/auth";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import EditKnowledgeBase from "./EditKnowledgeBase";
+import AgentConfig from "./AgentConfig";
+import AgentKnowledgeBaseToAgent from "./knowledgeBaseAssignToAgent/AssignToAgent";
 
 
 
@@ -67,6 +69,7 @@ export default function KnowledgeBaseUI() {
   const fetchKBs = async () => {
     try {
       const res = await getKbListByUserId(userId)
+      console.log(res,"res")
       if (res.success) {
         // Map backend data into UI format
         const sortedData = res.data.sort(
@@ -160,19 +163,19 @@ export default function KnowledgeBaseUI() {
     setOpenEditModal(false);
   };
 
-useEffect(() => {
-  if (message) {
-    console.log(message, "message");
-    setSnackbar({
-      open: true,
-      message: message,
-      severity: 'success'
-    });
+  useEffect(() => {
+    if (message) {
+      console.log(message, "message");
+      setSnackbar({
+        open: true,
+        message: message,
+        severity: 'success'
+      });
 
-    // Clear message so next alert can trigger
-    setMessage("");
-  }
-}, [message]);
+      // Clear message so next alert can trigger
+      setMessage("");
+    }
+  }, [message]);
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -278,6 +281,13 @@ useEffect(() => {
                     ID: {selectedItem.id} • Uploaded at:{" "}
                     {selectedItem.uploadedAt}
                   </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    <AgentKnowledgeBaseToAgent  kbId={selectedItem.kbId}/>
+                  </Typography>
+
+
                 </Box>
                 <Stack direction="row" spacing={1}>
                   <IconButton
@@ -506,7 +516,7 @@ useEffect(() => {
         onClose={() => setOpenEditModal(false)}
         onSubmit={handleEditSuccess}
         knowledgeBase={selectedItem}
-         setAlert={setMessage}
+        setAlert={setMessage}
 
       />
 

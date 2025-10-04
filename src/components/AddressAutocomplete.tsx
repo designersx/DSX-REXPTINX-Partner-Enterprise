@@ -20,7 +20,7 @@ interface AddressAutocompleteProps {
     last_name: string;
     postal_code: string;
     administrative_area: string;
-    formatted_address:string
+    formatted_address: string
   }) => void;
 }
 
@@ -88,7 +88,7 @@ export default function AddressAutocomplete({
             ? `${streetNumber} ${route}, ${city}, ${postalCode}`.replace(/\s+/g, ' ').trim()
             : result.formatted_address || '';
 
-           
+
           // Update address
           setAddress(normalizedAddress);
 
@@ -103,7 +103,7 @@ export default function AddressAutocomplete({
             last_name: '', // Not provided by Places API
             postal_code: postalCode,
             administrative_area: administrativeArea,
-             formatted_address: result.formatted_address || ''  // ✅ FIXED
+            formatted_address: result.formatted_address || ''  // ✅ FIXED
           };
 
           // Update parent with address details
@@ -212,13 +212,15 @@ export default function AddressAutocomplete({
             {...getInputProps({
               id: 'google-address-autocomplete',
               placeholder: 'Business Address',
-              label: 'Business Address',
+              // label: 'Business Address',
             })}
             error={error}
             helperText={helperText}
             fullWidth
             variant="outlined"
-            size="small"
+            InputProps={{
+              sx: { height: 50 },  
+            }}
             InputLabelProps={{ shrink: true }}
           />
 

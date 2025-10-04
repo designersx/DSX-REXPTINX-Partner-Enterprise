@@ -387,6 +387,17 @@ function getServicesByType(type) {
   const found = businessServices.find((b) => b.type === type);
   return found ? found.services : [];
 }
+const allowedFileTypes = [
+  ".bmp", ".csv", ".doc", ".docx", ".eml", ".epub", ".heic", ".html",
+  ".jpeg", ".jpg", ".png", ".md", ".msg", ".odt", ".org", ".p7s",
+  ".pdf", ".ppt", ".pptx", ".rst", ".rtf", ".tiff", ".txt", ".tsv",
+  ".xls", ".xlsx", ".xml"
+];
+const maxFilesPerKB = 25;
+const maxFileSizeMB = 50; // 50MB
+const maxCsvRows = 1000;
+const maxCsvCols = 50;
+
 // ---------------- Main Component ----------------
 export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   useEffect(() => {
@@ -744,7 +755,6 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         ),
         agentAccent: formData.agentAccent
       };
-      console.log('formData', formData)
       try {
         setApiStatus({ status: null, message: null });
         setIsSubmitting(true);
@@ -753,7 +763,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
         // Normal fields (direct req.body me milenge)
         formDataToSend.append("agentName", formData.agentName);
         formDataToSend.append("businessName", formData.businessName);
-        formDataToSend.append("businessAddress", formData.businessAddress);
+        formDataToSend.append("businessAddress", JSON.stringify(formData.businessAddress));
         formDataToSend.append("agentType", formData.agentType);
         formDataToSend.append("agentGender", formData.agentGender);
         formDataToSend.append("agentAvatar", formData.agentAvatar);
@@ -1016,30 +1026,89 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   };
   //MULTI AGENT FLOW
   // File upload handler
-  const handleFileUploadServices = (intentIndex, fileType, event) => {
-    const files = Array.from(event.target.files || []);
-    let errorMsg = "";
+  // const handleFileUploadServices = (intentIndex, fileType, event) => {
+  //   const files = Array.from(event.target.files || []);
+  //   let errorMsg = "";
 
-    if (files.length > 5) {
-      errorMsg = "You can upload a maximum of 5 files.";
-    } else {
-      files.forEach(file => {
-        if (file.size > 10 * 1024 * 1024) {
-          errorMsg = `File "${file.name}" exceeds 10MB limit.`;
+  //   if (files.length > 5) {
+  //     errorMsg = "You can upload a maximum of 5 files.";
+  //   } else {
+  //     files.forEach(file => {
+  //       if (file.size > 10 * 1024 * 1024) {
+  //         errorMsg = `File "${file.name}" exceeds 10MB limit.`;
+  //       }
+  //     });
+  //   }
+
+  //   if (errorMsg) {
+  //     setSnackbar({ open: true, message: errorMsg, severity: "error" });
+  //     return;
+  //   }
+
+  //   setFormData(prev => {
+  //     const kbCopy = [...prev.KnowledgeBase];
+  //     kbCopy[intentIndex].files[fileType] = files;
+  //     return { ...prev, KnowledgeBase: kbCopy };
+  //   });
+  // };
+  const handleFileUploadServices = async (index, type, e) => {
+    const files = Array.from(e.target.files);
+    const kbCopy = [...formData.KnowledgeBase];
+    kbCopy[index].files = kbCopy[index].files || {};
+    kbCopy[index].files[type] = kbCopy[index].files[type] || [];
+
+    let newErrors = { ...errors };
+    newErrors[`service_${index}_files`] = "";
+
+    for (let file of files) {
+      const ext = "." + file.name.split(".").pop().toLowerCase();
+
+      // File type check
+      if (!allowedFileTypes.includes(ext)) {
+        newErrors[`service_${index}_files`] = `File type not allowed: ${file.name}`;
+        continue;
+      }
+
+      // File size check
+      if (file.size / (1024 * 1024) > maxFileSizeMB) {
+        newErrors[`service_${index}_files`] = `File too large (max ${maxFileSizeMB}MB): ${file.name}`;
+        continue;
+      }
+
+      // Max files per KB check
+      if (kbCopy[index].files[type].length >= maxFilesPerKB) {
+        newErrors[`service_${index}_files`] = `Cannot upload more than ${maxFilesPerKB} files for ${type}`;
+        break;
+      }
+
+      // Optional CSV/XLS row & column validation
+      if ([".csv", ".tsv", ".xls", ".xlsx"].includes(ext)) {
+        try {
+          // Only CSV/TSV validation as example
+          if (ext === ".csv" || ext === ".tsv") {
+            const text = await file.text();
+            const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
+            const rowCount = rows.length;
+            const colCount = rows[0]?.split(ext === ".csv" ? "," : "\t").length || 0;
+
+            if (rowCount > maxCsvRows || colCount > maxCsvCols) {
+              newErrors[`service_${index}_files`] = `${file.name} exceeds max ${maxCsvRows} rows or ${maxCsvCols} columns`;
+              continue;
+            }
+          }
+          // XLS/XLSX validation can be added using libraries like 'xlsx' if needed
+        } catch (err) {
+          newErrors[`service_${index}_files`] = `Failed to read file: ${file.name}`;
+          continue;
         }
-      });
+      }
+
+      // Add file if all validations pass
+      kbCopy[index].files[type].push(file);
     }
 
-    if (errorMsg) {
-      setSnackbar({ open: true, message: errorMsg, severity: "error" });
-      return;
-    }
-
-    setFormData(prev => {
-      const kbCopy = [...prev.KnowledgeBase];
-      kbCopy[intentIndex].files[fileType] = files;
-      return { ...prev, KnowledgeBase: kbCopy };
-    });
+    setFormData(prev => ({ ...prev, KnowledgeBase: kbCopy }));
+    setErrors(newErrors);
   };
   const ensureKnowledgeBase = (index, intent) => {
     setFormData(prev => {
@@ -1066,12 +1135,70 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     });
   };
   // URL add handler
-  const handleAddUrlServices = async (intentIndex) => {
-    const kb = formData.KnowledgeBase[intentIndex];
-    const rawUrl = kb.newUrl?.trim();
-    if (!rawUrl) return;
+  // const handleAddUrlServices = async (intentIndex) => {
+  //   const kb = formData.KnowledgeBase[intentIndex];
+  //   const rawUrl = kb.newUrl?.trim();
+  //   if (!rawUrl) return;
 
-    // Start verification
+  //   // Start verification
+  //   setFormData(prev => {
+  //     const kbCopy = [...prev.KnowledgeBase];
+  //     kbCopy[intentIndex].verifying = true;
+  //     kbCopy[intentIndex].errorMsg = "";
+  //     kbCopy[intentIndex].currentUrlValid = false;
+  //     return { ...prev, KnowledgeBase: kbCopy };
+  //   });
+
+  //   // Normalize URL
+  //   let url = rawUrl.replace(/^https?:\/\//i, "");
+  //   url = `https://${url}`;
+
+  //   try {
+  //     // Replace this with your actual URL validation API call
+  //     const result = await validateWebsite(url);
+
+  //     setFormData(prev => {
+  //       const kbCopy = [...prev.KnowledgeBase];
+  //       const currentKB = kbCopy[intentIndex];
+
+  //       if (result.valid) {
+  //         if (!currentKB.urls.includes(url)) {
+  //           currentKB.urls.push(url);
+  //         }
+  //         currentKB.newUrl = "";
+  //         currentKB.errorMsg = "";
+  //         currentKB.currentUrlValid = true;
+  //       } else {
+  //         currentKB.errorMsg = "Your URL is invalid";
+  //         currentKB.currentUrlValid = false;
+  //       }
+
+  //       kbCopy[intentIndex] = currentKB;
+  //       return { ...prev, KnowledgeBase: kbCopy };
+  //     });
+  //   } catch (err) {
+  //     setFormData(prev => {
+  //       const kbCopy = [...prev.KnowledgeBase];
+  //       kbCopy[intentIndex].errorMsg = "Error verifying URL";
+  //       kbCopy[intentIndex].currentUrlValid = false;
+  //       return { ...prev, KnowledgeBase: kbCopy };
+  //     });
+  //   } finally {
+  //     setFormData(prev => {
+  //       const kbCopy = [...prev.KnowledgeBase];
+  //       kbCopy[intentIndex].verifying = false;
+  //       return { ...prev, KnowledgeBase: kbCopy };
+  //     });
+  //   }
+  // };
+  const handleAddUrlServices = async (intentIndex, inputValue) => {
+    let rawUrl = (inputValue || formData.KnowledgeBase[intentIndex]?.newUrl || "").trim();
+    if (!rawUrl) return;
+    if (!/^https?:\/\//i.test(rawUrl)) {
+      rawUrl = `https://${rawUrl.replace(/^https?:\/\//i, "")}`;
+    }
+
+    // Set verifying state
     setFormData(prev => {
       const kbCopy = [...prev.KnowledgeBase];
       kbCopy[intentIndex].verifying = true;
@@ -1080,33 +1207,30 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       return { ...prev, KnowledgeBase: kbCopy };
     });
 
-    // Normalize URL
-    let url = rawUrl.replace(/^https?:\/\//i, "");
-    url = `https://${url}`;
-
     try {
-      // Replace this with your actual URL validation API call
-      const result = await validateWebsite(url);
+      const result = await validateWebsite(rawUrl); // use normalized URL
+      console.log(result, "result")
+      if (result) {
+        setFormData(prev => {
+          const kbCopy = [...prev.KnowledgeBase];
+          const currentKB = kbCopy[intentIndex];
 
-      setFormData(prev => {
-        const kbCopy = [...prev.KnowledgeBase];
-        const currentKB = kbCopy[intentIndex];
-
-        if (result.valid) {
-          if (!currentKB.urls.includes(url)) {
-            currentKB.urls.push(url);
+          if (result.valid) {
+            if (!currentKB.urls.includes(rawUrl)) {
+              currentKB.urls.push(rawUrl);
+            }
+            currentKB.newUrl = "";
+            currentKB.errorMsg = "";
+            currentKB.currentUrlValid = true;
+          } else {
+            currentKB.errorMsg = "Your URL is invalid";
+            currentKB.currentUrlValid = false;
           }
-          currentKB.newUrl = "";
-          currentKB.errorMsg = "";
-          currentKB.currentUrlValid = true;
-        } else {
-          currentKB.errorMsg = "Your URL is invalid";
-          currentKB.currentUrlValid = false;
-        }
 
-        kbCopy[intentIndex] = currentKB;
-        return { ...prev, KnowledgeBase: kbCopy };
-      });
+          kbCopy[intentIndex] = currentKB;
+          return { ...prev, KnowledgeBase: kbCopy };
+        });
+      }
     } catch (err) {
       setFormData(prev => {
         const kbCopy = [...prev.KnowledgeBase];
@@ -1122,6 +1246,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       });
     }
   };
+
   // Remove URL
   const handleRemoveUrlServices = (intentIndex, urlIndex) => {
     setFormData(prev => {
@@ -1164,13 +1289,13 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
   };
 
   // Example usage with React state
-const handleAddressDataChange = (data) => {
-  setFormData(prev => {
-    const updated = [...prev.businessAddress];
-    updated[0] = data; // replace the first element
-    return { ...prev, businessAddress: updated };
-  });
-};
+  const handleAddressDataChange = (data) => {
+    setFormData(prev => {
+      const updated = [...prev.businessAddress];
+      updated[0] = data; // replace the first element
+      return { ...prev, businessAddress: updated };
+    });
+  };
 
   const getStepContent = (step) => {
     switch (step) {
@@ -1300,12 +1425,6 @@ const handleAddressDataChange = (data) => {
                     bgcolor: "#f1f5f9",
                   }}
                 >
-                  {/* <img
-                    src={selectedIndustryData.icon}
-                    alt=""
-                    width={28}
-                    height={28}
-                  /> */}
                   <Typography variant="body2" color="text.secondary">
                     {selectedIndustryData.subtype}
                   </Typography>
@@ -1388,17 +1507,16 @@ const handleAddressDataChange = (data) => {
             </Stack>
             <Stack spacing={1}>
               <InputLabel>Business Address</InputLabel>
-             
-              <AddressAutocomplete
-            address={formData.businessAddress[0]?.formatted_address || ""}  // safe access
 
-              setAddress={(value) => {
-    setFormData(prev => {
-      const updated = [...prev.businessAddress];
-      updated[0] = { ...updated[0], formatted_address: value };
-      return { ...prev, businessAddress: updated };
-    });
-  }}
+              <AddressAutocomplete
+                address={formData.businessAddress[0]?.formatted_address || ""}
+                setAddress={(value) => {
+                  setFormData(prev => {
+                    const updated = [...prev.businessAddress];
+                    updated[0] = { ...updated[0], formatted_address: value };
+                    return { ...prev, businessAddress: updated };
+                  });
+                }}
                 onAddressDataChange={handleAddressDataChange}
 
               />
@@ -1701,7 +1819,8 @@ const handleAddressDataChange = (data) => {
                           onChange={(e) => handleFileUploadServices(index, type, e)}
                         />
                       </Button>
-                      <Tooltip title={`Upload ${type} files (Max 5 files, ≤ 10MB each)`} arrow>
+                      <Tooltip title={`Upload ${type} files (Allowed: ${allowedFileTypes.join(", ")}, Max: ${maxFilesPerKB} files, ≤ ${maxFileSizeMB}MB each${type === "csv" || type === "tsv" || type === "xls" || type === "xlsx" ? `, Max rows: ${maxCsvRows}, Max columns: ${maxCsvCols}` : ""})`}
+                        arrow>
                         <IconButton>
                           <InfoOutlinedIcon fontSize="small" />
                         </IconButton>
@@ -1745,7 +1864,8 @@ const handleAddressDataChange = (data) => {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
-                          handleAddUrlServices(index);
+                          handleAddUrlServices(index, e.currentTarget.value); //  use current input
+
                         }
                       }}
                       error={!!formData.KnowledgeBase[index]?.errorMsg || !!errors[`service_${index}_urls`]}
@@ -1767,7 +1887,7 @@ const handleAddressDataChange = (data) => {
                       Add
                     </Button>
                   </Stack>
-
+                  <br />
                   <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: "wrap" }}>
                     {formData.KnowledgeBase[index]?.urls?.map((url, urlIndex) => (
                       <Chip
