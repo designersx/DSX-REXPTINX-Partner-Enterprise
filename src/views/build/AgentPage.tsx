@@ -84,7 +84,6 @@ const getValidColor = (color: string): ChipColor => {
   return validColors.includes(color as ChipColor) ? (color as ChipColor) : 'default';
 };
 
-
 const agentdataa = [
   {
     id: 'agent_7801k6q89jegf5pvgpaq9awwvz0q',
@@ -99,7 +98,8 @@ const agentdataa = [
     agentAccent: 'American',
     plantype: 'Regional',
     description: 'Handles customer queries',
-    userId: 'RXQ1NM1759328246'
+    userId: 'RXQ1NM1759328246',
+    createdAt: '2025-10-04T12:35:23.000Z'
   },
   {
     id: 'agent_2101k6qb02psethsw45h9h6b9zce',
@@ -107,7 +107,6 @@ const agentdataa = [
     agentPlan: 'Regional',
     mins_left: '1200',
     avatar: '/images/Male-02.png',
-
     agentName: 'Suraj',
     businessType: 'Banking',
     agentLanguage: 'Hindi + Multi',
@@ -115,10 +114,30 @@ const agentdataa = [
     agentAccent: 'American',
     plantype: 'Regional',
     description: 'Handles customer queries',
-    userId: 'RXQ1NM1759328246'
+    userId: 'RXQ1NM1759328246',
+    createdAt: '2025-10-04T12:35:23.000Z'
+  },
+  {
+    id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
+    businessname: 'Zouma Consulting Services',
+    agentPlan: 'partner',
+    mins_left: '45000',
+    avatar: '/images/Male-01.png',
+    agentName: 'Himanshu (Arabic)',
+    businessType: 'Software & CX Management',
+    agentLanguage: 'Arabic + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'partner',
+    description: 'Handles customer queries',
+    userId: 'RXDI7Q1759578841',
+    createdAt: '2025-10-04T12:35:23.000Z'
+
   }
 ];
-export default function TransactionHistoryCard() {
+export default function TransactionHistoryCard({ type }) {
+  // "partner" 'Regional' "Enterprise"
+  console.log(type, "HELELO")
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -134,7 +153,7 @@ export default function TransactionHistoryCard() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
-  const [planFilter, setPlanFilter] = useState('all');
+  const [planFilter, setPlanFilter] = useState(type?.toLowerCase() || 'all');
   const [selectAgent, setSelectAgent] = useState(null);
   const [conversation, setConversation] = useState(null);
   const [error, setError] = useState(null);
@@ -214,11 +233,11 @@ export default function TransactionHistoryCard() {
     onError: (error) => console.error('Error:', error)
   });
   const startCall = async (agentdatass) => {
-    // console.log(agentdatass, 'agent');
+    console.log(agentdatass, 'agent');
     setSelectedAgent(agentdatass);
     setError(null);
     try {
-      // console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
+      console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
       await navigator.mediaDevices.getUserMedia({ audio: true });
       const response = await fetch(`${process.env.NEXT_API_PUBLIC_URL}/api/agent/regionalagents/signed-url/${agentdatass.id}`);
       const data = await response.json();
@@ -233,7 +252,7 @@ export default function TransactionHistoryCard() {
         connectionType: 'webrtc'
       });
       setConversation(conversation);
-      // console.log('Conversation started');
+      console.log('Conversation started');
     } catch (err) {
       setError(`Failed to start call: ${err.message}`);
       console.error('Error starting call:', err);
@@ -369,13 +388,7 @@ export default function TransactionHistoryCard() {
     isEndingRef.current = false;
     // setRefresh((prev) => !prev);
     try {
-      // Example: End the call with Retell AI
-      // const callId = localStorage.getItem("currentCallId");
-      // const callId = localStorage.getItem("currentCallId");
-      // if (!callId) throw new Error("No call ID found");
-
       const response = await retellWebClient.stopCall();
-
       setIsCallActive(false);
       isEndingRef.current = false;
     } catch (error) {
@@ -403,54 +416,34 @@ export default function TransactionHistoryCard() {
     setPage(0); // reset to first page
   };
   const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
-  // const filteredAgents = agents
-  //   .filter((agent) => {
-  //     if (planFilter == 'all') return true;
-  //     if (planFilter == 'other') {
-  //       return agent.agentPlan.toLowerCase() != 'smb' && agent.agentPlan.toLowerCase() != 'enterprise';
-  //     }
-  //     return agent.agentPlan === planFilter;
-  //   })
-  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // normalize type
+  const normalizedFilter = planFilter.toLowerCase();
+  // merge both sources into one array first
+  const mergedAgents = [
+    ...agents.map(agent => ({ ...agent, source: 'filtered' })),
+    ...userFilteredAgentdataa.map(agent => ({ ...agent, source: 'elevenLabs' }))
+  ];
+  // now filter based on plan type
+  const filteredAgents = mergedAgents.filter(agent => {
+    const plan = agent.agentPlan?.toLowerCase() || agent.plantype?.toLowerCase() || '';
 
-  // console.log('planFilter', planFilter);
-  // const filteredAgents = agents
-  //   .filter((agent) => {
-  //     const plan = agent.agentPlan?.toLowerCase();
+    switch (normalizedFilter) {
+      case 'all':
+        return true;
+      case 'my':  // "My Own Agents"
+        return plan === 'partner';
+      case 'regional':
+        return plan === 'regional';
+      case 'enterprise':
+        return plan === 'enterprise';
+      default:
+        return true;
+    }
+  });
+  // finally, sort by creation date
+  filteredAgents.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
-  //     if (planFilter === 'all') return true;
-
-  //     if (planFilter === 'enterprise') return plan === 'enterprise';
-
-  //     if (planFilter === 'smb') return plan === 'smb';
-
-  //     // if (planFilter === 'other') {
-  //     //   return plan !== 'smb' && plan !== 'enterprise';
-  //     // }
-
-  //     return true; // default fallback
-  //   })
-  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  let filteredAgents;
-
-  if (planFilter === 'all') {
-    filteredAgents = [...agents, ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-  } else {
-    filteredAgents = agents
-      .filter((agent) => {
-        const plan = agent.agentPlan?.toLowerCase();
-        // 
-        // if (planFilter === 'enterprise') return plan === 'enterprise';
-        if (planFilter === 'OwnAgents') return plan === 'partner';
-
-        return true; // default fallback
-      })
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  }
-
-  // console.log(filteredAgents, 'filteredAgents');
+  console.log(filteredAgents, 'filteredAgents');
   //LOCK
   useEffect(() => {
     const client = new RetellWebClient();
@@ -488,10 +481,11 @@ export default function TransactionHistoryCard() {
                   <Select labelId="agent-plan-filter" value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
                     <MenuItem value="all">All</MenuItem>
                     {/* <MenuItem value="smb">SMB</MenuItem> */}
-                    {/* <MenuItem value="Enterprise">Enterprise</MenuItem> */}
-                    {userId == "RXQ1NM1759328246" ? <MenuItem value="Regional">Regional</MenuItem> : null
+                    <MenuItem value="enterprise">Enterprise</MenuItem>
+                    {userId == "RXQ1NM1759328246" ? <MenuItem value="regional">Regional</MenuItem> : null
                     }
-                    <MenuItem value="OwnAgents">My Own Agents</MenuItem>
+                    <MenuItem value="my">My  Agents</MenuItem>
+
                   </Select>
                 </FormControl>
 
@@ -526,11 +520,9 @@ export default function TransactionHistoryCard() {
               </TableRow>
             ) : (
               [
-                // ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-                // ...agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
                 ...(planFilter === 'Regional'
-                  ? userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-                  : filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })))
+                  ? userFilteredAgentdataa.map((agent) => ({ ...agent }))
+                  : filteredAgents.map((agent) => ({ ...agent })))
               ]
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((agent, index) => (
@@ -570,7 +562,6 @@ export default function TransactionHistoryCard() {
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
-
                                 </>
                               ) : null
                             }
@@ -587,7 +578,6 @@ export default function TransactionHistoryCard() {
                                     {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
                                   </Typography>
                                 </Tooltip>
-
                               }
                             />
                           </ListItem>
@@ -599,10 +589,8 @@ export default function TransactionHistoryCard() {
                       {agent.agentPlan == 'partner' ? (
                         <Grid item xs={12}>
                           <Box display="flex" alignItems="center" gap={1}>
-                            <Label sx={{ fontWeight: 500, color: "text.secondary" }}>Type:</Label>
-                            <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                              My Own Agent
-                            </Typography>
+                            <Label sx={{ fontWeight: 500, color: 'text.secondary' }}>Type:</Label>
+                            <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>My Own Agent</Typography>
                           </Box>
                         </Grid>
                       ) : (
@@ -669,7 +657,12 @@ export default function TransactionHistoryCard() {
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}> {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min</Typography>}
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {' '}
+                                      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
+                                    </Typography>
+                                  }
                                 />
                               </ListItem>
                             </List>
@@ -813,7 +806,7 @@ export default function TransactionHistoryCard() {
       {/* Agent Creation Modal */}
       {/* <AgentGeneralInfoModal
         open={isModalOpen}
-        onClose={handleModalClose}f
+        onClose={handleModalClose}
         onSubmit={handleAgentSubmit}
       /> */}
       {/* Snackbar */}
