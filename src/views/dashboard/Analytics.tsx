@@ -250,14 +250,20 @@ export default function DashboardFinance() {
 
   return (
     <Grid container spacing={GRID_COMMON_SPACING}>
-      <Grid style={{ display: 'flex', gap: '5px' }}>
+      {userId == 'RXDI7Q1759578841' ? (
+        <Grid style={{ display: 'flex', gap: '5px' }}>
+          <Grid size={12}>
+            <WelcomeBanner />
+          </Grid>
+          <Grid size={12}>
+            <MyownAgent />
+          </Grid>
+        </Grid>
+      ) : (
         <Grid size={12}>
           <WelcomeBanner />
         </Grid>
-        <Grid size={12}>
-          <MyownAgent />
-        </Grid>
-      </Grid>
+      )}
 
       <Grid size={{ xs: 12, lg: 12 }}>
         <Grid container spacing={GRID_COMMON_SPACING}>

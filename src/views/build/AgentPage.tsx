@@ -84,7 +84,6 @@ const getValidColor = (color: string): ChipColor => {
   return validColors.includes(color as ChipColor) ? (color as ChipColor) : 'default';
 };
 
-
 const agentdataa = [
   {
     id: 'agent_7801k6q89jegf5pvgpaq9awwvz0q',
@@ -116,6 +115,21 @@ const agentdataa = [
     plantype: 'Regional',
     description: 'Handles customer queries',
     userId: 'RXQ1NM1759328246'
+  },
+  {
+    id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
+    businessname: 'Zouma Consulting Services',
+    agentPlan: 'partner',
+    mins_left: '37500',
+    avatar: '/images/Male-01.png',
+    agentName: 'Himanshu',
+    businessType: 'Software & CX Management',
+    agentLanguage: 'English + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'partner',
+    description: 'Handles customer queries',
+    userId: 'RXDI7Q1759578841'
   }
 ];
 export default function TransactionHistoryCard() {
@@ -441,7 +455,7 @@ export default function TransactionHistoryCard() {
     filteredAgents = agents
       .filter((agent) => {
         const plan = agent.agentPlan?.toLowerCase();
-        // 
+        //
         // if (planFilter === 'enterprise') return plan === 'enterprise';
         if (planFilter === 'OwnAgents') return plan === 'partner';
 
@@ -489,8 +503,7 @@ export default function TransactionHistoryCard() {
                     <MenuItem value="all">All</MenuItem>
                     {/* <MenuItem value="smb">SMB</MenuItem> */}
                     {/* <MenuItem value="Enterprise">Enterprise</MenuItem> */}
-                    {userId == "RXQ1NM1759328246" ? <MenuItem value="Regional">Regional</MenuItem> : null
-                    }
+                    {userId == 'RXQ1NM1759328246' ? <MenuItem value="Regional">Regional</MenuItem> : null}
                     <MenuItem value="OwnAgents">My Own Agents</MenuItem>
                   </Select>
                 </FormControl>
@@ -516,9 +529,9 @@ export default function TransactionHistoryCard() {
             {loading ? (
               <Loader />
             ) : [
-              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-            ].length === 0 ? (
+                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+              ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
@@ -570,7 +583,6 @@ export default function TransactionHistoryCard() {
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
-
                                 </>
                               ) : null
                             }
@@ -587,7 +599,6 @@ export default function TransactionHistoryCard() {
                                     {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
                                   </Typography>
                                 </Tooltip>
-
                               }
                             />
                           </ListItem>
@@ -599,10 +610,8 @@ export default function TransactionHistoryCard() {
                       {agent.agentPlan == 'partner' ? (
                         <Grid item xs={12}>
                           <Box display="flex" alignItems="center" gap={1}>
-                            <Label sx={{ fontWeight: 500, color: "text.secondary" }}>Type:</Label>
-                            <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                              My Own Agent
-                            </Typography>
+                            <Label sx={{ fontWeight: 500, color: 'text.secondary' }}>Type:</Label>
+                            <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>My Own Agent</Typography>
                           </Box>
                         </Grid>
                       ) : (
@@ -669,7 +678,12 @@ export default function TransactionHistoryCard() {
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}> {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min</Typography>}
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {' '}
+                                      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
+                                    </Typography>
+                                  }
                                 />
                               </ListItem>
                             </List>
