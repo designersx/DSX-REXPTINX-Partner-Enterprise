@@ -405,9 +405,24 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
     service: [],
     customService: '',
     businessName: '',
-    businessAddress: [],
-    agentType: '',
-    agentGender: '',
+    // businessAddress: [],
+businessAddress: [{
+    officeType: 'Main Office',  // Initial officeType for first address
+    addressDetails: {
+      businessName: '',        // Location Name
+      streetAddress: '',
+      locality: '',
+      city: '',
+      district: '',
+      state: '',
+      country: '',
+      postalCode: '',
+      formattedAddress: '',
+      placeId: '',
+      url: ''
+    }
+  }],
+      agentGender: '',
     agentAvatar: '',
     agentLanguage: '',
     agentLanguageCode: '',
@@ -430,7 +445,7 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       }
     ]
   });
-  console.log(formData, 'formDataformData');
+  // console.log(formData, 'formDataformData');
   const [errors, setErrors] = useState({});
   const [activeStep, setActiveStep] = useState(0);
   const [apiStatus, setApiStatus] = useState({ status: null, message: null });
@@ -1219,37 +1234,84 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
       return { ...prev, service: serviceCopy, KnowledgeBase: kbCopy };
     });
   };
-  const parseAddressComponents = (place) => {
-    console.log(place, 'place');
-    const components = place.address_components || [];
-    const getComponent = (type) => {
-      const comp = components.find((c) => c.types.includes(type));
-      return comp ? comp.long_name : '';
-    };
-
-    return {
-      businessName: place.name || getComponent('premise'),
-      streetAddress: getComponent('route') || '', // route = street name
-      locality: getComponent('sublocality_level_1') || getComponent('locality') || '',
-      city: getComponent('administrative_area_level_3') || '',
-      district: getComponent('administrative_area_level_2') || '',
-      state: getComponent('administrative_area_level_1') || '',
-      country: getComponent('country') || '',
-      postalCode: getComponent('postal_code') || '',
-      formattedAddress: place.formatted_address || '',
-      placeId: place.place_id || '',
-      url: place.url || ''
-    };
+const parseAddressComponents = (data) => {
+  return {
+    businessName: data.business_name || '',
+    streetAddress: data.street_address || '',
+    locality: data.locality || '',
+    city: data.locality || data.city || '', // Fallback to locality if city is not provided
+    district: data.administrative_area_level_2 || '', // Map to district if available
+    state: data.administrative_area || '',
+    country: data.country_code || '',
+    postalCode: data.postal_code || '',
+    formattedAddress: data.formatted_address || '',
+    placeId: data.place_id || '',
+    url: data.url || '',
   };
+};
 
   // Example usage with React state
-  const handleAddressDataChange = (data) => {
-    setFormData((prev) => {
-      const updated = [...prev.businessAddress];
-      updated[0] = data; // replace the first element
-      return { ...prev, businessAddress: updated };
-    });
-  };
+const handleAddressDataChange = (index, data) => {
+  const mappedData = parseAddressComponents(data); // Map AddressAutocomplete fields to formData structure
+  setFormData((prev) => {
+    const updatedAddresses = [...prev.businessAddress];
+    updatedAddresses[index].addressDetails = {
+      ...mappedData,
+    };
+    return { ...prev, businessAddress: updatedAddresses };
+  });
+};
+const handleAddAddress = () => {
+  setFormData((prev) => ({
+    ...prev,
+    businessAddress: [
+      ...prev.businessAddress,
+      {
+        officeType: '',
+        addressDetails: {
+          businessName: '',
+          streetAddress: '',
+          locality: '',
+          city: '',
+          district: '',
+          state: '',
+          country: '',
+          postalCode: '',
+          formattedAddress: '',
+          placeId: '',
+          url: '',
+        },
+      },
+    ],
+  }));
+};
+
+const handleRemoveAddress = (index) => {
+  setFormData((prev) => ({
+    ...prev,
+    businessAddress: prev.businessAddress.filter((_, i) => i !== index),
+  }));
+};
+
+const handleOfficeTypeChange = (index, value) => {
+  setFormData((prev) => {
+    const updatedAddresses = [...prev.businessAddress];
+    updatedAddresses[index].officeType = value;
+    return { ...prev, businessAddress: updatedAddresses };
+  });
+};
+
+
+const handleAddressFieldChange = (index, field, value) => {
+  setFormData((prev) => {
+    const updatedAddresses = [...prev.businessAddress];
+    updatedAddresses[index].addressDetails = {
+      ...updatedAddresses[index].addressDetails,
+      [field]: value,
+    };
+    return { ...prev, businessAddress: updatedAddresses };
+  });
+};
 
   const getStepContent = (step) => {
     switch (step) {
@@ -1334,124 +1396,402 @@ export default function AgentGeneralInfo({ open, onClose, onSubmit }) {
             )}
           </Stack>
         );
+      // case 1:
+      //   return (
+      //     <Stack spacing={3}>
+      //       {/* Industry */}
+      //       <Stack spacing={1}>
+      //         <InputLabel>Industry</InputLabel>
+      //         <Select name="industry" value={formData.industry} onChange={handleIndustryChange} error={!!errors.industry} fullWidth>
+      //           {allBusinessTypes.map((ind) => (
+      //             <MenuItem key={ind.type} value={ind.type}>
+      //               {ind.type}
+      //             </MenuItem>
+      //           ))}
+      //         </Select>
+      //         <FormHelperText error>{errors.industry}</FormHelperText>
+
+      //         {/* Show icon + subtype */}
+      //         {selectedIndustryData && (
+      //           <Stack
+      //             direction="row"
+      //             spacing={1}
+      //             alignItems="center"
+      //             mt={1}
+      //             sx={{
+      //               p: 1,
+      //               borderRadius: 2,
+      //               bgcolor: '#f1f5f9'
+      //             }}
+      //           >
+      //             <Typography variant="body2" color="text.secondary">
+      //               {selectedIndustryData.subtype}
+      //             </Typography>
+      //           </Stack>
+      //         )}
+      //       </Stack>
+
+      //       {/* Business Service/Product */}
+      //       <Stack spacing={1}>
+      //         <InputLabel>Business Services/Products</InputLabel>
+      //         <Select
+      //           multiple
+      //           name="service"
+      //           value={formData.service}
+      //           onChange={handleServiceChange}
+      //           error={!!errors.service}
+      //           disabled={!formData.industry}
+      //           renderValue={(selected) => (
+      //             <Stack direction="row" spacing={1} flexWrap="wrap">
+      //               {selected.map((value) => (
+      //                 <Chip key={value} label={value} />
+      //               ))}
+      //             </Stack>
+      //           )}
+      //           fullWidth
+      //         >
+      //           {getServicesByType(formData.industry).map((s) => (
+      //             <MenuItem key={s} value={s}>
+      //               {s}
+      //             </MenuItem>
+      //           ))}
+      //         </Select>
+      //         <FormHelperText error>{errors.service}</FormHelperText>
+
+      //         {/* Custom services when "Other" is selected */}
+      //         {formData.service.includes('Other') && (
+      //           <Stack spacing={1} sx={{ mt: 1 }}>
+      //             {formData.customServices.map((customService, index) => (
+      //               <Stack key={index} direction="row" spacing={1} alignItems="center">
+      //                 <TextField
+      //                   fullWidth
+      //                   name={`customService_${index}`}
+      //                   placeholder="Enter your custom service"
+      //                   value={customService}
+      //                   onChange={(e) => handleCustomServiceChange(e, index)}
+      //                   error={!!errors.customServices?.[index]}
+      //                   helperText={errors.customServices?.[index]}
+      //                 />
+      //                 {index > 0 && (
+      //                   <Button variant="outlined" color="error" onClick={() => handleRemoveCustomService(index)}>
+      //                     Remove
+      //                   </Button>
+      //                 )}
+      //               </Stack>
+      //             ))}
+      //             <Button variant="contained" onClick={handleAddCustomService} sx={{ alignSelf: 'flex-start' }}>
+      //               Add Another Service
+      //             </Button>
+      //           </Stack>
+      //         )}
+      //       </Stack>
+      //       {/* Business Name (Optional) */}
+      //       <Stack spacing={1}>
+      //         <InputLabel>Busines Name</InputLabel>
+      //         <TextField
+      //           name="businessName"
+      //           placeholder="E.g., Samsung, Amazon"
+      //           value={formData.businessName}
+      //           onChange={handleChange}
+      //           fullWidth
+      //         />
+      //       </Stack>
+      //       {/* <Stack spacing={1}>
+      //         <InputLabel>Business Address</InputLabel>
+
+      //         <AddressAutocomplete
+      //           address={formData.businessAddress[0]?.formatted_address || ''}
+      //           setAddress={(value) => {
+      //             setFormData((prev) => {
+      //               const updated = [...prev.businessAddress];
+      //               updated[0] = { ...updated[0], formatted_address: value };
+      //               return { ...prev, businessAddress: updated };
+      //             });
+      //           }}
+      //           onAddressDataChange={handleAddressDataChange}
+      //         />
+      //       </Stack> */}
+      //       <Stack spacing={2}>
+      //   <InputLabel>Business Addresses</InputLabel>
+      //   {formData.businessAddress.map((address, index) => (
+      //     <Paper key={index} sx={{ p: 2, mb: 2 }} variant="outlined">
+      //       <Stack spacing={2}>
+      //         <Stack direction="row" spacing={1} alignItems="center">
+      //           <TextField
+      //             label="Office Type"
+      //             placeholder="E.g., Head Office, Regional Office"
+      //             value={address.officeType}
+      //             onChange={(e) => handleOfficeTypeChange(index, e.target.value)}
+      //             error={!!errors[`businessAddress_${index}_officeType`]}
+      //             helperText={errors[`businessAddress_${index}_officeType`]}
+      //             fullWidth
+      //           />
+      //           {formData.businessAddress.length > 1 && (
+      //             <Button variant="outlined" color="error" onClick={() => handleRemoveAddress(index)}>
+      //               Remove
+      //             </Button>
+      //           )}
+      //         </Stack>
+      //         <AddressAutocomplete
+      //           address={address.addressDetails.formattedAddress || ''}
+      //           setAddress={(value) => {
+      //             setFormData((prev) => {
+      //               const updatedAddresses = [...prev.businessAddress];
+      //               updatedAddresses[index].addressDetails = {
+      //                 ...updatedAddresses[index].addressDetails,
+      //                 formattedAddress: value
+      //               };
+      //               return { ...prev, businessAddress: updatedAddresses };
+      //             });
+      //           }}
+      //           onAddressDataChange={(data) => handleAddressDataChange(index, data)}
+      //         />
+      //         {errors[`businessAddress_${index}_address`] && (
+      //           <FormHelperText error>{errors[`businessAddress_${index}_address`]}</FormHelperText>
+      //         )}
+      //       </Stack>
+      //     </Paper>
+      //   ))}
+      //   <Button variant="contained" onClick={handleAddAddress} sx={{ alignSelf: 'flex-start' }}>
+      //     Add Another Address
+      //   </Button>
+      //       </Stack>
+      //     </Stack>
+      //   );
+        
       case 1:
-        return (
-          <Stack spacing={3}>
-            {/* Industry */}
-            <Stack spacing={1}>
-              <InputLabel>Industry</InputLabel>
-              <Select name="industry" value={formData.industry} onChange={handleIndustryChange} error={!!errors.industry} fullWidth>
-                {allBusinessTypes.map((ind) => (
-                  <MenuItem key={ind.type} value={ind.type}>
-                    {ind.type}
-                  </MenuItem>
-                ))}
-              </Select>
-              <FormHelperText error>{errors.industry}</FormHelperText>
-
-              {/* Show icon + subtype */}
-              {selectedIndustryData && (
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  mt={1}
-                  sx={{
-                    p: 1,
-                    borderRadius: 2,
-                    bgcolor: '#f1f5f9'
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    {selectedIndustryData.subtype}
-                  </Typography>
-                </Stack>
-              )}
-            </Stack>
-
-            {/* Business Service/Product */}
-            <Stack spacing={1}>
-              <InputLabel>Business Services/Products</InputLabel>
-              <Select
-                multiple
-                name="service"
-                value={formData.service}
-                onChange={handleServiceChange}
-                error={!!errors.service}
-                disabled={!formData.industry}
-                renderValue={(selected) => (
-                  <Stack direction="row" spacing={1} flexWrap="wrap">
-                    {selected.map((value) => (
-                      <Chip key={value} label={value} />
-                    ))}
-                  </Stack>
-                )}
-                fullWidth
-              >
-                {getServicesByType(formData.industry).map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {s}
-                  </MenuItem>
-                ))}
-              </Select>
-              <FormHelperText error>{errors.service}</FormHelperText>
-
-              {/* Custom services when "Other" is selected */}
-              {formData.service.includes('Other') && (
-                <Stack spacing={1} sx={{ mt: 1 }}>
-                  {formData.customServices.map((customService, index) => (
-                    <Stack key={index} direction="row" spacing={1} alignItems="center">
-                      <TextField
-                        fullWidth
-                        name={`customService_${index}`}
-                        placeholder="Enter your custom service"
-                        value={customService}
-                        onChange={(e) => handleCustomServiceChange(e, index)}
-                        error={!!errors.customServices?.[index]}
-                        helperText={errors.customServices?.[index]}
-                      />
-                      {index > 0 && (
-                        <Button variant="outlined" color="error" onClick={() => handleRemoveCustomService(index)}>
-                          Remove
-                        </Button>
-                      )}
-                    </Stack>
-                  ))}
-                  <Button variant="contained" onClick={handleAddCustomService} sx={{ alignSelf: 'flex-start' }}>
-                    Add Another Service
-                  </Button>
-                </Stack>
-              )}
-            </Stack>
-            {/* Business Name (Optional) */}
-            <Stack spacing={1}>
-              <InputLabel>Busines Name</InputLabel>
-              <TextField
-                name="businessName"
-                placeholder="E.g., Samsung, Amazon"
-                value={formData.businessName}
-                onChange={handleChange}
-                fullWidth
-              />
-            </Stack>
-            <Stack spacing={1}>
-              <InputLabel>Business Address</InputLabel>
-
-              <AddressAutocomplete
-                address={formData.businessAddress[0]?.formatted_address || ''}
-                setAddress={(value) => {
-                  setFormData((prev) => {
-                    const updated = [...prev.businessAddress];
-                    updated[0] = { ...updated[0], formatted_address: value };
-                    return { ...prev, businessAddress: updated };
-                  });
-                }}
-                onAddressDataChange={handleAddressDataChange}
-              />
-            </Stack>
+  return (
+    <Stack spacing={3}>
+      {/* Industry */}
+      <Stack spacing={1}>
+        <InputLabel>Industry</InputLabel>
+        <Select name="industry" value={formData.industry} onChange={handleIndustryChange} error={!!errors.industry} fullWidth>
+          {allBusinessTypes.map((ind) => (
+            <MenuItem key={ind.type} value={ind.type}>
+              {ind.type}
+            </MenuItem>
+          ))}
+        </Select>
+        <FormHelperText error>{errors.industry}</FormHelperText>
+        {selectedIndustryData && (
+          <Stack direction="row" spacing={1} alignItems="center" mt={1} sx={{ p: 1, borderRadius: 2, bgcolor: '#f1f5f9' }}>
+            <Typography variant="body2" color="text.secondary">
+              {selectedIndustryData.subtype}
+            </Typography>
           </Stack>
-        );
-      case 2:
+        )}
+      </Stack>
+
+      {/* Business Service/Product */}
+      <Stack spacing={1}>
+        <InputLabel>Business Services/Products</InputLabel>
+        <Select
+          multiple
+          name="service"
+          value={formData.service}
+          onChange={handleServiceChange}
+          error={!!errors.service}
+          disabled={!formData.industry}
+          renderValue={(selected) => (
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Stack>
+          )}
+          fullWidth
+        >
+          {getServicesByType(formData.industry).map((s) => (
+            <MenuItem key={s} value={s}>
+              {s}
+            </MenuItem>
+          ))}
+        </Select>
+        <FormHelperText error>{errors.service}</FormHelperText>
+        {formData.service.includes('Other') && (
+          <Stack spacing={1} sx={{ mt: 1 }}>
+            {formData.customServices.map((customService, index) => (
+              <Stack key={index} direction="row" spacing={1} alignItems="center">
+                <TextField
+                  fullWidth
+                  name={`customService_${index}`}
+                  placeholder="Enter your custom service"
+                  value={customService}
+                  onChange={(e) => handleCustomServiceChange(e, index)}
+                  error={!!errors.customServices?.[index]}
+                  helperText={errors.customServices?.[index]}
+                />
+                {index > 1 && (
+                  <Button variant="outlined" color="error" onClick={() => handleRemoveCustomService(index)}>
+                    Remove
+                  </Button>
+                )}
+              </Stack>
+            ))}
+            <Button variant="contained" onClick={handleAddCustomService} sx={{ alignSelf: 'flex-start' }}>
+              Add Another Service
+            </Button>
+          </Stack>
+        )}
+      </Stack>
+
+      {/* Business Name (Optional) */}
+      <Stack spacing={1}>
+        <InputLabel>Business Name</InputLabel>
+        <TextField
+          name="businessName"
+          placeholder="E.g., Samsung, Amazon"
+          value={formData.businessName}
+          onChange={handleChange}
+          fullWidth
+        />
+      </Stack>
+
+      {/* Multiple Business Addresses */}
+<Stack spacing={2}>
+            <InputLabel>Business Addresses</InputLabel>
+            {formData.businessAddress.map((address, index) => (
+              <Paper key={index} sx={{ p: 2, mb: 2 }} variant="outlined">
+                <Stack spacing={2}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <TextField
+                      label="Office Type"
+                      placeholder="E.g., Head Office, Regional Office"
+                      value={address.officeType || ''}
+                      onChange={(e) => handleOfficeTypeChange(index, e.target.value)}
+                      error={!!errors[`businessAddress_${index}_officeType`]}
+                      helperText={errors[`businessAddress_${index}_officeType`]}
+                      fullWidth
+                    />
+                    {formData.businessAddress.length > 1 && (
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleRemoveAddress(index)}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </Stack>
+                  <AddressAutocomplete
+                    address={address.addressDetails.formattedAddress || ''}
+                    setAddress={(value) => {
+                      setFormData((prev) => {
+                        const updatedAddresses = [...prev.businessAddress];
+                        updatedAddresses[index].addressDetails = {
+                          ...updatedAddresses[index].addressDetails,
+                          formattedAddress: value,
+                        };
+                        return { ...prev, businessAddress: updatedAddresses };
+                      });
+                    }}
+                    onAddressDataChange={(data) => handleAddressDataChange(index, data)}
+                    error={!!errors[`businessAddress_${index}_address`]}
+                    helperText={errors[`businessAddress_${index}_address`]}
+                  />
+                  {/* Prefilled Editable Fields */}
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Location Name"
+                        value={address.addressDetails.businessName || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'businessName', e.target.value)
+                        }
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Street Address"
+                        value={address.addressDetails.streetAddress || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'streetAddress', e.target.value)
+                        }
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Locality"
+                        value={address.addressDetails.locality || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'locality', e.target.value)
+                        }
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="City"
+                        value={address.addressDetails.city || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'city', e.target.value)
+                        }
+                        fullWidth
+                        error={!!errors[`businessAddress_${index}_city`]}
+                        helperText={errors[`businessAddress_${index}_city`]}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="District"
+                        value={address.addressDetails.district || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'district', e.target.value)
+                        }
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="State"
+                        value={address.addressDetails.state || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'state', e.target.value)
+                        }
+                        fullWidth
+                        error={!!errors[`businessAddress_${index}_state`]}
+                        helperText={errors[`businessAddress_${index}_state`]}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Country"
+                        value={address.addressDetails.country || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'country', e.target.value)
+                        }
+                        fullWidth
+                        error={!!errors[`businessAddress_${index}_country`]}
+                        helperText={errors[`businessAddress_${index}_country`]}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Postal Code"
+                        value={address.addressDetails.postalCode || ''}
+                        onChange={(e) =>
+                          handleAddressFieldChange(index, 'postalCode', e.target.value)
+                        }
+                        fullWidth
+                      />
+                    </Grid>
+                  </Grid>
+                </Stack>
+              </Paper>
+            ))}
+            <Button
+              variant="contained"
+              onClick={handleAddAddress}
+              sx={{ alignSelf: 'flex-start' }}
+            >
+              Add Another Address
+            </Button>
+          </Stack>
+    </Stack>
+  );
+        case 2:
         return (
           <>
             {/* Intents */}
