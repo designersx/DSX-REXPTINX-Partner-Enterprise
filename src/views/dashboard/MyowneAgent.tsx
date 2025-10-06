@@ -98,22 +98,7 @@ export default function MyownAgent() {
     };
   }, []);
 
-  // New useEffect for tab visibility detection
-  useEffect(() => {
-  const handleVisibilityChange = () => {
-  console.log('Visibility changed, hidden:', document.hidden);
-  if (document.hidden && Object.keys(activeAgents).length > 0) {
-    console.log('Active call detected, ending call for index:', Object.keys(activeAgents)[0]);
-    handleEndCall(Number(Object.keys(activeAgents)[0]));
-  }
-};
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [activeAgents]);
 
   const handleStartCall = async (agent: Agent, index: number) => {
     setCallLoading(true);
@@ -213,20 +198,7 @@ export default function MyownAgent() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  // Existing beforeunload handler
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (Object.keys(activeAgents).length > 0) {
-        handleEndCall(Number(Object.keys(activeAgents)[0]));
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [activeAgents]);
+ 
 
   if (loading) {
     return (
