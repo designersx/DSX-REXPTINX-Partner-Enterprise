@@ -11,8 +11,8 @@ import TransactionHistoryCard from './AgentPage';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
-export default function AgentList() {
+export default function AgentList({type}) {
   return (
-<TransactionHistoryCard/>  
+<TransactionHistoryCard type={type}/>  
 );
 }

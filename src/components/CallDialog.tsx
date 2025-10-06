@@ -39,8 +39,8 @@ const CallDialog: React.FC<CallDialogProps> = ({
   const displayBusinessName = agent?.businessDetails?.name || agent?.company || 'Enterprise';
 
   const handleClose = (event: object, reason: string) => {
-    console.log('agentsource');
-    console.log(agent?.source, 'agentsource');
+    
+
 
     if (reason === 'backdropClick') return;
     console.log(agent?.source, 'agentsource');
@@ -90,6 +90,7 @@ const CallDialog: React.FC<CallDialogProps> = ({
   };
 
   const handleStartClick = () => {
+    console.log(agent,"agent")
     if (agent?.source === 'filtered') {
       onStartCall();
     } else {
