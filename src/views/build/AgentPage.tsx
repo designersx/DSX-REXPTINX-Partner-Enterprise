@@ -98,7 +98,7 @@ const agentdataa = [
     agentAccent: 'American',
     plantype: 'Regional',
     description: 'Handles customer queries',
-    userId: 'RXQ1NM1759328246'
+    userId: 'RXQ1NM1759328246',
   },
   {
     id: 'agent_2101k6qb02psethsw45h9h6b9zce',
@@ -106,7 +106,6 @@ const agentdataa = [
     agentPlan: 'Regional',
     mins_left: '1200',
     avatar: '/images/Male-02.png',
-
     agentName: 'Suraj',
     businessType: 'Banking',
     agentLanguage: 'Hindi + Multi',
@@ -114,7 +113,8 @@ const agentdataa = [
     agentAccent: 'American',
     plantype: 'Regional',
     description: 'Handles customer queries',
-    userId: 'RXQ1NM1759328246'
+    userId: 'RXQ1NM1759328246',
+    createdAt: '2025-10-04T12:35:23.000Z'
   },
   {
     id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
@@ -130,9 +130,7 @@ const agentdataa = [
     plantype: 'partner',
     description: 'Handles customer queries',
     userId: 'RXDI7Q1759578841',
-
-    source: 'elevenLabs',
-
+  
     createdAt: '2025-10-04T12:35:23.000Z'
 
   }
@@ -552,11 +550,9 @@ export default function TransactionHistoryCard({ type }) {
               </TableRow>
             ) : (
               [
-                // ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-                // ...agentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
                 ...(planFilter === 'Regional'
-                  ? userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-                  : filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })))
+                  ? userFilteredAgentdataa.map((agent) => ({ ...agent }))
+                  : filteredAgents.map((agent) => ({ ...agent })))
               ]
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((agent, index) => (
