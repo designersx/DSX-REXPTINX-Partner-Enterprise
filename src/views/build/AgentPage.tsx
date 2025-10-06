@@ -813,7 +813,7 @@ export default function TransactionHistoryCard() {
       {/* Agent Creation Modal */}
       {/* <AgentGeneralInfoModal
         open={isModalOpen}
-        onClose={handleModalClose}
+        onClose={handleModalClose}f
         onSubmit={handleAgentSubmit}
       /> */}
       {/* Snackbar */}
