@@ -84,7 +84,6 @@ const getValidColor = (color: string): ChipColor => {
   return validColors.includes(color as ChipColor) ? (color as ChipColor) : 'default';
 };
 
-
 const agentdataa = [
   {
     id: 'agent_7801k6q89jegf5pvgpaq9awwvz0q',
@@ -131,8 +130,11 @@ const agentdataa = [
     plantype: 'partner',
     description: 'Handles customer queries',
     userId: 'RXDI7Q1759578841',
-    createdAt: '2025-10-04T12:35:23.000Z',
-    source: 'elevenLabs'
+
+    source: 'elevenLabs',
+
+    createdAt: '2025-10-04T12:35:23.000Z'
+
   }
 ];
 export default function TransactionHistoryCard({ type }) {
@@ -423,6 +425,7 @@ export default function TransactionHistoryCard({ type }) {
   };
   const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
   console.log('planFilter', planFilter);
+
   // let filteredAgents;
 
   // if (planFilter === 'all') {
@@ -471,6 +474,7 @@ export default function TransactionHistoryCard({ type }) {
   });
   // finally, sort by creation date
   filteredAgents.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
   console.log(filteredAgents, 'filteredAgents');
   //LOCK
   useEffect(() => {
@@ -513,6 +517,7 @@ export default function TransactionHistoryCard({ type }) {
                     {userId == "RXQ1NM1759328246" ? <MenuItem value="regional">Regional</MenuItem> : null
                     }
                     <MenuItem value="my">My  Agents</MenuItem>
+
                   </Select>
                 </FormControl>
 
@@ -537,9 +542,9 @@ export default function TransactionHistoryCard({ type }) {
             {loading ? (
               <Loader />
             ) : [
-              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-            ].length === 0 ? (
+                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+              ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
@@ -591,7 +596,6 @@ export default function TransactionHistoryCard({ type }) {
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
-
                                 </>
                               ) : null
                             }
@@ -608,7 +612,6 @@ export default function TransactionHistoryCard({ type }) {
                                     {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
                                   </Typography>
                                 </Tooltip>
-
                               }
                             />
                           </ListItem>
@@ -620,10 +623,8 @@ export default function TransactionHistoryCard({ type }) {
                       {agent.agentPlan == 'partner' ? (
                         <Grid item xs={12}>
                           <Box display="flex" alignItems="center" gap={1}>
-                            <Label sx={{ fontWeight: 500, color: "text.secondary" }}>Type:</Label>
-                            <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                              My Own Agent
-                            </Typography>
+                            <Label sx={{ fontWeight: 500, color: 'text.secondary' }}>Type:</Label>
+                            <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>My Own Agent</Typography>
                           </Box>
                         </Grid>
                       ) : (
@@ -690,7 +691,12 @@ export default function TransactionHistoryCard({ type }) {
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText
-                                  primary={<Typography sx={{ color: 'text.secondary' }}> {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min</Typography>}
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {' '}
+                                      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
+                                    </Typography>
+                                  }
                                 />
                               </ListItem>
                             </List>
