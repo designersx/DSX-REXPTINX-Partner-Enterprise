@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { Theme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
@@ -39,13 +40,31 @@ export default function MyownAgent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [callLoading, setCallLoading] = useState(false);
+  const [isCallActive, setIsCallActive] = useState();
   const [retellWebClient, setRetellWebClient] = useState<RetellWebClient | null>(null);
   const [snackbar, setSnackbar] = useState<SnackbarState>({ open: false, message: '', severity: 'info' });
   const [callId, setCallId] = useState<string | null>(null);
+  const [conversation, setConversation] = React.useState<any>(null);
   const isEndingRef = useRef(false);
   const isStartingRef = useRef(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-
+  const agentdataa = [
+    {
+      id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
+      businessname: 'Zouma Consulting Services',
+      agentPlan: 'partner',
+      mins_left: '37500',
+      avatar: '/images/Male-01.png',
+      agentName: 'Himanshu',
+      businessType: 'Software & CX Management',
+      agentLanguage: 'English + Multi',
+      agentGender: 'male',
+      agentAccent: 'American',
+      plantype: 'partner',
+      description: 'Handles customer queries',
+      userId: 'RXDI7Q1759578841'
+    }
+  ];
   // const router = useRouter();
   const userId = getUserId();
 
@@ -96,98 +115,136 @@ export default function MyownAgent() {
     setRetellWebClient(client);
   }, []);
 
-  // Handle route changes to end cal
-  const handleStartCall = async (agent: Agent, index: number) => {
-    setCallLoading(true);
+  const startCalleleven = async (agent: any) => {
     setSelectedAgent(agent);
-
+    setError(null);
     try {
-      const micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-      if (micPermission.state !== 'granted') {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        const updatedMicPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+      setCallLoading(true);
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/regionalagents/signed-url/${agent.id}`);
 
-        if (updatedMicPermission.state !== 'granted') {
-          setSnackbar({
-            open: true,
-            message: 'You must grant microphone access to start the call.',
-            severity: 'warning'
-          });
-          setCallLoading(false);
-          return;
-        }
-      }
+      const conversationToken = response?.data.token;
+      if (!conversationToken) throw new Error('No conversation token received from backend');
 
-      const agentId = agent.agent_id;
-      if (!agentId) throw new Error('No agent ID found');
-
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/agent/create-web-call`,
-        { agent_id: agentId },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.status === 403) {
-        setSnackbar({
-          open: true,
-          message: 'Agent Plan minutes exhausted',
-          severity: 'error'
-        });
-        setCallLoading(false);
-        return;
-      }
-
-      isStartingRef.current = true;
-      await retellWebClient?.startCall({ accessToken: response?.data?.access_token });
-      setCallId(response?.data?.call_id);
-      setActiveAgents({ [index]: true }); // Only activate the clicked agent
-    } catch (error: any) {
-      console.error('Error starting call:', error);
-      setSnackbar({
-        open: true,
-        message: error.response?.status === 403 ? 'Agent Plan minutes exhausted' : 'Failed to start call. Please try again.',
-        severity: 'error'
+      const { Conversation } = await import('@elevenlabs/client');
+      const conversation = await Conversation.startSession({
+        conversationToken,
+        connectionType: 'webrtc'
       });
-      setActiveAgents({});
+      setConversation(conversation);
+      console.log('Conversation started');
+      setIsCallActive(true);
+      // activeAgents(true)
+    } catch (err: any) {
+      setError(`Failed to start call: ${err.message}`);
+      console.error('Error starting call:', err);
     } finally {
       setCallLoading(false);
-      isStartingRef.current = false;
     }
   };
-  const handleEndCall = async (index: number) => {
-    if (isEndingRef.current) return;
-    console.log();
-    isEndingRef.current = true;
-    setCallLoading(true);
 
-    try {
-      await retellWebClient.stopCall(); // Ensure this gets awaited
-    } catch (error) {
-      console.error('Error ending call:', error);
-      setSnackbar({
-        open: true,
-        message: 'Failed to end call. Please try again.',
-        severity: 'error'
-      });
-    } finally {
-      // Always clean up
-      isEndingRef.current = false;
-      setActiveAgents({});
-      setCallId(null);
+  const endCalleleven = async (agent) => {
+    if (conversation) {
+      await conversation.endSession();
+      setConversation(null);
       setSelectedAgent(null);
-      setCallLoading(false);
+      setError(null);
     }
+    setIsCallActive(false);
   };
+
+  // Handle route changes to end cal
+  // const handleStartCall = async (agent: Agent, index: number) => {
+  //   setCallLoading(true);
+  //   setSelectedAgent(agent);
+
+  //   try {
+  //     const micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+  //     if (micPermission.state !== 'granted') {
+  //       await navigator.mediaDevices.getUserMedia({ audio: true });
+  //       const updatedMicPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+  //       if (updatedMicPermission.state !== 'granted') {
+  //         setSnackbar({
+  //           open: true,
+  //           message: 'You must grant microphone access to start the call.',
+  //           severity: 'warning'
+  //         });
+  //         setCallLoading(false);
+  //         return;
+  //       }
+  //     }
+
+  //     const agentId = agent.agent_id;
+  //     if (!agentId) throw new Error('No agent ID found');
+
+  //     const response = await axios.post(
+  //       `${process.env.NEXT_PUBLIC_API_URL}/api/agent/create-web-call`,
+  //       { agent_id: agentId },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
+  //           'Content-Type': 'application/json'
+  //         }
+  //       }
+  //     );
+
+  //     if (response.status === 403) {
+  //       setSnackbar({
+  //         open: true,
+  //         message: 'Agent Plan minutes exhausted',
+  //         severity: 'error'
+  //       });
+  //       setCallLoading(false);
+  //       return;
+  //     }
+
+  //     isStartingRef.current = true;
+  //     await retellWebClient?.startCall({ accessToken: response?.data?.access_token });
+  //     setCallId(response?.data?.call_id);
+  //     setActiveAgents({ [index]: true }); // Only activate the clicked agent
+  //   } catch (error: any) {
+  //     console.error('Error starting call:', error);
+  //     setSnackbar({
+  //       open: true,
+  //       message: error.response?.status === 403 ? 'Agent Plan minutes exhausted' : 'Failed to start call. Please try again.',
+  //       severity: 'error'
+  //     });
+  //     setActiveAgents({});
+  //   } finally {
+  //     setCallLoading(false);
+  //     isStartingRef.current = false;
+  //   }
+  // };
+  // const handleEndCall = async (index: number) => {
+  //   if (isEndingRef.current) return;
+  //   console.log();
+  //   isEndingRef.current = true;
+  //   setCallLoading(true);
+
+  //   try {
+  //     await retellWebClient.stopCall(); // Ensure this gets awaited
+  //   } catch (error) {
+  //     console.error('Error ending call:', error);
+  //     setSnackbar({
+  //       open: true,
+  //       message: 'Failed to end call. Please try again.',
+  //       severity: 'error'
+  //     });
+  //   } finally {
+  //     // Always clean up
+  //     isEndingRef.current = false;
+  //     setActiveAgents({});
+  //     setCallId(null);
+  //     setSelectedAgent(null);
+  //     setCallLoading(false);
+  //   }
+  // };
   const handleButtonClick = (agent: Agent, index: number) => {
-    if (activeAgents[index]) {
-      handleEndCall(index);
+    if (isCallActive) {
+      endCalleleven(agent);
     } else {
-      handleStartCall(agent, index);
+      startCalleleven(agent);
     }
   };
 
@@ -202,7 +259,7 @@ export default function MyownAgent() {
     );
   }
 
-  if (error || agents.length === 0) {
+  if (agentdataa.length === 0) {
     return (
       <MainCard
         border={false}
@@ -228,11 +285,10 @@ export default function MyownAgent() {
         <Grid container>
           <Grid size={{ md: 6, sm: 6, xs: 12 }}>
             <Stack sx={{ gap: 2, padding: 1 }}>
-           
               <Typography variant="h6">Name: Partner Agent</Typography>
               <Typography variant="h6">Mins Left: N/A</Typography>
               <Typography variant="h6">Mins Assigned: N/A</Typography>
-              <Typography variant="h6">Your test agent</Typography>
+              <Typography variant="h6">Your agent</Typography>
               <Box sx={{ pt: 1.5 }}>
                 <Button
                   disabled
@@ -309,7 +365,7 @@ export default function MyownAgent() {
 
   return (
     <>
-      {agents.map((agent, index) => (
+      {agentdataa.map((agent, index) => (
         <MainCard
           key={index}
           border={false}
@@ -341,28 +397,24 @@ export default function MyownAgent() {
                 <Typography variant="h6">Your Partner Agent</Typography>
                 <Box sx={{ pt: 1.5 }}>
                   <Button
-                    aria-label={activeAgents[index] ? 'End call with agent' : 'Test agent'}
-                    variant={activeAgents[index] ? 'contained' : 'outlined'}
-                    color={activeAgents[index] ? 'error' : 'secondary'}
+                    aria-label={isCallActive ? 'End call with agent' : 'Test agent'}
+                    variant={isCallActive ? 'contained' : 'outlined'}
+                    color={isCallActive ? 'error' : 'secondary'}
                     onClick={() => handleButtonClick(agent, index)}
-                    disabled={callLoading || (Object.keys(activeAgents).length > 0 && !activeAgents[index])}
+                    disabled={callLoading}
                     sx={(theme) => ({
                       color: 'background.paper',
                       borderColor: 'background.paper',
                       ...theme.applyStyles('dark', { color: 'text.primary', borderColor: 'text.primary' }),
                       zIndex: 2,
                       '&:hover': {
-                        bgcolor: activeAgents[index] ? 'error.main' : 'indigo',
+                        bgcolor: isCallActive ? 'error.main' : 'indigo',
                         color: 'white',
                         borderColor: 'background.paper'
                       }
                     })}
                   >
-                    {callLoading && selectedAgent?.agent_id === agent.agent_id
-                      ? 'Connecting...'
-                      : activeAgents[index]
-                        ? 'End Call'
-                        : 'Test Agent'}
+                    {callLoading && selectedAgent?.agent_id === agent.agent_id ? 'Connecting...' : isCallActive ? 'End Call' : 'Test Agent'}
                   </Button>
                 </Box>
               </Stack>
@@ -386,7 +438,7 @@ export default function MyownAgent() {
                   zIndex: 2
                 }}
               >
-                {activeAgents[index] && (
+                {isCallActive && (
                   <Box
                     sx={{
                       position: 'absolute',
@@ -407,7 +459,7 @@ export default function MyownAgent() {
                   sx={{
                     maxWidth: 115,
                     borderRadius: '50%',
-                    animation: activeAgents[index] ? 'pop 0.6s ease-in-out infinite alternate' : 'none',
+                    animation: isCallActive ? 'pop 0.6s ease-in-out infinite alternate' : 'none',
                     zIndex: 1
                   }}
                   src={agent?.avatar?.startsWith('/') ? agent?.avatar : `/${agent?.avatar}`}
