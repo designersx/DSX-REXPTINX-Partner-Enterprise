@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle, IconButton, Typography, Button, CardMedia, Stack, CircularProgress, Box } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import CloseIcon from '@mui/icons-material/Close';
@@ -105,6 +105,28 @@ const CallDialog: React.FC<CallDialogProps> = ({
       endCalleleven(agent);
     }
   };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && isCallActive) {
+        // End the call when the tab is hidden
+        if (agent?.source === 'filtered') {
+          onEndCall();
+        } else {
+          endCalleleven(agent);
+        }
+        onClose(); // Close the dialog after ending the call
+      }
+    };
+
+    // Add event listener for visibility change
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isCallActive, agent, onEndCall, onClose]);
 
   return (
     <Dialog

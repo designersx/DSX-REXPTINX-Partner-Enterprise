@@ -46,7 +46,7 @@ export default function WelcomeBanner() {
             <Typography variant="h4">Create Agents with Rexpt</Typography>
             <Typography variant="h6">Build, customize, and manage intelligent agents seamlessly with the power of Rexpt.</Typography>
             <Box sx={{ pt: 1.5 }}>
-              <Link href="/build/agents/" passHref>
+              <Link href="/build/agents/all" passHref>
                 <Button
                   variant="outlined"
                   color="secondary"

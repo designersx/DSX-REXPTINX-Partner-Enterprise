@@ -99,6 +99,7 @@ const agentdataa = [
     plantype: 'Regional',
     description: 'Handles customer queries',
     userId: 'RXQ1NM1759328246',
+    createdAt: '2025-10-04T12:35:23.000Z'
   },
   {
     id: 'agent_2101k6qb02psethsw45h9h6b9zce',
@@ -130,7 +131,6 @@ const agentdataa = [
     plantype: 'partner',
     description: 'Handles customer queries',
     userId: 'RXDI7Q1759578841',
-  
     createdAt: '2025-10-04T12:35:23.000Z'
 
   }
@@ -388,13 +388,7 @@ export default function TransactionHistoryCard({ type }) {
     isEndingRef.current = false;
     // setRefresh((prev) => !prev);
     try {
-      // Example: End the call with Retell AI
-      // const callId = localStorage.getItem("currentCallId");
-      // const callId = localStorage.getItem("currentCallId");
-      // if (!callId) throw new Error("No call ID found");
-
       const response = await retellWebClient.stopCall();
-
       setIsCallActive(false);
       isEndingRef.current = false;
     } catch (error) {
@@ -422,32 +416,8 @@ export default function TransactionHistoryCard({ type }) {
     setPage(0); // reset to first page
   };
   const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
-  console.log('planFilter', planFilter);
-
-  // let filteredAgents;
-
-  // if (planFilter === 'all') {
-  //   filteredAgents = [...agents, ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
-  //     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  //   );
-  // } else {
-  //   filteredAgents = agents
-  //     .filter((agent) => {
-  //       const plan = agent.agentPlan?.toLowerCase();
-  //       // 
-  //       // if (planFilter === 'enterprise') return plan === 'enterprise';
-  //       if (planFilter === 'OwnAgents') return plan === 'partner';
-
-  //       return true; // default fallback
-  //     })
-  //     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  // }
-
-
-  // assuming `type` comes from props: 'my', 'regional', 'enterprise'
   // normalize type
-  const normalizedFilter = planFilter.toLowerCase(); // 'all', 'myagents', 'regional', 'enterprise'
-
+  const normalizedFilter = planFilter.toLowerCase();
   // merge both sources into one array first
   const mergedAgents = [
     ...agents.map(agent => ({ ...agent, source: 'filtered' })),
@@ -540,9 +510,9 @@ export default function TransactionHistoryCard({ type }) {
             {loading ? (
               <Loader />
             ) : [
-                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-              ].length === 0 ? (
+              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+            ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
