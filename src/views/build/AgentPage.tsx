@@ -214,11 +214,11 @@ export default function TransactionHistoryCard() {
     onError: (error) => console.error('Error:', error)
   });
   const startCall = async (agentdatass) => {
-    console.log(agentdatass, 'agent');
+    // console.log(agentdatass, 'agent');
     setSelectedAgent(agentdatass);
     setError(null);
     try {
-      console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
+      // console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
       await navigator.mediaDevices.getUserMedia({ audio: true });
       const response = await fetch(`${process.env.NEXT_API_PUBLIC_URL}/api/agent/regionalagents/signed-url/${agentdatass.id}`);
       const data = await response.json();
@@ -233,7 +233,7 @@ export default function TransactionHistoryCard() {
         connectionType: 'webrtc'
       });
       setConversation(conversation);
-      console.log('Conversation started');
+      // console.log('Conversation started');
     } catch (err) {
       setError(`Failed to start call: ${err.message}`);
       console.error('Error starting call:', err);
@@ -413,7 +413,7 @@ export default function TransactionHistoryCard() {
   //   })
   //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  console.log('planFilter', planFilter);
+  // console.log('planFilter', planFilter);
   // const filteredAgents = agents
   //   .filter((agent) => {
   //     const plan = agent.agentPlan?.toLowerCase();
@@ -450,7 +450,7 @@ export default function TransactionHistoryCard() {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
 
-  console.log(filteredAgents, 'filteredAgents');
+  // console.log(filteredAgents, 'filteredAgents');
   //LOCK
   useEffect(() => {
     const client = new RetellWebClient();
