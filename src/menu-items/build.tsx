@@ -1,7 +1,5 @@
 // assets
 import { Book1, Security, MessageProgramming, DollarSquare, Airplane } from '@wandersonalwes/iconsax-react';
-import { SupportAgent } from '@mui/icons-material';
-
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 // types
@@ -29,9 +27,37 @@ const build: NavItemType = {
     {
       id: 'agents',
       title: 'Agents',
-      type: 'item',
-      url: '/build/agents',
-      icon: SmartToyIcon
+      type: 'collapse',
+      url: '/build/agents/all',
+      icon: SmartToyIcon,
+       open: true,
+      children: [
+         {
+          id: 'allAgents',
+          title: 'All',
+          type: 'item',
+          url: '/build/agents/all'
+        }
+        ,
+        {
+          id: 'myAgents',
+          title: 'My Agents',
+          type: 'item',
+          url: '/build/agents/my'
+        },
+        {
+          id: 'regionalAgents',
+          title: 'Regional',
+          type: 'item',
+          url: '/build/agents/regional'
+        },
+        {
+          id: 'enterpriseAgents',
+          title: 'Enterprise',
+          type: 'item',
+          url: '/build/agents/enterprise'
+        }
+      ]
     },
     {
       id: 'knowledgeBase',
@@ -40,21 +66,6 @@ const build: NavItemType = {
       url: '/build/knowledgeBase',
       icon: icons.landing
     }
-    // {
-    //   id: 'Integrations',
-    //   title: 'Integrations',
-    //   type: 'item',
-    //   url: '/build/Integrations',
-    //   icon: icons.contactus,
-
-    // },
-    // {
-    //   id: 'DemoAgents',
-    //   title: 'Demo Agents',
-    //   type: 'item',
-    //   url: '/build/Demoview',
-    //   icon: icons.landing
-    // }
   ]
 };
 

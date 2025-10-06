@@ -116,9 +116,28 @@ const agentdataa = [
     plantype: 'Regional',
     description: 'Handles customer queries',
     userId: 'RXQ1NM1759328246'
+  },
+  {
+    id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
+    businessname: 'Zouma Consulting Services',
+    agentPlan: 'partner',
+    mins_left: '45000',
+    avatar: '/images/Male-01.png',
+    agentName: 'Himanshu (Arabic)',
+    businessType: 'Software & CX Management',
+    agentLanguage: 'Arabic + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'partner',
+    description: 'Handles customer queries',
+    userId: 'RXDI7Q1759578841',
+    createdAt: '2025-10-04T12:35:23.000Z',
+    source: 'elevenLabs'
   }
 ];
-export default function TransactionHistoryCard() {
+export default function TransactionHistoryCard({ type }) {
+  // "partner" 'Regional' "Enterprise"
+  console.log(type, "HELELO")
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -134,7 +153,7 @@ export default function TransactionHistoryCard() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
-  const [planFilter, setPlanFilter] = useState('all');
+  const [planFilter, setPlanFilter] = useState(type?.toLowerCase() || 'all');
   const [selectAgent, setSelectAgent] = useState(null);
   const [conversation, setConversation] = useState(null);
   const [error, setError] = useState(null);
@@ -403,53 +422,55 @@ export default function TransactionHistoryCard() {
     setPage(0); // reset to first page
   };
   const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
-  // const filteredAgents = agents
-  //   .filter((agent) => {
-  //     if (planFilter == 'all') return true;
-  //     if (planFilter == 'other') {
-  //       return agent.agentPlan.toLowerCase() != 'smb' && agent.agentPlan.toLowerCase() != 'enterprise';
-  //     }
-  //     return agent.agentPlan === planFilter;
-  //   })
-  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
   console.log('planFilter', planFilter);
-  // const filteredAgents = agents
-  //   .filter((agent) => {
-  //     const plan = agent.agentPlan?.toLowerCase();
+  // let filteredAgents;
 
-  //     if (planFilter === 'all') return true;
+  // if (planFilter === 'all') {
+  //   filteredAgents = [...agents, ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
+  //     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  //   );
+  // } else {
+  //   filteredAgents = agents
+  //     .filter((agent) => {
+  //       const plan = agent.agentPlan?.toLowerCase();
+  //       // 
+  //       // if (planFilter === 'enterprise') return plan === 'enterprise';
+  //       if (planFilter === 'OwnAgents') return plan === 'partner';
 
-  //     if (planFilter === 'enterprise') return plan === 'enterprise';
+  //       return true; // default fallback
+  //     })
+  //     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // }
 
-  //     if (planFilter === 'smb') return plan === 'smb';
 
-  //     // if (planFilter === 'other') {
-  //     //   return plan !== 'smb' && plan !== 'enterprise';
-  //     // }
+  // assuming `type` comes from props: 'my', 'regional', 'enterprise'
+  // normalize type
+  const normalizedFilter = planFilter.toLowerCase(); // 'all', 'myagents', 'regional', 'enterprise'
 
-  //     return true; // default fallback
-  //   })
-  //   .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  let filteredAgents;
+  // merge both sources into one array first
+  const mergedAgents = [
+    ...agents.map(agent => ({ ...agent, source: 'filtered' })),
+    ...userFilteredAgentdataa.map(agent => ({ ...agent, source: 'elevenLabs' }))
+  ];
+  // now filter based on plan type
+  const filteredAgents = mergedAgents.filter(agent => {
+    const plan = agent.agentPlan?.toLowerCase() || agent.plantype?.toLowerCase() || '';
 
-  if (planFilter === 'all') {
-    filteredAgents = [...agents, ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))].sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-  } else {
-    filteredAgents = agents
-      .filter((agent) => {
-        const plan = agent.agentPlan?.toLowerCase();
-        // 
-        // if (planFilter === 'enterprise') return plan === 'enterprise';
-        if (planFilter === 'OwnAgents') return plan === 'partner';
-
-        return true; // default fallback
-      })
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  }
-
+    switch (normalizedFilter) {
+      case 'all':
+        return true;
+      case 'my':  // "My Own Agents"
+        return plan === 'partner';
+      case 'regional':
+        return plan === 'regional';
+      case 'enterprise':
+        return plan === 'enterprise';
+      default:
+        return true;
+    }
+  });
+  // finally, sort by creation date
+  filteredAgents.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
   console.log(filteredAgents, 'filteredAgents');
   //LOCK
   useEffect(() => {
@@ -488,10 +509,10 @@ export default function TransactionHistoryCard() {
                   <Select labelId="agent-plan-filter" value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
                     <MenuItem value="all">All</MenuItem>
                     {/* <MenuItem value="smb">SMB</MenuItem> */}
-                    {/* <MenuItem value="Enterprise">Enterprise</MenuItem> */}
-                    {userId == "RXQ1NM1759328246" ? <MenuItem value="Regional">Regional</MenuItem> : null
+                    <MenuItem value="enterprise">Enterprise</MenuItem>
+                    {userId == "RXQ1NM1759328246" ? <MenuItem value="regional">Regional</MenuItem> : null
                     }
-                    <MenuItem value="OwnAgents">My Own Agents</MenuItem>
+                    <MenuItem value="my">My  Agents</MenuItem>
                   </Select>
                 </FormControl>
 

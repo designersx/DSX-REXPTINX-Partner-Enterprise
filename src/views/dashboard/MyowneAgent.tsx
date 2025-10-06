@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Theme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-// import dynamic from 'next/dynamic';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -14,13 +13,12 @@ import MainCard from 'components/MainCard';
 import axios from 'axios';
 import { getUserId } from 'utils/auth';
 import { RetellWebClient } from 'retell-client-js-sdk';
-import { useRouter } from 'next/router';
 
 const cardBack = '/assets/images/widget/img-dropbox-bg.svg';
 const WelcomeImage = '/assets/images/avatrs/Male-01.png';
 
 interface Agent {
-  agent_id: string; // Added agent_id to match handleStartCall
+  agent_id: string;
   agentName: string;
   mins_left: number;
   description: string;
@@ -46,7 +44,6 @@ export default function MyownAgent() {
   const isStartingRef = useRef(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
 
-  // const router = useRouter();
   const userId = getUserId();
 
   useEffect(() => {
@@ -94,9 +91,30 @@ export default function MyownAgent() {
     });
 
     setRetellWebClient(client);
+
+    return () => {
+      // Cleanup RetellWebClient on component unmount
+      client.stopCall();
+    };
   }, []);
 
-  // Handle route changes to end cal
+  // New useEffect for tab visibility detection
+  useEffect(() => {
+  const handleVisibilityChange = () => {
+  console.log('Visibility changed, hidden:', document.hidden);
+  if (document.hidden && Object.keys(activeAgents).length > 0) {
+    console.log('Active call detected, ending call for index:', Object.keys(activeAgents)[0]);
+    handleEndCall(Number(Object.keys(activeAgents)[0]));
+  }
+};
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [activeAgents]);
+
   const handleStartCall = async (agent: Agent, index: number) => {
     setCallLoading(true);
     setSelectedAgent(agent);
@@ -145,7 +163,7 @@ export default function MyownAgent() {
       isStartingRef.current = true;
       await retellWebClient?.startCall({ accessToken: response?.data?.access_token });
       setCallId(response?.data?.call_id);
-      setActiveAgents({ [index]: true }); // Only activate the clicked agent
+      setActiveAgents({ [index]: true });
     } catch (error: any) {
       console.error('Error starting call:', error);
       setSnackbar({
@@ -159,14 +177,14 @@ export default function MyownAgent() {
       isStartingRef.current = false;
     }
   };
+
   const handleEndCall = async (index: number) => {
     if (isEndingRef.current) return;
-    console.log();
     isEndingRef.current = true;
     setCallLoading(true);
 
     try {
-      await retellWebClient.stopCall(); // Ensure this gets awaited
+      await retellWebClient?.stopCall();
     } catch (error) {
       console.error('Error ending call:', error);
       setSnackbar({
@@ -175,7 +193,6 @@ export default function MyownAgent() {
         severity: 'error'
       });
     } finally {
-      // Always clean up
       isEndingRef.current = false;
       setActiveAgents({});
       setCallId(null);
@@ -183,6 +200,7 @@ export default function MyownAgent() {
       setCallLoading(false);
     }
   };
+
   const handleButtonClick = (agent: Agent, index: number) => {
     if (activeAgents[index]) {
       handleEndCall(index);
@@ -194,6 +212,22 @@ export default function MyownAgent() {
   const handleSnackbarClose = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
+
+  // Existing beforeunload handler
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (Object.keys(activeAgents).length > 0) {
+        handleEndCall(Number(Object.keys(activeAgents)[0]));
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [activeAgents]);
+
   if (loading) {
     return (
       <MainCard>
@@ -228,7 +262,6 @@ export default function MyownAgent() {
         <Grid container>
           <Grid size={{ md: 6, sm: 6, xs: 12 }}>
             <Stack sx={{ gap: 2, padding: 1 }}>
-           
               <Typography variant="h6">Name: Partner Agent</Typography>
               <Typography variant="h6">Mins Left: N/A</Typography>
               <Typography variant="h6">Mins Assigned: N/A</Typography>
