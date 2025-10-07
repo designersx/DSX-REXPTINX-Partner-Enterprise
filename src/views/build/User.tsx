@@ -37,7 +37,7 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    if (menuMaster.openedItem !== 'user-profile') handlerActiveItem('user-profile');
+    if (menuMaster.openedItem !== 'user-profile') handlerActiveItem('knowledgeBase');
     // eslint-disable-next-line
   }, [pathname]);
 
