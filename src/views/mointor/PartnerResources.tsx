@@ -1980,7 +1980,7 @@ const PartnerResources = () => {
                           sx={{
                             height: 250,
                             width: "100%",
-                            objectFit: "cover",
+                            objectFit: "fill",
                           }}
                         />
                       ) : (

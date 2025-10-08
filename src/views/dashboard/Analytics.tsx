@@ -229,8 +229,6 @@ import { useAuth } from 'contexts/AuthContext';
 export default function DashboardFinance() {
   const theme = useTheme();
   const userId = getUserId();
-  const { user } = useAuth();
-  console.log(user, 'userdashboard');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const {user}=useAuth();
@@ -254,7 +252,7 @@ export default function DashboardFinance() {
 
   return (
     <>
-    {user.roleId== "4"?
+    {/* {user.roleId== "4"? */}
       <Grid container spacing={GRID_COMMON_SPACING}>
       {userId == 'RXDI7Q1759578841' ? (
         <Grid style={{ display: 'flex', gap: '5px' }}>
@@ -344,8 +342,7 @@ export default function DashboardFinance() {
         </Grid>
       </Grid>
     </Grid>
+    </>
 
-    : <InvoiceDashboard/>}
-  </>
   );
 }

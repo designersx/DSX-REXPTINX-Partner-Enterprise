@@ -7,14 +7,14 @@ import { useAuth } from '../../../../contexts/AuthContext';
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function SamplePage() {
-  console.log('jai ba a ki');
 
-  // return  <DashboardFinance />;
-  return (
-    <>
-      <DashboardFinance />
-    </>
-  );
+  // return  <InvoiceDashboard />;
+  return  <DashboardFinance />;
+  // return (
+  //   <>
+  //     
+  //   </>
+  // );
   //
   // <AnalyticsSection/>
 }

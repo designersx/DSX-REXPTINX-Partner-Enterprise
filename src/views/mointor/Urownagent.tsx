@@ -592,7 +592,7 @@
 //         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 //         const currentTime = new Date().toLocaleString('en-US', { timeZone });
 
-//         const filledPrompt = `
+//  const filledPrompt = `
 // You are ${form.agentName}, a ${form.gender} assistant to ${partnername},
 // who helps ${partnerFirstName} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
 
@@ -633,7 +633,7 @@
 
 //       `;
 
-//         const rawPromptTemplate = `
+//  const rawPromptTemplate = `
 // You are {{AGENT NAME}}, a {{AGENT GENDER}} assistant to {{PARTNER FULL NAME}},
 // who helps {{PARTNER FIRST NAME}} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
 
@@ -1943,6 +1943,8 @@ export default function AgentFormSetup() {
     selectedVoice: null,
     avatar: ''
   });
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const [voices, setVoices] = useState([]);
   const [playingIdx, setPlayingIdx] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -2995,6 +2997,7 @@ export default function AgentFormSetup() {
         // Package all data into one object for create
         const createPayload = {
           userId,
+          timeZone,
           business: {
             businessType: 'AI Virtual Receptionist',
             businessName: 'Receptin',
