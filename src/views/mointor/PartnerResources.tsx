@@ -1915,7 +1915,7 @@ const PartnerResources = () => {
           <Grid container spacing={3} justifyContent="flex-start" alignItems="stretch">
             {content[activeTab]?.length > 0 ? (
               content[activeTab].map((item, index) => ( // FIXED: Ensure map renders ALL items
-                <Grid item xs={12} sm={6} md={4} key={index}> {/* Reference: 3-col on md */}
+                <Grid item xs={12} sm={6} md={4} key={index}> 
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -1939,37 +1939,7 @@ const PartnerResources = () => {
                         },
                       }}
                     >
-                      {/* Absolute chips on top */}
-                      {/* <Stack
-                        direction="row"
-                        sx={{ 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between', 
-                          width: '100%', 
-                          position: 'absolute', 
-                          top: 8, 
-                          left: 8, 
-                          right: 8,
-                          zIndex: 1
-                        }}
-                      >
-                        {(!item.files || item.files.length === 0) && (!item.links || item.links.length === 0) && (
-                          <Chip variant="light" color="error" size="small" label="No Attachments" />
-                        )}
-                        {(item.files && item.files.length > 0) && (
-                          <Chip label={`${item.files.length} Files`} variant="combined" color="success" size="small" />
-                        )}
-                        {(item.links && item.links.length > 0) && (
-                          <Chip label={`${item.links.length} Links`} variant="combined" color="info" size="small" />
-                        )}
-                        <IconButton
-                          color={wishlistedResources[item.id] ? 'error' : 'secondary'}
-                          sx={{ ml: 'auto', '&:hover': { bgcolor: 'transparent' } }}
-                          onClick={() => toggleWishlist(item.id)}
-                        >
-                          <FaHeart size={18} />
-                        </IconButton>
-                      </Stack> */}
+             
 
                       {/* Image */}
                       {item.coverImage ? (
@@ -2034,40 +2004,7 @@ const PartnerResources = () => {
                               {item.description}
                             </Typography>
                           </Grid>
-                          {/* Rating placeholder */}
-                          {/* <Grid item xs={12}>
-                            <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
-                              <Rating precision={0.5} value={4.5} size="small" readOnly />
-                              <Typography variant="caption" sx={{ ml: 1 }}>(4.5)</Typography>
-                            </Stack>
-                          </Grid> */}
-                          {/* Total items as "price" */}
-                          {/* <Grid item xs={12}>
-                            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-end', mt: 1 }}>
-                              <Stack>
-                                <Typography variant="h5" color="success.main">
-                                  {item.files?.length + (item.links?.length || 0)} Items
-                                </Typography>
-                                {item.files?.[0] && (
-                                  <Typography variant="body2" color="text.secondary">
-                                    {item.files[0].name}
-                                  </Typography>
-                                )}
-                              </Stack>
-                              <Button 
-                                variant="contained" 
-                                onClick={() => {
-                                  if (item.files?.[0]) handleFileClick(item.files[0]);
-                                  else if (item.links?.[0]) handleLinkClick(item.links[0]);
-                                }}
-                                disabled={!item.files?.length && !item.links?.length}
-                                sx={{ borderRadius: 2 }}
-                              >
-                                {(!item.files?.length && !item.links?.length) ? 'No Items' : 'View Resource'}
-                              </Button>
-                            </Stack>
-                          </Grid> */}
-                          {/* FIXED: Add back summary grids for files/links - but compact to avoid height issues */}
+                              
                           {item.linkThumbnails?.length > 0 && (
                             <Grid item xs={12}>
                               <Box sx={{ height: 80, overflow: 'hidden' }}>
