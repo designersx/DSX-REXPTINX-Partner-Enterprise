@@ -5,6 +5,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 // types
 import { NavItemType } from 'types/menu';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 // icons
 const icons = {
   page: DashboardIcon,
@@ -30,15 +31,14 @@ const build: NavItemType = {
       type: 'collapse',
       url: '/build/agents/all',
       icon: SmartToyIcon,
-       open: true,
+      open: true,
       children: [
-         {
+        {
           id: 'allAgents',
           title: 'All',
           type: 'item',
           url: '/build/agents/all'
-        }
-        ,
+        },
         {
           id: 'myAgents',
           title: 'My Agents',
@@ -65,6 +65,13 @@ const build: NavItemType = {
       type: 'item',
       url: '/build/knowledgeBase',
       icon: icons.landing
+    },
+    {
+      id: 'UserManagement',
+      title: 'User Management',
+      type: 'item',
+      url: '/build/Usermanagement',
+      icon: ManageAccountsIcon
     }
   ]
 };

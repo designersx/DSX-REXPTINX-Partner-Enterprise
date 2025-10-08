@@ -41,7 +41,6 @@ import { preload } from 'swr';
 import { Login } from '../../../../Services/auth';
 import { useRouter } from 'next/navigation';
 
-
 const Auth0 = '/assets/images/icons/auth0.svg';
 const Cognito = '/assets/images/icons/aws-cognito.svg';
 const Google = '/assets/images/icons/google.svg';
@@ -75,18 +74,24 @@ export default function AuthLogin({ providers, csrfToken }: any) {
           password: Yup.string()
             .required('Password is required')
             .test('no-leading-trailing-whitespace', 'Password can not start or end with spaces', (value) => value === value.trim())
-            // .max(10, 'Password must be less than 10 characters')
+          // .max(10, 'Password must be less than 10 characters')
         })}
-           onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
             const trimmedEmail = values.email.trim();
             console.log('Submitting:', trimmedEmail, values.password);
             const result = await Login(trimmedEmail, values.password);
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('userId', result.userId);
+            localStorage.setItem('referralCode', result.referralCode);
+            localStorage.setItem('referralName', result.referalname);
+            localStorage.setItem('partnername', result.name);
+
             console.log('Login result:', result);
 
             if (result.success && result.token) {
               localStorage.setItem('authToken', result.token); // Save token
-                 sessionStorage.setItem(
+              sessionStorage.setItem(
                 'user',
                 JSON.stringify({
                   userId: result.userId,
@@ -174,7 +179,7 @@ export default function AuthLogin({ providers, csrfToken }: any) {
                   </FormHelperText>
                 )}
               </Grid>
-{/* 
+              {/* 
               <Grid sx={{ mt: -1 }} size={12}>
                 <Stack direction="row" sx={{ gap: 2, justifyContent: 'space-between', alignItems: 'center' }}>
                   <FormControlLabel
