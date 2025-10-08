@@ -23,8 +23,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-
-// third-party
+import { useAuth } from '../../../contexts/AuthContext';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
@@ -53,6 +52,7 @@ export default function AuthLogin({ providers, csrfToken }: any) {
   const [checked, setChecked] = useState(false);
   const { data: session } = useSession();
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -81,6 +81,9 @@ export default function AuthLogin({ providers, csrfToken }: any) {
             const trimmedEmail = values.email.trim();
             console.log('Submitting:', trimmedEmail, values.password);
             const result = await Login(trimmedEmail, values.password);
+            console.log(result, 'result');
+            const userData = result;
+            login(userData);
             localStorage.setItem('token', result.token);
             localStorage.setItem('userId', result.userId);
             localStorage.setItem('referralCode', result.referralCode);
