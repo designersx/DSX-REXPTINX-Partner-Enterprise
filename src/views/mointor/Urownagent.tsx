@@ -2345,626 +2345,754 @@ export default function AgentFormSetup() {
     current.onended = () => setPlayingIdx(null);
   };
 
+//   const handleSubmit = async () => {
+//     const userId = localStorage.getItem('userId');
+//     if (!form.agentName || !form.language || !form.gender || !form.voice || !form.avatar) {
+//       Swal.fire('Please fill all required fields: agentname, Language, Gender, Voice, Avatar.');
+//       return;
+//     }
+//     if (mode == 'create') {
+//       try {
+//         setLoading(true);
+//         const businessPayload = {
+//           userId,
+//           businessType: 'AI Virtual Receptionist',
+//           businessName: 'Receptin',
+//           businessSize: '50-100',
+//           buisnessService: ['AI Virtual Receptionist Service'],
+//           buisnessEmail: 'support@rxpt.us',
+//           address1: '11210 NW 45th St #, Coral Springs, FL 33065, United States',
+//           city: 'Coral Springs',
+//           state: 'Florida',
+//           country: 'United States',
+//           webUrl: 'www.rxpt.us',
+//           street_number: '11210 NW 45th St #'
+//         };
+//         const businessRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/businessDetails/create`, businessPayload);
+//         const businessId = businessRes.data.record.businessId;
+//         const agentCode = businessRes.data.agentCode;
+//         localStorage.setItem('BusinessId', businessId);
+//         localStorage.setItem('agentCode', agentCode);
+//         const knowledgeText = [
+//           {
+//             title: 'Business Details',
+//             text: `Name: Receptin
+//             Address: 11210 NW 45th St #, Coral Springs, FL 33065, United States
+//             Phone: +1 (772) 271 7966
+//             Website: www.rxpt.us
+//             Email: support@rxpt.us
+//             About: N/A
+//             Google: N/A`
+//           }
+//         ];
+//         let agentCount = 0;
+//         let knowledgeBaseName = '';
+//         try {
+//           agentCount = await countAgentsbyUserId(userId);
+//           knowledgeBaseName = `Prtnr_${userId}_${agentCode}_#${agentCount + 1}`;
+//           localStorage.setItem('knowledgebaseName', knowledgeBaseName);
+//         } catch (error) {
+//           console.error('Error generating knowledgeBaseName:', error);
+//           return null;
+//         }
+//         const knowledgeFormData = new FormData();
+//         knowledgeFormData.append('knowledge_base_name', knowledgeBaseName);
+//         knowledgeFormData.append('enable_auto_refresh', 'true');
+//         knowledgeFormData.append('knowledge_base_texts', JSON.stringify(knowledgeText));
+//         knowledgeFormData.append('knowledge_base_urls', JSON.stringify(['https://www.rxpt.us']));
+//         const kbRes = await axios.post('https://api.retellai.com/create-knowledge-base', knowledgeFormData, {
+//           headers: {
+//             Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
+//             'Content-Type': 'multipart/form-data'
+//           }
+//         });
+//         const knowledge_Base_ID = kbRes?.data?.knowledge_base_id;
+//         knowledgeFormData.append('knowledgeBaseId', knowledge_Base_ID);
+//         localStorage.setItem('knowledge_Base_ID', knowledge_Base_ID);
+//         localStorage.getItem('BusinessId');
+//         knowledgeFormData.append('agentId', null);
+//         await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/businessDetails/updateKnowledeBase/${businessId}`, knowledgeFormData, {
+//           headers: {
+//             Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
+//             'Content-Type': 'multipart/form-data'
+//           }
+//         });
+//         const partnername = localStorage.getItem('partnername') || 'Receptin';
+//         const partnerFirstName = partnername.split(' ')[0];
+//         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//         const currentTime = new Date().toLocaleString('en-US', { timeZone });
+//         const filledPrompt = `
+// You are ${form.agentName}, a ${form.gender} assistant to ${partnername}, 
+// who helps ${partnerFirstName} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
+// ### Persona of the Receptionist
+// - Role: A seasoned SDR named ${form.agentName} who answers inbound calls on behalf of ${partnername} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
+// - Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
+// Greet the caller with a warm welcome directly in language the language code is this ${form.language}. Do not repeat the greeting in another language.
+// You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
+// 1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
+// 2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
+// 3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
+// - Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
+// - Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
+// ### Rules for AI Voice Assistant:
+// The agent must respect multi and converse only in that language.
+// - Current Time: ${currentTime}
+// - Timezone: ${timeZone}
+// ### More Instructions
+// You can assist callers with the following:
+// - General inquiries, such as Services Information
+// - Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
+// - Assist the caller in buying the correct package for a specific business
+// - Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
+// - Take the project details from the caller for Future Interactions
+// - Take Details of the caller and the Business for which an AI Receptionist is required
+// - Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
+// - If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
+// Keep the conversation concise and to the point.
+// The user transcript might contain transcription errors. Use your best judgment to guess and respond.
+// `;
+//         const rawPromptTemplate = `
+// You are {{AGENT NAME}}, a {{AGENT GENDER}} assistant to {{PARTNER FULL NAME}}, 
+// who helps {{PARTNER FIRST NAME}} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
+// ### Persona of the Receptioni {{AGENT NAME}} who answers inbound calls on behalf of {{PARTNER FULL NAME}} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
+// - Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
+// Greet the caller with a warm welcome directly in language the language code is this {{LANGUAGE}}. Do not repeat the greeting in another language.
+// You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
+// 1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
+// 2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
+// 3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
+// - Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
+// - Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
+// ### Rules for AI Voice Assistant:
+// The agent must respect multi and converse only in that language.
+// - Current Time: {{CURRENT TIME}}
+// - Timezone:{{TIMEZONE}}
+// ### More Instructions
+// You can assist callers with the following:
+// - General inquiries, such as Services Information
+// - Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
+// - Assist the caller in buying the correct package for a specific business
+// - Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
+// - Take the project details from the caller for Future Interactions
+// - Take Details of the caller and the Business for which an AI Receptionist is required
+// - Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
+// - If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
+// Keep the conversation concise and to the point.
+// The user transcript might contain transcription errors. Use your best judgment to guess and respond.
+// `;
+//         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
+//           agentName: { key: 'AGENT NAME', value: form.agentName?.split(' ')[0] || 'Assistant' },
+//           agentGender: { key: 'AGENT GENDER', value: form.gender || 'neutral' },
+//           partnerNameFull: { key: 'PARTNER FULL NAME', value: partnername },
+//           partnerFirstName: { key: 'PARTNER FIRST NAME', value: partnerFirstName },
+//           businessName: { key: 'BUSINESS NAME', value: 'Receptin' },
+//           businessEmail: { key: 'BUSINESS EMAIL ID', value: 'support@rxpt.us' },
+//           aboutBusiness: { key: 'MORE ABOUT YOUR BUSINESS', value: 'We provide virtual AI receptionist services.' },
+//           businessAddress: { key: 'BUSINESS ADDRESS', value: '11210 NW 45th St #, Coral Springs, FL 33065, United States' },
+//           businessWebsite: { key: 'BUSINESS WEBSITE', value: 'www.rxpt.us' },
+//           businessPhone: { key: 'BUSINESS PHONE', value: '+1 (772) 271 7966' },
+//           businessType: { key: 'BUSINESSTYPE', value: 'AI Virtual Receptionist' },
+//           commaSeparatedServices: { key: 'SERVICES', value: 'AI Virtual Receptionist Service' },
+//           languageSelect: { key: 'LANGUAGE', value: form.language || 'English' },
+//           timeZone: { key: 'TIMEZONE', value: timeZone },
+//           current_time: { key: 'CURRENT TIME', value: currentTime },
+//           [`current_time_[${timeZone}]`]: { key: `CURRENT TIME IN ${timeZone}`, value: currentTime }
+//         });
+//         const agentConfig = {
+//           version: 0,
+//           model: 'gemini-2.0-flash',
+//           model_temperature: 0,
+//           model_high_priority: true,
+//           tool_call_strict_mode: true,
+//           general_prompt: filledPrompt,
+//           general_tools: [
+//             {
+//               type: 'end_call',
+//               name: 'end_call',
+//               description: 'End the call with user.'
+//             },
+//             {
+//               type: 'extract_dynamic_variable',
+//               name: 'extract_user_details',
+//               description:
+//                 "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+//               variables: [
+//                 { type: 'string', name: 'email', description: "Extract the user's email address from the conversation" },
+//                 { type: 'number', name: 'phone', description: "Extract the user's phone number from the conversation" },
+//                 { type: 'string', name: 'address', description: "Extract the user's address from the conversation" },
+//                 { type: 'string', name: 'reason', description: "Extract the user's reason for calling from the conversation" },
+//                 { type: 'string', name: 'name', description: "Extract the user's name from the conversation" }
+//               ]
+//             }
+//           ],
+//           states: [
+//             {
+//               name: 'information_collection',
+//               state_prompt: `Greet the user with the begin_message and assist with their query.
+//                               If the user wants to transfer the call, then say Call forwarding is not available.
+//                               If the user asks for an appointment (e.g., "appointment", "book", "schedule"), transition to appointment_booking.
+//                               If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+//                               If the user wants to end the call transition to end_call_state`,
+//               edges: [{ destination_state_name: 'CallTransfer_confirmation', description: 'User wants to tranfer call to talk.' }]
+//             },
+//             {
+//               name: 'appointment_booking',
+//               state_prompt: '## Task\nYou will now help the user book an appointment.'
+//             },
+//             {
+//               name: 'CallTransfer_confirmation',
+//               state_prompt: `
+//                               Say: Would you like me to connect you with {{partner}}? Please say yes or no."
+//                               Wait for their response.
+//                               If the user says yes, transition to call_transfer.
+//                               If the user says no, transition to information_collection.
+//                               If the response is unclear, repeat the question once.
+//                           `,
+//               edges: [
+//                 { destination_state_name: 'call_transfer', description: 'User agreed to speak to Partner.' },
+//                 { destination_state_name: 'information_collection', description: 'User declined to speak to partner.' }
+//               ],
+//               tools: []
+//             },
+//             {
+//               name: 'call_transfer',
+//               state_prompt: `Connecting you to a team member now. Please hold.`,
+//               tools: [
+//                 {
+//                   type: 'transfer_call',
+//                   name: 'transfer_to_Partner',
+//                   description: 'Transfer the call to the team member.',
+//                   transfer_destination: { type: 'predefined', number: '{{business_Phone}}' },
+//                   transfer_option: { type: 'cold_transfer', public_handoff_option: { message: 'Please hold while I transfer your call.' } },
+//                   speak_during_execution: true,
+//                   speak_after_execution: true,
+//                   failure_message:
+//                     "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+//                 }
+//               ],
+//               edges: []
+//             },
+//             {
+//               name: 'end_call_state',
+//               state_prompt: `Politely end the call by saying: "Thank you for calling. Have a great day!"`,
+//               tools: [{ type: 'end_call', name: 'end_call1', description: 'End the call with the user.' }],
+//               edges: []
+//             }
+//           ],
+//           starting_state: 'information_collection',
+//           default_dynamic_variables: {
+//             customer_name: 'John Doe',
+//             timeZone: timeZone
+//           }
+//         };
+//         const knowledgeBaseId = localStorage.getItem('knowledge_Base_ID');
+//         if (knowledgeBaseId) {
+//           agentConfig.knowledge_base_ids = [knowledgeBaseId];
+//         }
+//         const llmRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/createAdmin/llm`, agentConfig, {
+//           headers: {
+//             Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`
+//           }
+//         });
+//         const llmId = llmRes.data.data.llm_id;
+//         const agentRes = await axios.post(
+//           'https://api.retellai.com/create-agent',
+//           {
+//             response_engine: { type: 'retell-llm', llm_id: llmId },
+//             voice_id: form.voice,
+//             agent_name: form.selectedVoice?.voice_name || 'Virtual Assistant',
+//             language: 'multi',
+//             post_call_analysis_model: 'gpt-4o-mini',
+//             responsiveness: 1,
+//             enable_backchannel: true,
+//             interruption_sensitivity: 0.91,
+//             backchannel_frequency: 0.7,
+//             backchannel_words: ['Got it', 'Yeah', 'Uh-huh', 'Understand', 'Ok', 'hmmm'],
+//             post_call_analysis_data: [
+//               {
+//                 type: 'enum',
+//                 name: 'lead_type',
+//                 description: 'Feedback given by the customer about the call.',
+//                 choices: getLeadTypeChoices()
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'name',
+//                 description: "Extract the user's name from the conversation",
+//                 examples: ['Ajay Sood', 'John Wick', 'Adam Zampa', 'Jane Doe', 'Nitish Kumar', 'Ravi Shukla']
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'email',
+//                 description: "Extract the user's email from the conversation",
+//                 examples: ['john.doe@example.com', 'nitish@company.in', '12@gmail.com']
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'reason',
+//                 description:
+//                   "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
+//                 examples: ['Schedule an appointment', 'Ask about services', 'Request for accounting help']
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'address',
+//                 description:
+//                   "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+//                 examples: ['123 Main St, Delhi', '42 Wallaby Way, Sydney', '1490 Aandhar Eleven']
+//               },
+//               {
+//                 type: 'number',
+//                 name: 'phone_number',
+//                 description:
+//                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible."
+//               }
+//             ],
+//             end_call_after_silence_ms: 30000,
+//             normalize_for_speech: true,
+//             webhook_url: `${process.env.NEXT_PUBLIC_API_URL}/api/agent/updateAgentCall_And_Mins_WebHook`
+//           },
+//           {
+//             headers: {
+//               Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`
+//             }
+//           }
+//         );
+//         const agentId = agentRes.data.agent_id;
+//         const dbPayload = {
+//           userId,
+//           agent_id: agentId,
+//           llmId,
+//           avatar: form.avatar,
+//           agentVoice: form.voice,
+//           knowledgeBaseId: knowledge_Base_ID,
+//           agentAccent: form.selectedVoice?.voice_accent || 'American',
+//           agentRole: 'Partner Assistant',
+//           agentName: form.agentName || 'Virtual Assistant',
+//           agentLanguageCode: form.language,
+//           agentLanguage: form.agentLanguage,
+//           dynamicPromptTemplate: filledPrompt,
+//           rawPromptTemplate: filledPrompt,
+//           promptVariablesList: JSON.stringify(promptVariablesList),
+//           agentGender: form.gender,
+//           agentPlan: 'free',
+//           agentStatus: true,
+//           businessId,
+//           additionalNote: '',
+//           agentCreatedBy: 'partner'
+//         };
+//         const saveRes = await createAgent(dbPayload);
+//         if (saveRes.status === 200 || saveRes.status === 201) {
+//           setLoading(false);
+//           setRefresh((prev) => !prev);
+//           Swal.fire('Agent created successfully!');
+//           localStorage.removeItem('agentCode');
+//           localStorage.removeItem('businessType');
+//         } else {
+//           throw new Error('Agent creation failed.');
+//           setLoading(false);
+//         }
+//       } catch (err) {
+//         console.error('Error during full setup:', err);
+//         Swal.fire('Something went wrong during setup.');
+//         setLoading(false);
+//       } finally {
+//         setLoading(false);
+//       }
+//     } else if (mode == 'edit') {
+//       setLoading(true);
+//       try {
+//         const agentId = agentData?.agent_id;
+//         const llmId = agentData?.llmId;
+//         const knowledgeBaseId = agentData?.knowledgeBaseId;
+//         const businessId = agentData?.businessId;
+//         if (!agentId || !llmId || !knowledgeBaseId || !businessId) {
+//           throw new Error('Missing required agent data for update.');
+//         }
+//         const partnername = localStorage.getItem('partnername') || 'Receptin';
+//         const partnerFirstName = partnername.split(' ')[0];
+//         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//         const currentTime = new Date().toLocaleString('en-US', { timeZone });
+//         const filledPrompt = `
+//   You are ${form.agentName}, a ${form.gender} assistant to ${partnername}, 
+//   who helps ${partnerFirstName} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
+//   ### Persona of the Receptionist
+//   - Role: A seasoned SDR named ${form.agentName} who answers inbound calls on behalf of ${partnername} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
+//   - Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
+//   Greet the caller with a warm welcome directly in language the language code is this ${form.language}. Do not repeat the greeting in another language.
+//   You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
+//   1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
+//   2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
+//   3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
+//   - Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
+//   - Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
+//   ### Rules for AI Voice Assistant:
+//   The agent must respect multi and converse only in that language.
+//   - Current Time: ${currentTime}
+//   - Timezone: ${timeZone}
+//   ### More Instructions
+//   You can assist callers with the following:
+//   - General inquiries, such as Services Information
+//   - Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
+//   - Assist the caller in buying the correct package for a specific business
+//   - Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
+//   - Take the project details from the caller for Future Interactions
+//   - Take Details of the caller and the Business for which an AI Receptionist is required
+//   - Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
+//   - If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
+//   Keep the conversation concise and to the point.
+//   The user transcript might contain transcription errors. Use your best judgment to guess and respond.
+//   `;
+//         const rawPromptTemplate = `
+// You are {{AGENT NAME}}, a {{AGENT GENDER}} assistant to {{PARTNER FULL NAME}}, 
+// who helps {{PARTNER FIRST NAME}} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
+// ### Persona of the Receptioni {{AGENT NAME}} who answers inbound calls on behalf of {{PARTNER FULL NAME}} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
+// - Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
+// Greet the caller with a warm welcome directly in language the language code is this {{LANGUAGE}}. Do not repeat the greeting in another language.
+// You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
+// 1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
+// 2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
+// 3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
+// - Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
+// - Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
+// ### Rules for AI Voice Assistant:
+// The agent must respect multi and converse only in that language.
+// - Current Time: {{CURRENT TIME}}
+// - Timezone:{{TIMEZONE}}
+// ### More Instructions
+// You can assist callers with the following:
+// - General inquiries, such as Services Information
+// - Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
+// - Assist the caller in buying the correct package for a specific business
+// - Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
+// - Take the project details from the caller for Future Interactions
+// - Take Details of the caller and the Business for which an AI Receptionist is required
+// - Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
+// - If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
+// Keep the conversation concise and to the point.
+// The user transcript might contain transcription errors. Use your best judgment to guess and respond.
+// `;
+//         const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
+//           agentName: { key: 'AGENT NAME', value: form.agentName?.split(' ')[0] || 'Assistant' },
+//           agentGender: { key: 'AGENT GENDER', value: form.gender || 'neutral' },
+//           partnerNameFull: { key: 'PARTNER FULL NAME', value: partnername },
+//           partnerFirstName: { key: 'PARTNER FIRST NAME', value: partnerFirstName },
+//           businessName: { key: 'BUSINESS NAME', value: 'Receptin' },
+//           businessEmail: { key: 'BUSINESS EMAIL ID', value: 'support@rxpt.us' },
+//           aboutBusiness: { key: 'MORE ABOUT YOUR BUSINESS', value: 'We provide virtual AI receptionist services.' },
+//           businessAddress: { key: 'BUSINESS ADDRESS', value: '11210 NW 45th St #, Coral Springs, FL 33065, United States' },
+//           businessWebsite: { key: 'BUSINESS WEBSITE', value: 'www.rxpt.us' },
+//           businessPhone: { key: 'BUSINESS PHONE', value: '+1 (772) 271 7966' },
+//           businessType: { key: 'BUSINESSTYPE', value: 'AI Virtual Receptionist' },
+//           commaSeparatedServices: { key: 'SERVICES', value: 'AI Virtual Receptionist Service' },
+//           languageSelect: { key: 'LANGUAGE', value: form.language || 'English' },
+//           timeZone: { key: 'TIMEZONE', value: timeZone },
+//           current_time: { key: 'CURRENT TIME', value: currentTime },
+//           [`current_time_[${timeZone}]`]: { key: `CURRENT TIME IN ${timeZone}`, value: currentTime }
+//         });
+//         const callForwarding = agentData.callForwarding;
+//         const agentConfig = {
+//           version: 0,
+//           model: 'gemini-2.0-flash',
+//           model_temperature: 0,
+//           model_high_priority: true,
+//           tool_call_strict_mode: true,
+//           general_prompt: filledPrompt,
+//           general_tools: [
+//             {
+//               type: 'end_call',
+//               name: 'end_call',
+//               description: 'End the call with user.'
+//             },
+//             {
+//               type: 'extract_dynamic_variable',
+//               name: 'extract_user_details',
+//               description:
+//                 "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
+//               variables: [
+//                 { type: 'string', name: 'email', description: "Extract the user's email address from the conversation" },
+//                 { type: 'number', name: 'phone', description: "Extract the user's phone number from the conversation" },
+//                 { type: 'string', name: 'address', description: "Extract the user's address from the conversation" },
+//                 { type: 'string', name: 'reason', description: "Extract the user's reason for calling from the conversation" },
+//                 { type: 'string', name: 'name', description: "Extract the user's name from the conversation" }
+//               ]
+//             }
+//           ],
+//           states: [
+//             {
+//               name: 'information_collection',
+//               state_prompt: `Greet the user with the begin_message and assist with their query.
+//                               If the user wants to transfer the call:
+//                               ${getCallForwarding(callForwarding)}
+//                               If the user asks for an appointment (e.g., "appointment", "book", "schedule"),transition to appointment_booking.
+//                               If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
+//                               If the user wants to end the call transition to end_call_state`,
+//               edges: [{ destination_state_name: 'CallTransfer_confirmation', description: 'User wants to transfer call.' }]
+//             },
+//             {
+//               name: 'appointment_booking',
+//               state_prompt: '## Task\nYou will now help the user book an appointment.'
+//             },
+//             {
+//               name: 'CallTransfer_confirmation',
+//               state_prompt: `
+//                               Say: Would you like me to connect you with {{partner}}? Please say yes or no."
+//                               Wait for their response.
+//                               If the user says yes, transition to call_transfer.
+//                               If the user says no, transition to information_collection.
+//                               If the response is unclear, repeat the question once.
+//                           `,
+//               edges: [
+//                 { destination_state_name: 'call_transfer', description: 'User agreed to speak to Partner.' },
+//                 { destination_state_name: 'information_collection', description: 'User declined to speak to Partner.' }
+//               ],
+//               tools: []
+//             },
+//             {
+//               name: 'call_transfer',
+//               state_prompt: `Connecting you to a team member now. Please hold.`,
+//               tools: [
+//                 {
+//                   type: 'transfer_call',
+//                   name: 'transfer_to_Partner',
+//                   description: 'Transfer the call to the team member.',
+//                   transfer_destination: { type: 'predefined', number: '{{business_Phone}}' },
+//                   transfer_option: { type: 'cold_transfer', public_handoff_option: { message: 'Please hold while I transfer your call.' } },
+//                   speak_during_execution: true,
+//                   speak_after_execution: true,
+//                   failure_message:
+//                     "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
+//                 }
+//               ],
+//               edges: []
+//             },
+//             {
+//               name: 'end_call_state',
+//               state_prompt: `Politely end the call by saying: "Thank you for calling. Have a great day!"`,
+//               tools: [{ type: 'end_call', name: 'end_call1', description: 'End the call with the user.' }],
+//               edges: []
+//             }
+//           ],
+//           starting_state: 'information_collection',
+//           default_dynamic_variables: {
+//             customer_name: 'John Doe',
+//             timeZone: timeZone
+//           }
+//         };
+//         await axios.patch(`https://api.retellai.com/update-retell-llm/${llmId}`, agentConfig, {
+//           headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}` }
+//         });
+//         await axios.patch(
+//           `https://api.retellai.com/update-agent/${agentId}`,
+//           {
+//             response_engine: { type: 'retell-llm', llm_id: llmId },
+//             voice_id: form.voice,
+//             agent_name: form.selectedVoice?.voice_name || form.agentName || 'Virtual Assistant',
+//             language: 'multi',
+//             post_call_analysis_model: 'gpt-4o-mini',
+//             responsiveness: 1,
+//             enable_backchannel: true,
+//             interruption_sensitivity: 0.91,
+//             backchannel_frequency: 0.7,
+//             backchannel_words: ['Got it', 'Yeah', 'Uh-huh', 'Understand', 'Ok', 'hmmm'],
+//             post_call_analysis_data: [
+//               {
+//                 type: 'enum',
+//                 name: 'lead_type',
+//                 description: 'Feedback given by the customer about the call.',
+//                 choices: getLeadTypeChoices()
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'name',
+//                 description: "Extract the user's name from the conversation",
+//                 examples: ['Ajay Sood', 'John Wick', 'Adam Zampa', 'Jane Doe', 'Nitish Kumar', 'Ravi Shukla']
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'email',
+//                 description: "Extract the user's email from the conversation",
+//                 examples: ['john.doe@example.com', 'nitish@company.in', '12@gmail.com']
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'reason',
+//                 description:
+//                   "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
+//                 examples: ['Schedule an appointment', 'Ask about services', 'Request for accounting help']
+//               },
+//               {
+//                 type: 'string',
+//                 name: 'address',
+//                 description:
+//                   "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
+//                 examples: ['123 Main St, Delhi', '42 Wallaby Way, Sydney', '1490 Aandhar Eleven']
+//               },
+//               {
+//                 type: 'number',
+//                 name: 'phone_number',
+//                 description:
+//                   "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible."
+//               }
+//             ],
+//             end_call_after_silence_ms: 30000,
+//             normalize_for_speech: true,
+//             webhook_url: `${process.env.NEXT_PUBLIC_API_URL}/api/agent/updateAgentCall_And_Mins_WebHook`
+//           },
+//           { headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}` } }
+//         );
+//         const dbPayload = {
+//           userId,
+//           agent_id: agentId,
+//           llmId,
+//           avatar: form.avatar,
+//           agentVoice: form.voice,
+//           knowledgeBaseId,
+//           agentAccent: form.selectedVoice?.voice_accent || 'American',
+//           agentRole: 'Partner Assistant',
+//           agentName: form.agentName || 'Virtual Assistant',
+//           agentLanguageCode: form.language,
+//           agentLanguage: form.agentLanguage,
+//           dynamicPromptTemplate: filledPrompt,
+//           rawPromptTemplate: filledPrompt,
+//           promptVariablesList: JSON.stringify(promptVariablesList),
+//           agentGender: form.gender,
+//           agentPlan: agentData?.agentPlan || 'free',
+//           agentStatus: agentData?.agentStatus || true,
+//           businessId,
+//           additionalNote: '',
+//           agentCreatedBy: 'partner'
+//         };
+//         const updateRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/updateAgent/${agentId}`, dbPayload);
+//         if (updateRes.status === 200 || updateRes.status === 201) {
+//           setRefresh((prev) => !prev);
+//           setMode('create');
+//           setShowEditModal(false);
+//           setForm({ language: '', agentName: '', gender: '', voice: '', selectedVoice: null, avatar: '', agentLanguage: '' });
+//           Swal.fire('Agent updated successfully!');
+//         } else {
+//           throw new Error('Agent update failed.');
+//         }
+//       } catch (error) {
+//         console.error('Error during edit:', error);
+//         Swal.fire('Something went wrong while editing.');
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//   };
+
   const handleSubmit = async () => {
     const userId = localStorage.getItem('userId');
     if (!form.agentName || !form.language || !form.gender || !form.voice || !form.avatar) {
       Swal.fire('Please fill all required fields: agentname, Language, Gender, Voice, Avatar.');
       return;
     }
-    if (mode == 'create') {
-      try {
-        setLoading(true);
-        const businessPayload = {
+
+    setLoading(true);
+    try {
+      if (mode === 'create') {
+        // Package all data into one object for create
+        const createPayload = {
           userId,
-          businessType: 'AI Virtual Receptionist',
-          businessName: 'Receptin',
-          businessSize: '50-100',
-          buisnessService: ['AI Virtual Receptionist Service'],
-          buisnessEmail: 'support@rxpt.us',
-          address1: '11210 NW 45th St #, Coral Springs, FL 33065, United States',
-          city: 'Coral Springs',
-          state: 'Florida',
-          country: 'United States',
-          webUrl: 'www.rxpt.us',
-          street_number: '11210 NW 45th St #'
-        };
-        const businessRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/businessDetails/create`, businessPayload);
-        const businessId = businessRes.data.record.businessId;
-        const agentCode = businessRes.data.agentCode;
-        localStorage.setItem('BusinessId', businessId);
-        localStorage.setItem('agentCode', agentCode);
-        const knowledgeText = [
-          {
-            title: 'Business Details',
-            text: `Name: Receptin
-            Address: 11210 NW 45th St #, Coral Springs, FL 33065, United States
-            Phone: +1 (772) 271 7966
-            Website: www.rxpt.us
-            Email: support@rxpt.us
-            About: N/A
-            Google: N/A`
-          }
-        ];
-        let agentCount = 0;
-        let knowledgeBaseName = '';
-        try {
-          agentCount = await countAgentsbyUserId(userId);
-          knowledgeBaseName = `Prtnr_${userId}_${agentCode}_#${agentCount + 1}`;
-          localStorage.setItem('knowledgebaseName', knowledgeBaseName);
-        } catch (error) {
-          console.error('Error generating knowledgeBaseName:', error);
-          return null;
-        }
-        const knowledgeFormData = new FormData();
-        knowledgeFormData.append('knowledge_base_name', knowledgeBaseName);
-        knowledgeFormData.append('enable_auto_refresh', 'true');
-        knowledgeFormData.append('knowledge_base_texts', JSON.stringify(knowledgeText));
-        knowledgeFormData.append('knowledge_base_urls', JSON.stringify(['https://www.rxpt.us']));
-        const kbRes = await axios.post('https://api.retellai.com/create-knowledge-base', knowledgeFormData, {
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        const knowledge_Base_ID = kbRes?.data?.knowledge_base_id;
-        knowledgeFormData.append('knowledgeBaseId', knowledge_Base_ID);
-        localStorage.setItem('knowledge_Base_ID', knowledge_Base_ID);
-        localStorage.getItem('BusinessId');
-        knowledgeFormData.append('agentId', null);
-        await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/businessDetails/updateKnowledeBase/${businessId}`, knowledgeFormData, {
-          headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_API_RETELL_API}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        const partnername = localStorage.getItem('partnername') || 'Receptin';
-        const partnerFirstName = partnername.split(' ')[0];
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const currentTime = new Date().toLocaleString('en-US', { timeZone });
-        const filledPrompt = `
-You are ${form.agentName}, a ${form.gender} assistant to ${partnername}, 
-who helps ${partnerFirstName} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
-### Persona of the Receptionist
-- Role: A seasoned SDR named ${form.agentName} who answers inbound calls on behalf of ${partnername} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
-- Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
-Greet the caller with a warm welcome directly in language the language code is this ${form.language}. Do not repeat the greeting in another language.
-You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
-1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
-2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
-3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
-- Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
-- Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
-### Rules for AI Voice Assistant:
-The agent must respect multi and converse only in that language.
-- Current Time: ${currentTime}
-- Timezone: ${timeZone}
-### More Instructions
-You can assist callers with the following:
-- General inquiries, such as Services Information
-- Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
-- Assist the caller in buying the correct package for a specific business
-- Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
-- Take the project details from the caller for Future Interactions
-- Take Details of the caller and the Business for which an AI Receptionist is required
-- Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
-- If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
-Keep the conversation concise and to the point.
-The user transcript might contain transcription errors. Use your best judgment to guess and respond.
-`;
-        const rawPromptTemplate = `
-You are {{AGENT NAME}}, a {{AGENT GENDER}} assistant to {{PARTNER FULL NAME}}, 
-who helps {{PARTNER FIRST NAME}} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
-### Persona of the Receptioni {{AGENT NAME}} who answers inbound calls on behalf of {{PARTNER FULL NAME}} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
-- Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
-Greet the caller with a warm welcome directly in language the language code is this {{LANGUAGE}}. Do not repeat the greeting in another language.
-You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
-1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
-2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
-3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
-- Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
-- Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
-### Rules for AI Voice Assistant:
-The agent must respect multi and converse only in that language.
-- Current Time: {{CURRENT TIME}}
-- Timezone:{{TIMEZONE}}
-### More Instructions
-You can assist callers with the following:
-- General inquiries, such as Services Information
-- Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
-- Assist the caller in buying the correct package for a specific business
-- Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
-- Take the project details from the caller for Future Interactions
-- Take Details of the caller and the Business for which an AI Receptionist is required
-- Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
-- If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
-Keep the conversation concise and to the point.
-The user transcript might contain transcription errors. Use your best judgment to guess and respond.
-`;
-        const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
-          agentName: { key: 'AGENT NAME', value: form.agentName?.split(' ')[0] || 'Assistant' },
-          agentGender: { key: 'AGENT GENDER', value: form.gender || 'neutral' },
-          partnerNameFull: { key: 'PARTNER FULL NAME', value: partnername },
-          partnerFirstName: { key: 'PARTNER FIRST NAME', value: partnerFirstName },
-          businessName: { key: 'BUSINESS NAME', value: 'Receptin' },
-          businessEmail: { key: 'BUSINESS EMAIL ID', value: 'support@rxpt.us' },
-          aboutBusiness: { key: 'MORE ABOUT YOUR BUSINESS', value: 'We provide virtual AI receptionist services.' },
-          businessAddress: { key: 'BUSINESS ADDRESS', value: '11210 NW 45th St #, Coral Springs, FL 33065, United States' },
-          businessWebsite: { key: 'BUSINESS WEBSITE', value: 'www.rxpt.us' },
-          businessPhone: { key: 'BUSINESS PHONE', value: '+1 (772) 271 7966' },
-          businessType: { key: 'BUSINESSTYPE', value: 'AI Virtual Receptionist' },
-          commaSeparatedServices: { key: 'SERVICES', value: 'AI Virtual Receptionist Service' },
-          languageSelect: { key: 'LANGUAGE', value: form.language || 'English' },
-          timeZone: { key: 'TIMEZONE', value: timeZone },
-          current_time: { key: 'CURRENT TIME', value: currentTime },
-          [`current_time_[${timeZone}]`]: { key: `CURRENT TIME IN ${timeZone}`, value: currentTime }
-        });
-        const agentConfig = {
-          version: 0,
-          model: 'gemini-2.0-flash',
-          model_temperature: 0,
-          model_high_priority: true,
-          tool_call_strict_mode: true,
-          general_prompt: filledPrompt,
-          general_tools: [
-            {
-              type: 'end_call',
-              name: 'end_call',
-              description: 'End the call with user.'
-            },
-            {
-              type: 'extract_dynamic_variable',
-              name: 'extract_user_details',
-              description:
-                "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
-              variables: [
-                { type: 'string', name: 'email', description: "Extract the user's email address from the conversation" },
-                { type: 'number', name: 'phone', description: "Extract the user's phone number from the conversation" },
-                { type: 'string', name: 'address', description: "Extract the user's address from the conversation" },
-                { type: 'string', name: 'reason', description: "Extract the user's reason for calling from the conversation" },
-                { type: 'string', name: 'name', description: "Extract the user's name from the conversation" }
-              ]
-            }
-          ],
-          states: [
-            {
-              name: 'information_collection',
-              state_prompt: `Greet the user with the begin_message and assist with their query.
-                              If the user wants to transfer the call, then say Call forwarding is not available.
-                              If the user asks for an appointment (e.g., "appointment", "book", "schedule"), transition to appointment_booking.
-                              If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
-                              If the user wants to end the call transition to end_call_state`,
-              edges: [{ destination_state_name: 'CallTransfer_confirmation', description: 'User wants to tranfer call to talk.' }]
-            },
-            {
-              name: 'appointment_booking',
-              state_prompt: '## Task\nYou will now help the user book an appointment.'
-            },
-            {
-              name: 'CallTransfer_confirmation',
-              state_prompt: `
-                              Say: Would you like me to connect you with {{partner}}? Please say yes or no."
-                              Wait for their response.
-                              If the user says yes, transition to call_transfer.
-                              If the user says no, transition to information_collection.
-                              If the response is unclear, repeat the question once.
-                          `,
-              edges: [
-                { destination_state_name: 'call_transfer', description: 'User agreed to speak to Partner.' },
-                { destination_state_name: 'information_collection', description: 'User declined to speak to partner.' }
-              ],
-              tools: []
-            },
-            {
-              name: 'call_transfer',
-              state_prompt: `Connecting you to a team member now. Please hold.`,
-              tools: [
-                {
-                  type: 'transfer_call',
-                  name: 'transfer_to_Partner',
-                  description: 'Transfer the call to the team member.',
-                  transfer_destination: { type: 'predefined', number: '{{business_Phone}}' },
-                  transfer_option: { type: 'cold_transfer', public_handoff_option: { message: 'Please hold while I transfer your call.' } },
-                  speak_during_execution: true,
-                  speak_after_execution: true,
-                  failure_message:
-                    "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
-                }
-              ],
-              edges: []
-            },
-            {
-              name: 'end_call_state',
-              state_prompt: `Politely end the call by saying: "Thank you for calling. Have a great day!"`,
-              tools: [{ type: 'end_call', name: 'end_call1', description: 'End the call with the user.' }],
-              edges: []
-            }
-          ],
-          starting_state: 'information_collection',
-          default_dynamic_variables: {
-            customer_name: 'John Doe',
-            timeZone: timeZone
-          }
-        };
-        const knowledgeBaseId = localStorage.getItem('knowledge_Base_ID');
-        if (knowledgeBaseId) {
-          agentConfig.knowledge_base_ids = [knowledgeBaseId];
-        }
-        const llmRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/createAdmin/llm`, agentConfig, {
-          headers: {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`
-          }
-        });
-        const llmId = llmRes.data.data.llm_id;
-        const agentRes = await axios.post(
-          'https://api.retellai.com/create-agent',
-          {
-            response_engine: { type: 'retell-llm', llm_id: llmId },
-            voice_id: form.voice,
-            agent_name: form.selectedVoice?.voice_name || 'Virtual Assistant',
-            language: 'multi',
-            post_call_analysis_model: 'gpt-4o-mini',
-            responsiveness: 1,
-            enable_backchannel: true,
-            interruption_sensitivity: 0.91,
-            backchannel_frequency: 0.7,
-            backchannel_words: ['Got it', 'Yeah', 'Uh-huh', 'Understand', 'Ok', 'hmmm'],
-            post_call_analysis_data: [
+          business: {
+            businessType: 'AI Virtual Receptionist',
+            businessName: 'Receptin',
+            businessSize: '50-100',
+            buisnessService: ['AI Virtual Receptionist Service'],
+            buisnessEmail: 'support@rxpt.us',
+            address1: '11210 NW 45th St #, Coral Springs, FL 33065, United States',
+            city: 'Coral Springs',
+            state: 'Florida',
+            country: 'United States',
+            webUrl: 'www.rxpt.us',
+            street_number: '11210 NW 45th St #'
+          },
+          knowledge: {
+            texts: [
               {
-                type: 'enum',
-                name: 'lead_type',
-                description: 'Feedback given by the customer about the call.',
-                choices: getLeadTypeChoices()
-              },
-              {
-                type: 'string',
-                name: 'name',
-                description: "Extract the user's name from the conversation",
-                examples: ['Ajay Sood', 'John Wick', 'Adam Zampa', 'Jane Doe', 'Nitish Kumar', 'Ravi Shukla']
-              },
-              {
-                type: 'string',
-                name: 'email',
-                description: "Extract the user's email from the conversation",
-                examples: ['john.doe@example.com', 'nitish@company.in', '12@gmail.com']
-              },
-              {
-                type: 'string',
-                name: 'reason',
-                description:
-                  "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
-                examples: ['Schedule an appointment', 'Ask about services', 'Request for accounting help']
-              },
-              {
-                type: 'string',
-                name: 'address',
-                description:
-                  "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
-                examples: ['123 Main St, Delhi', '42 Wallaby Way, Sydney', '1490 Aandhar Eleven']
-              },
-              {
-                type: 'number',
-                name: 'phone_number',
-                description:
-                  "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible."
+                title: 'Business Details',
+                text: `Name: Receptin
+Address: 11210 NW 45th St #, Coral Springs, FL 33065, United States
+Phone: +1 (772) 271 7966
+Website: www.rxpt.us
+Email: support@rxpt.us
+About: N/A
+Google: N/A`
               }
             ],
-            end_call_after_silence_ms: 30000,
-            normalize_for_speech: true,
-            webhook_url: `${process.env.NEXT_PUBLIC_API_URL}/api/agent/updateAgentCall_And_Mins_WebHook`
+            urls: ['https://www.rxpt.us'],
+            enable_auto_refresh: true
           },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`
-            }
-          }
-        );
-        const agentId = agentRes.data.agent_id;
-        const dbPayload = {
-          userId,
-          agent_id: agentId,
-          llmId,
-          avatar: form.avatar,
-          agentVoice: form.voice,
-          knowledgeBaseId: knowledge_Base_ID,
-          agentAccent: form.selectedVoice?.voice_accent || 'American',
-          agentRole: 'Partner Assistant',
-          agentName: form.agentName || 'Virtual Assistant',
-          agentLanguageCode: form.language,
-          agentLanguage: form.agentLanguage,
-          dynamicPromptTemplate: filledPrompt,
-          rawPromptTemplate: filledPrompt,
-          promptVariablesList: JSON.stringify(promptVariablesList),
-          agentGender: form.gender,
-          agentPlan: 'free',
-          agentStatus: true,
-          businessId,
-          additionalNote: '',
-          agentCreatedBy: 'partner'
+          agent: {
+            agentName: form.agentName,
+            agentLanguageCode: form.language,
+            agentLanguage: form.agentLanguage,
+            agentGender: form.gender.toLowerCase(),
+            agentVoice: form.voice,
+            agentAccent: form.selectedVoice?.voice_accent || 'American',
+            avatar: form.avatar,
+            agentPlan: 'free',
+            agentRole: 'Partner Assistant',
+            agentStatus: true,
+            agentCreatedBy: 'partner',
+            additionalNote: ''
+          },
+          // Include any other static configs if needed (e.g., model: 'gemini-2.0-flash', etc.)
+          // Backend will generate prompts, variables, agentConfig, etc., based on this data
         };
-        const saveRes = await createAgent(dbPayload);
-        if (saveRes.status === 200 || saveRes.status === 201) {
-          setLoading(false);
+
+        // Send to single backend API for creation
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/enterpriseAgent/createPartnerOwnAgent`, createPayload, {
+          headers: {
+            'Content-Type': 'application/json',
+            // Add auth if needed
+          }
+        });
+
+        if (response.data.status === true) {
           setRefresh((prev) => !prev);
           Swal.fire('Agent created successfully!');
           localStorage.removeItem('agentCode');
           localStorage.removeItem('businessType');
         } else {
           throw new Error('Agent creation failed.');
-          setLoading(false);
         }
-      } catch (err) {
-        console.error('Error during full setup:', err);
-        Swal.fire('Something went wrong during setup.');
-        setLoading(false);
-      } finally {
-        setLoading(false);
-      }
-    } else if (mode == 'edit') {
-      setLoading(true);
-      try {
-        const agentId = agentData?.agent_id;
-        const llmId = agentData?.llmId;
-        const knowledgeBaseId = agentData?.knowledgeBaseId;
-        const businessId = agentData?.businessId;
-        if (!agentId || !llmId || !knowledgeBaseId || !businessId) {
-          throw new Error('Missing required agent data for update.');
-        }
-        const partnername = localStorage.getItem('partnername') || 'Receptin';
-        const partnerFirstName = partnername.split(' ')[0];
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const currentTime = new Date().toLocaleString('en-US', { timeZone });
-        const filledPrompt = `
-  You are ${form.agentName}, a ${form.gender} assistant to ${partnername}, 
-  who helps ${partnerFirstName} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
-  ### Persona of the Receptionist
-  - Role: A seasoned SDR named ${form.agentName} who answers inbound calls on behalf of ${partnername} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
-  - Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
-  Greet the caller with a warm welcome directly in language the language code is this ${form.language}. Do not repeat the greeting in another language.
-  You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
-  1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
-  2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
-  3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
-  - Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
-  - Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
-  ### Rules for AI Voice Assistant:
-  The agent must respect multi and converse only in that language.
-  - Current Time: ${currentTime}
-  - Timezone: ${timeZone}
-  ### More Instructions
-  You can assist callers with the following:
-  - General inquiries, such as Services Information
-  - Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
-  - Assist the caller in buying the correct package for a specific business
-  - Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
-  - Take the project details from the caller for Future Interactions
-  - Take Details of the caller and the Business for which an AI Receptionist is required
-  - Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
-  - If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
-  Keep the conversation concise and to the point.
-  The user transcript might contain transcription errors. Use your best judgment to guess and respond.
-  `;
-        const rawPromptTemplate = `
-You are {{AGENT NAME}}, a {{AGENT GENDER}} assistant to {{PARTNER FULL NAME}}, 
-who helps {{PARTNER FIRST NAME}} in selling the services of “Receptin”. You can explain all about the Receptin application and its features based on the added knowledge base.
-### Persona of the Receptioni {{AGENT NAME}} who answers inbound calls on behalf of {{PARTNER FULL NAME}} to help sell AI Receptionist Service named “Receptin” using which anyone can create a virtual AI receptionist for their business. The details of the service and its features can be taken from the Knowledge Base.
-- Skills: Customer service, Sales Development, communication skills, problem solving, emergency response handling, services knowledge from the knowledge base, and caller data collection.
-Greet the caller with a warm welcome directly in language the language code is this {{LANGUAGE}}. Do not repeat the greeting in another language.
-You can shift to multi language, if the caller asks you to or if you switch the language in between of the conversation.
-1. Clarity and Simplicity: Keep responses clear, concise, and to the point. Use simple language and avoid unnecessary details to ensure the caller easily understands the information provided.
-2. Personalization: Tailor interactions to be empathetic and polite. Please keep your response natural.
-3. Focus on each step: Remember the steps to sell the AI Receptionist Service, and that you must stay on track with these steps.
-- Process to follow: Take all the details of the caller, like name, phone number, email address, and business name, before guiding them further.
-- Behaviour: Calm, Pleasing, and professional. Do not show too much excitement while talking. Do not say "Thanks" or "Thank you" more than twice in a call. Stay focused on more human-like behaviour. Control your excitement and talk normally. Be very concise and quick in your conversations.
-### Rules for AI Voice Assistant:
-The agent must respect multi and converse only in that language.
-- Current Time: {{CURRENT TIME}}
-- Timezone:{{TIMEZONE}}
-### More Instructions
-You can assist callers with the following:
-- General inquiries, such as Services Information
-- Book Meetings with Technical Specialists if the caller wants the enterprise package, for which the price is not listed.
-- Assist the caller in buying the correct package for a specific business
-- Guide them on a step-by-step Process to purchase the optimum package and set up a new AI receptionist for their specific business based on the Knowledge Base.
-- Take the project details from the caller for Future Interactions
-- Take Details of the caller and the Business for which an AI Receptionist is required
-- Handle Complaints with a calm & natural voice and provide an accurate solution to the complaint.
-- If no solution is accepted by the caller and the caller is adamant to talk to a human only, then only transfer the call to a human representative.
-Keep the conversation concise and to the point.
-The user transcript might contain transcription errors. Use your best judgment to guess and respond.
-`;
-        const promptVariablesList = extractPromptVariables(rawPromptTemplate, {
-          agentName: { key: 'AGENT NAME', value: form.agentName?.split(' ')[0] || 'Assistant' },
-          agentGender: { key: 'AGENT GENDER', value: form.gender || 'neutral' },
-          partnerNameFull: { key: 'PARTNER FULL NAME', value: partnername },
-          partnerFirstName: { key: 'PARTNER FIRST NAME', value: partnerFirstName },
-          businessName: { key: 'BUSINESS NAME', value: 'Receptin' },
-          businessEmail: { key: 'BUSINESS EMAIL ID', value: 'support@rxpt.us' },
-          aboutBusiness: { key: 'MORE ABOUT YOUR BUSINESS', value: 'We provide virtual AI receptionist services.' },
-          businessAddress: { key: 'BUSINESS ADDRESS', value: '11210 NW 45th St #, Coral Springs, FL 33065, United States' },
-          businessWebsite: { key: 'BUSINESS WEBSITE', value: 'www.rxpt.us' },
-          businessPhone: { key: 'BUSINESS PHONE', value: '+1 (772) 271 7966' },
-          businessType: { key: 'BUSINESSTYPE', value: 'AI Virtual Receptionist' },
-          commaSeparatedServices: { key: 'SERVICES', value: 'AI Virtual Receptionist Service' },
-          languageSelect: { key: 'LANGUAGE', value: form.language || 'English' },
-          timeZone: { key: 'TIMEZONE', value: timeZone },
-          current_time: { key: 'CURRENT TIME', value: currentTime },
-          [`current_time_[${timeZone}]`]: { key: `CURRENT TIME IN ${timeZone}`, value: currentTime }
-        });
-        const callForwarding = agentData.callForwarding;
-        const agentConfig = {
-          version: 0,
-          model: 'gemini-2.0-flash',
-          model_temperature: 0,
-          model_high_priority: true,
-          tool_call_strict_mode: true,
-          general_prompt: filledPrompt,
-          general_tools: [
-            {
-              type: 'end_call',
-              name: 'end_call',
-              description: 'End the call with user.'
-            },
-            {
-              type: 'extract_dynamic_variable',
-              name: 'extract_user_details',
-              description:
-                "Extract the user's details like name, email, phone number, address, and reason for calling from the conversation",
-              variables: [
-                { type: 'string', name: 'email', description: "Extract the user's email address from the conversation" },
-                { type: 'number', name: 'phone', description: "Extract the user's phone number from the conversation" },
-                { type: 'string', name: 'address', description: "Extract the user's address from the conversation" },
-                { type: 'string', name: 'reason', description: "Extract the user's reason for calling from the conversation" },
-                { type: 'string', name: 'name', description: "Extract the user's name from the conversation" }
-              ]
-            }
-          ],
-          states: [
-            {
-              name: 'information_collection',
-              state_prompt: `Greet the user with the begin_message and assist with their query.
-                              If the user wants to transfer the call:
-                              ${getCallForwarding(callForwarding)}
-                              If the user asks for an appointment (e.g., "appointment", "book", "schedule"),transition to appointment_booking.
-                              If the user is silent or unclear, say: "Sorry, I didn’t catch that. Could you please repeat?"
-                              If the user wants to end the call transition to end_call_state`,
-              edges: [{ destination_state_name: 'CallTransfer_confirmation', description: 'User wants to transfer call.' }]
-            },
-            {
-              name: 'appointment_booking',
-              state_prompt: '## Task\nYou will now help the user book an appointment.'
-            },
-            {
-              name: 'CallTransfer_confirmation',
-              state_prompt: `
-                              Say: Would you like me to connect you with {{partner}}? Please say yes or no."
-                              Wait for their response.
-                              If the user says yes, transition to call_transfer.
-                              If the user says no, transition to information_collection.
-                              If the response is unclear, repeat the question once.
-                          `,
-              edges: [
-                { destination_state_name: 'call_transfer', description: 'User agreed to speak to Partner.' },
-                { destination_state_name: 'information_collection', description: 'User declined to speak to Partner.' }
-              ],
-              tools: []
-            },
-            {
-              name: 'call_transfer',
-              state_prompt: `Connecting you to a team member now. Please hold.`,
-              tools: [
-                {
-                  type: 'transfer_call',
-                  name: 'transfer_to_Partner',
-                  description: 'Transfer the call to the team member.',
-                  transfer_destination: { type: 'predefined', number: '{{business_Phone}}' },
-                  transfer_option: { type: 'cold_transfer', public_handoff_option: { message: 'Please hold while I transfer your call.' } },
-                  speak_during_execution: true,
-                  speak_after_execution: true,
-                  failure_message:
-                    "Sorry, I couldn't transfer your call. Please contact us at {{business_email}} or call {{business_Phone}} directly."
-                }
-              ],
-              edges: []
-            },
-            {
-              name: 'end_call_state',
-              state_prompt: `Politely end the call by saying: "Thank you for calling. Have a great day!"`,
-              tools: [{ type: 'end_call', name: 'end_call1', description: 'End the call with the user.' }],
-              edges: []
-            }
-          ],
-          starting_state: 'information_collection',
-          default_dynamic_variables: {
-            customer_name: 'John Doe',
-            timeZone: timeZone
-          }
-        };
-        await axios.patch(`https://api.retellai.com/update-retell-llm/${llmId}`, agentConfig, {
-          headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}` }
-        });
-        await axios.patch(
-          `https://api.retellai.com/update-agent/${agentId}`,
-          {
-            response_engine: { type: 'retell-llm', llm_id: llmId },
-            voice_id: form.voice,
-            agent_name: form.selectedVoice?.voice_name || form.agentName || 'Virtual Assistant',
-            language: 'multi',
-            post_call_analysis_model: 'gpt-4o-mini',
-            responsiveness: 1,
-            enable_backchannel: true,
-            interruption_sensitivity: 0.91,
-            backchannel_frequency: 0.7,
-            backchannel_words: ['Got it', 'Yeah', 'Uh-huh', 'Understand', 'Ok', 'hmmm'],
-            post_call_analysis_data: [
-              {
-                type: 'enum',
-                name: 'lead_type',
-                description: 'Feedback given by the customer about the call.',
-                choices: getLeadTypeChoices()
-              },
-              {
-                type: 'string',
-                name: 'name',
-                description: "Extract the user's name from the conversation",
-                examples: ['Ajay Sood', 'John Wick', 'Adam Zampa', 'Jane Doe', 'Nitish Kumar', 'Ravi Shukla']
-              },
-              {
-                type: 'string',
-                name: 'email',
-                description: "Extract the user's email from the conversation",
-                examples: ['john.doe@example.com', 'nitish@company.in', '12@gmail.com']
-              },
-              {
-                type: 'string',
-                name: 'reason',
-                description:
-                  "The reason the user is calling or their inquiry. If provided in Hindi, translate to English. Summarize if it's long.",
-                examples: ['Schedule an appointment', 'Ask about services', 'Request for accounting help']
-              },
-              {
-                type: 'string',
-                name: 'address',
-                description:
-                  "The user's address or business location. If spoken in Hindi, translate to English. Format it for use in CRM or contact forms.",
-                examples: ['123 Main St, Delhi', '42 Wallaby Way, Sydney', '1490 Aandhar Eleven']
-              },
-              {
-                type: 'number',
-                name: 'phone_number',
-                description:
-                  "The user's phone number in numeric format. If digits are spoken in words (e.g., 'seven eight seven six one two'), convert them to digits (e.g., '787612'). Ensure it's a valid number when possible."
-              }
-            ],
-            end_call_after_silence_ms: 30000,
-            normalize_for_speech: true,
-            webhook_url: `${process.env.NEXT_PUBLIC_API_URL}/api/agent/updateAgentCall_And_Mins_WebHook`
-          },
-          { headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}` } }
-        );
-        const dbPayload = {
+      } else if (mode === 'edit') {
+        // Package all data into one object for edit
+        const editPayload = {
           userId,
-          agent_id: agentId,
-          llmId,
-          avatar: form.avatar,
-          agentVoice: form.voice,
-          knowledgeBaseId,
-          agentAccent: form.selectedVoice?.voice_accent || 'American',
-          agentRole: 'Partner Assistant',
-          agentName: form.agentName || 'Virtual Assistant',
-          agentLanguageCode: form.language,
-          agentLanguage: form.agentLanguage,
-          dynamicPromptTemplate: filledPrompt,
-          rawPromptTemplate: filledPrompt,
-          promptVariablesList: JSON.stringify(promptVariablesList),
-          agentGender: form.gender,
-          agentPlan: agentData?.agentPlan || 'free',
-          agentStatus: agentData?.agentStatus || true,
-          businessId,
-          additionalNote: '',
-          agentCreatedBy: 'partner'
+          agentId: agentData?.agent_id,
+          llmId: agentData?.llmId,
+          knowledgeBaseId: agentData?.knowledgeBaseId,
+          businessId: agentData?.businessId,
+          agent: {
+            agentName: form.agentName,
+            agentLanguageCode: form.language,
+            agentLanguage: form.agentLanguage,
+            agentGender: form.gender.toLowerCase(),
+            agentVoice: form.voice,
+            agentAccent: form.selectedVoice?.voice_accent || 'American',
+            avatar: form.avatar,
+            agentPlan: agentData?.agentPlan || 'free',
+            agentStatus: agentData?.agentStatus || true,
+            agentRole: 'Partner Assistant',
+            agentCreatedBy: 'partner',
+            additionalNote: ''
+          },
+          callForwarding: agentData.callForwarding // If needed
+          // Backend will generate updated prompts, variables, agentConfig, etc.
         };
-        const updateRes = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/updateAgent/${agentId}`, dbPayload);
-        if (updateRes.status === 200 || updateRes.status === 201) {
+
+        // Send to single backend API for update
+        const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/updatePartnerAgent`, editPayload, {
+          headers: {
+            'Content-Type': 'application/json',
+            // Add auth if needed
+          }
+        });
+
+        if (response.data.status === true) {
           setRefresh((prev) => !prev);
           setMode('create');
           setShowEditModal(false);
@@ -2973,12 +3101,12 @@ The user transcript might contain transcription errors. Use your best judgment t
         } else {
           throw new Error('Agent update failed.');
         }
-      } catch (error) {
-        console.error('Error during edit:', error);
-        Swal.fire('Something went wrong while editing.');
-      } finally {
-        setLoading(false);
       }
+    } catch (err) {
+      console.error('Error during submit:', err);
+      Swal.fire('Something went wrong.', err.message || 'Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -3340,7 +3468,7 @@ The user transcript might contain transcription errors. Use your best judgment t
               setForm({ ...form, agentName: value });
             }
           }}
-          placeholder="Enter your name"
+          placeholder="Enter agent name"
           inputProps={{ maxLength: 20 }}
           sx={{
             '& .MuiOutlinedInput-root': {

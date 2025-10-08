@@ -224,11 +224,13 @@ import WelcomeBanner from './WelcomeBanner';
 import { display } from '@mui/system';
 import MyownAgent from './MyowneAgent';
 import InvoiceDashboard from './PartnerAnalytics';
+import { useAuth } from 'contexts/AuthContext';
 
 export default function DashboardFinance() {
   const theme = useTheme();
   const userId = getUserId();
-
+  const { user } = useAuth();
+  console.log(user, 'userdashboard');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const {user}=useAuth();
@@ -271,6 +273,8 @@ export default function DashboardFinance() {
 
       <Grid size={{ xs: 12, lg: 12 }}>
         <Grid container spacing={GRID_COMMON_SPACING}>
+
+          {user.roleId== '3'?
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
             <TransactionCard
               title="Total Calls"
@@ -281,7 +285,7 @@ export default function DashboardFinance() {
               // iconPrimary={<CallCalling />}
             />
           </Grid>
-
+:null}
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
             <TransactionCard
               title="Total Bulk Minutes"
