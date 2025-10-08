@@ -223,6 +223,7 @@ import CategoryCard1 from 'sections/dashboard/finance/Category1';
 import WelcomeBanner from './WelcomeBanner';
 import { display } from '@mui/system';
 import MyownAgent from './MyowneAgent';
+import InvoiceDashboard from './PartnerAnalytics';
 
 export default function DashboardFinance() {
   const theme = useTheme();
@@ -230,6 +231,7 @@ export default function DashboardFinance() {
 
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const {user}=useAuth();
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -249,7 +251,9 @@ export default function DashboardFinance() {
   }, [userId]);
 
   return (
-    <Grid container spacing={GRID_COMMON_SPACING}>
+    <>
+    {user.roleId== "4"?
+      <Grid container spacing={GRID_COMMON_SPACING}>
       {userId == 'RXDI7Q1759578841' ? (
         <Grid style={{ display: 'flex', gap: '5px' }}>
           <Grid size={12}>
@@ -336,5 +340,8 @@ export default function DashboardFinance() {
         </Grid>
       </Grid>
     </Grid>
+
+    : <InvoiceDashboard/>}
+  </>
   );
 }

@@ -51,6 +51,8 @@ const mointor: NavItemType = {
       type: 'item',
       url: '/mointor/partner-resources',
       icon: VideoLibrary
+    },
+      {
       id: 'Earning',
       title: 'Partner Earning',
       type: 'item',
