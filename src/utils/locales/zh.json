@@ -28,5 +28,8 @@
   "others": "其他",
   "fire": "火",
   "gitbook": "吉特書",
-  "home": "首頁"
+  "home": "首頁",
+  "invoice-summary":"invoice-summary",
+    "my-dashboard":"my-dashboard"
+
 }

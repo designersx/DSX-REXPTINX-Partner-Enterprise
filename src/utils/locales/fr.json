@@ -29,5 +29,7 @@
   "others": "Autres",
   "fire": "Feu",
   "gitbook": "GitBook",
-  "home": "Accueil"
+  "home": "Accueil",
+  "invoice-summary":"invoice-summary",
+  "my-dashboard":"my-dashboard"
 }
