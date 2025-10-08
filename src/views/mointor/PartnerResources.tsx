@@ -1191,162 +1191,162 @@
 //                           }}
 //                         />
 //                       )}
-//                       <CardContent sx={{ 
-//                         p: 3, 
-//                         display: "flex", 
-//                         flexDirection: "column", 
-//                         flexGrow: 1,
-//                         justifyContent: "space-between"
-//                       }}>
-//                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-//                           <Typography
-//                             variant="h6"
-//                             component="h3"
-//                             color="text.primary"
-//                             fontWeight={600}
-//                             sx={{ flexGrow: 1, mr: 2, lineHeight: 1.4 }}
-//                           >
-//                             {item.title}
-//                           </Typography>
-//                           <Chip
-//                             label={item.resourceType}
-//                             size="small"
-//                             color="primary"
-//                             variant="filled"
-//                             sx={{ fontSize: "0.7rem", fontWeight: 500 }}
-//                           />
-//                         </Box>
+                      // <CardContent sx={{ 
+                      //   p: 3, 
+                      //   display: "flex", 
+                      //   flexDirection: "column", 
+                      //   flexGrow: 1,
+                      //   justifyContent: "space-between"
+                      // }}>
+                      //   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      //     <Typography
+                      //       variant="h6"
+                      //       component="h3"
+                      //       color="text.primary"
+                      //       fontWeight={600}
+                      //       sx={{ flexGrow: 1, mr: 2, lineHeight: 1.4 }}
+                      //     >
+                      //       {item.title}
+                      //     </Typography>
+                      //     <Chip
+                      //       label={item.resourceType}
+                      //       size="small"
+                      //       color="primary"
+                      //       variant="filled"
+                      //       sx={{ fontSize: "0.7rem", fontWeight: 500 }}
+                      //     />
+                      //   </Box>
 
-//                         <Typography
-//                           variant="body2"
-//                           color="text.secondary"
-//                           sx={{
-//                             mt: 1.5,
-//                             mb: 2,
-//                             lineHeight: 1.6,
-//                             display: "-webkit-box",
-//                             WebkitLineClamp: 3,
-//                             WebkitBoxOrient: "vertical",
-//                             overflow: "hidden",
-//                           }}
-//                         >
-//                           {item.description}
-//                         </Typography>
+                      //   <Typography
+                      //     variant="body2"
+                      //     color="text.secondary"
+                      //     sx={{
+                      //       mt: 1.5,
+                      //       mb: 2,
+                      //       lineHeight: 1.6,
+                      //       display: "-webkit-box",
+                      //       WebkitLineClamp: 3,
+                      //       WebkitBoxOrient: "vertical",
+                      //       overflow: "hidden",
+                      //     }}
+                      //   >
+                      //     {item.description}
+                      //   </Typography>
 
-//                         {/* FIXED LINKS: Fixed height container, show ellipsis if overflow */}
-//                         {item.linkThumbnails?.length > 0 && (
-//                           <Box sx={{ mb: 2, height: 120, overflow: 'hidden' }}>  
-//                             <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
-//                               Links
-//                             </Typography>
-//                             <Grid container spacing={1}>
-//                               {item.linkThumbnails.slice(0, 4).map((linkThumb, idx) => (  // Limit to 4 items max
-//                                 <Grid item xs={6} key={idx}>
-//                                   <motion.div whileHover={{ scale: 1.03 }}>
-//                                     <Card
-//                                       onClick={() => handleLinkClick(linkThumb.url)}
-//                                       sx={{
-//                                         position: "relative",
-//                                         cursor: "pointer",
-//                                         borderRadius: 2,
-//                                         overflow: "hidden",
-//                                         height: 90,
-//                                         "&:hover": { boxShadow: 2 },
-//                                       }}
-//                                     >
-//                                       <CardMedia
-//                                         component="img"
-//                                         image={linkThumb.thumbnail}
-//                                         alt="Link Thumbnail"
-//                                         sx={{ height: "100%", objectFit: "cover" }}
-//                                       />
-//                                       <Box
-//                                         sx={{
-//                                           position: "absolute",
-//                                           bottom: 8,
-//                                           left: 8,
-//                                           bgcolor: "rgba(0,0,0,0.6)",
-//                                           borderRadius: 1,
-//                                           px: 1,
-//                                           py: 0.3,
-//                                         }}
-//                                       >
-//                                         <FaExternalLinkAlt size={12} color="white" />
-//                                       </Box>
-//                                     </Card>
-//                                   </motion.div>
-//                                 </Grid>
-//                               ))}
-//                               {item.linkThumbnails.length > 4 && (
-//                                 <Grid item xs={12}>  // NEW: "See more" for overflow
-//                                   <Typography variant="caption" color="text.secondary">
-//                                     +{item.linkThumbnails.length - 4} more...
-//                                   </Typography>
-//                                 </Grid>
-//                               )}
-//                             </Grid>
-//                           </Box>
-//                         )}
+                      //   {/* FIXED LINKS: Fixed height container, show ellipsis if overflow */}
+                      //   {item.linkThumbnails?.length > 0 && (
+                      //     <Box sx={{ mb: 2, height: 120, overflow: 'hidden' }}>  
+                      //       <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
+                      //         Links
+                      //       </Typography>
+                      //       <Grid container spacing={1}>
+                      //         {item.linkThumbnails.slice(0, 4).map((linkThumb, idx) => (  // Limit to 4 items max
+                      //           <Grid item xs={6} key={idx}>
+                      //             <motion.div whileHover={{ scale: 1.03 }}>
+                      //               <Card
+                      //                 onClick={() => handleLinkClick(linkThumb.url)}
+                      //                 sx={{
+                      //                   position: "relative",
+                      //                   cursor: "pointer",
+                      //                   borderRadius: 2,
+                      //                   overflow: "hidden",
+                      //                   height: 90,
+                      //                   "&:hover": { boxShadow: 2 },
+                      //                 }}
+                      //               >
+                      //                 <CardMedia
+                      //                   component="img"
+                      //                   image={linkThumb.thumbnail}
+                      //                   alt="Link Thumbnail"
+                      //                   sx={{ height: "100%", objectFit: "cover" }}
+                      //                 />
+                      //                 <Box
+                      //                   sx={{
+                      //                     position: "absolute",
+                      //                     bottom: 8,
+                      //                     left: 8,
+                      //                     bgcolor: "rgba(0,0,0,0.6)",
+                      //                     borderRadius: 1,
+                      //                     px: 1,
+                      //                     py: 0.3,
+                      //                   }}
+                      //                 >
+                      //                   <FaExternalLinkAlt size={12} color="white" />
+                      //                 </Box>
+                      //               </Card>
+                      //             </motion.div>
+                      //           </Grid>
+                      //         ))}
+                      //         {item.linkThumbnails.length > 4 && (
+                      //           <Grid item xs={12}>  // NEW: "See more" for overflow
+                      //             <Typography variant="caption" color="text.secondary">
+                      //               +{item.linkThumbnails.length - 4} more...
+                      //             </Typography>
+                      //           </Grid>
+                      //         )}
+                      //       </Grid>
+                      //     </Box>
+                      //   )}
 
-//                         {/* FIXED FILES: Same as links - strict height, limit items */}
-//                         {item.files?.length > 0 && (
-//                           <Box sx={{ height: 120, overflow: 'hidden' }}>
-//                             <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
-//                               Files
-//                             </Typography>
-//                             <Grid container spacing={1}>
-//                               {item.files.slice(0, 4).map((file, idx) => (  // Limit to 4 items max
-//                                 <Grid item xs={6} key={idx}>
-//                                   <motion.div whileHover={{ scale: 1.03 }}>
-//                                     <Card
-//                                       onClick={() => handleFileClick(file)}
-//                                       sx={{
-//                                         height: 90,
-//                                         display: "flex",
-//                                         alignItems: "center",
-//                                         justifyContent: "center",
-//                                         bgcolor: "grey.50",
-//                                         borderRadius: 2,
-//                                         cursor: "pointer",
-//                                         "&:hover": { bgcolor: "grey.100" },
-//                                       }}
-//                                     >
-//                                       <IconRenderer
-//                                         iconComponent={file.iconComponent}
-//                                         color={file.color}
-//                                         size={28}
-//                                       />
-//                                       <Typography
-//                                         variant="caption"
-//                                         sx={{
-//                                           ml: 1,
-//                                           overflow: "hidden",
-//                                           textOverflow: "ellipsis",
-//                                           whiteSpace: "nowrap",
-//                                           fontWeight: 500,
-//                                           color: "text.primary",
-//                                         }}
-//                                       >
-//                                         {file.name}
-//                                       </Typography>
-//                                     </Card>
-//                                   </motion.div>
-//                                 </Grid>
-//                               ))}
-//                               {item.files.length > 4 && (
-//                                 <Grid item xs={12}>  // NEW: "See more" for overflow
-//                                   <Typography variant="caption" color="text.secondary">
-//                                     +{item.files.length - 4} more...
-//                                   </Typography>
-//                                 </Grid>
-//                               )}
-//                             </Grid>
-//                           </Box>
-//                         )}
+                      //   {/* FIXED FILES: Same as links - strict height, limit items */}
+                      //   {item.files?.length > 0 && (
+                      //     <Box sx={{ height: 120, overflow: 'hidden' }}>
+                      //       <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
+                      //         Files
+                      //       </Typography>
+                      //       <Grid container spacing={1}>
+                      //         {item.files.slice(0, 4).map((file, idx) => (  // Limit to 4 items max
+                      //           <Grid item xs={6} key={idx}>
+                      //             <motion.div whileHover={{ scale: 1.03 }}>
+                      //               <Card
+                      //                 onClick={() => handleFileClick(file)}
+                      //                 sx={{
+                      //                   height: 90,
+                      //                   display: "flex",
+                      //                   alignItems: "center",
+                      //                   justifyContent: "center",
+                      //                   bgcolor: "grey.50",
+                      //                   borderRadius: 2,
+                      //                   cursor: "pointer",
+                      //                   "&:hover": { bgcolor: "grey.100" },
+                      //                 }}
+                      //               >
+                      //                 <IconRenderer
+                      //                   iconComponent={file.iconComponent}
+                      //                   color={file.color}
+                      //                   size={28}
+                      //                 />
+                      //                 <Typography
+                      //                   variant="caption"
+                      //                   sx={{
+                      //                     ml: 1,
+                      //                     overflow: "hidden",
+                      //                     textOverflow: "ellipsis",
+                      //                     whiteSpace: "nowrap",
+                      //                     fontWeight: 500,
+                      //                     color: "text.primary",
+                      //                   }}
+                      //                 >
+                      //                   {file.name}
+                      //                 </Typography>
+                      //               </Card>
+                      //             </motion.div>
+                      //           </Grid>
+                      //         ))}
+                      //         {item.files.length > 4 && (
+                      //           <Grid item xs={12}>  // NEW: "See more" for overflow
+                      //             <Typography variant="caption" color="text.secondary">
+                      //               +{item.files.length - 4} more...
+                      //             </Typography>
+                      //           </Grid>
+                      //         )}
+                      //       </Grid>
+                      //     </Box>
+                      //   )}
 
-//                         {/* NEW: Spacer to push content up if sections are empty */}
-//                         <Box sx={{ flexGrow: 1 }} />
-//                       </CardContent>
+                      //   {/* NEW: Spacer to push content up if sections are empty */}
+                      //   <Box sx={{ flexGrow: 1 }} />
+                      // </CardContent>
 //                     </Card>
 //                   </motion.div>
 //                 </Grid>
@@ -1912,36 +1912,37 @@ const PartnerResources = () => {
             ))}
           </Tabs>
 
-          <Grid container spacing={3} justifyContent="flex-start" alignItems="stretch">
+          {/* <Grid container spacing={3} justifyContent="flex-start" alignItems="stretch">
             {content[activeTab]?.length > 0 ? (
-              content[activeTab].map((item, index) => ( // FIXED: Ensure map renders ALL items
-                <Grid item xs={12} sm={6} md={4} key={index}> 
+              content[activeTab].map((item, index) => ( 
+                <Grid item xs={12} sm={6} md={6} lg={6} key={index} > 
                   <motion.div
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 250, damping: 20 }}
                   >
-                    <Card
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
-                        minHeight: 450,
-                        borderRadius: 3,
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                        overflow: "hidden",
-                        transition: "all .4s ease-in-out",
-                        border: "1px solid rgba(0,0,0,0.05)",
-                        position: 'relative',
-                        "&:hover": {
-                          boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
-                          transform: "translateY(-2px)",
-                        },
-                      }}
-                    >
-             
+            
+              <Card
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              minHeight: 450,
+              borderRadius: 3,
+              width: "100%",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+              transition: "all .4s ease-in-out",
+              border: "1px solid rgba(0,0,0,0.05)",
+              // Fixed typo: 'absoulte' to 'absolute' (if needed, but seems unnecessary here)
+              // position: 'absolute', // Likely not needed, so remove it
+              "&:hover": {
+                boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                transform: "translateY(-2px)",
+              },
+            }}
+          >
 
-                      {/* Image */}
                       {item.coverImage ? (
                         <CardMedia
                           component="img"
@@ -1960,102 +1961,153 @@ const PartnerResources = () => {
                       )}
 
                       <Divider />
+                       <CardContent sx={{ 
+                        p: 3, 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        flexGrow: 1,
+                        justifyContent: "space-between"
+                      }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <Typography
+                            variant="h6"
+                            component="h3"
+                            color="text.primary"
+                            fontWeight={600}
+                            sx={{ flexGrow: 1, mr: 2, lineHeight: 1.4 }}
+                          >
+                            {item.title}
+                          </Typography>
+                          <Chip
+                            label={item.resourceType}
+                            size="small"
+                            color="primary"
+                            variant="filled"
+                            sx={{ fontSize: "0.7rem", fontWeight: 500 }}
+                          />
+                        </Box>
 
-                      <CardContent sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                        <Grid container spacing={2}>
-                          <Grid item xs={12}>
-                            <Stack>
-                              <Typography
-                                variant="h5"
-                                component="div"
-                                sx={{
-                                  color: 'text.primary',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                  display: 'block',
-                                }}
-                              >
-                                {item.title}
-                              </Typography>
-                              <Chip
-                                label={item.resourceType}
-                                size="small"
-                                color="primary"
-                                variant="filled"
-                                sx={{ fontSize: "0.7rem", fontWeight: 500, mt: 0.5 }}
-                              />
-                            </Stack>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{
-                                mt: 1,
-                                mb: 2,
-                                lineHeight: 1.6,
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                              }}
-                            >
-                              {item.description}
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mt: 1.5,
+                            mb: 2,
+                            lineHeight: 1.6,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {item.description}
+                        </Typography>
+
+                        {item.linkThumbnails?.length > 0 && (
+                          <Box sx={{ mb: 2, height: 120, overflow: 'hidden' }}>  
+                            <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
+                              Links
                             </Typography>
-                          </Grid>
-                              
-                          {item.linkThumbnails?.length > 0 && (
-                            <Grid item xs={12}>
-                              <Box sx={{ height: 80, overflow: 'hidden' }}>
-                                <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1} sx={{ fontSize: '0.875rem' }}>
-                                  Links ({item.linkThumbnails.length})
-                                </Typography>
-                                <Grid container spacing={1}>
-                                  {item.linkThumbnails.slice(0, 2).map((linkThumb, idx) => (
-                                    <Grid item xs={6} key={idx}>
-                                      <Card
-                                        onClick={() => handleLinkClick(linkThumb.url)}
-                                        sx={{ height: 60, cursor: 'pointer', '&:hover': { boxShadow: 1 } }}
+                            <Grid container spacing={1}>
+                              {item.linkThumbnails.slice(0, 4).map((linkThumb, idx) => (  // Limit to 4 items max
+                                <Grid item xs={6} key={idx}>
+                                  <motion.div whileHover={{ scale: 1.03 }}>
+                                    <Card
+                                      onClick={() => handleLinkClick(linkThumb.url)}
+                                      sx={{
+                                        position: "relative",
+                                        cursor: "pointer",
+                                        borderRadius: 2,
+                                        overflow: "hidden",
+                                        height: 90,
+                                        "&:hover": { boxShadow: 2 },
+                                      }}
+                                    >
+                                      <CardMedia
+                                        component="img"
+                                        image={linkThumb.thumbnail}
+                                        alt="Link Thumbnail"
+                                        sx={{ height: "100%", objectFit: "cover" }}
+                                      />
+                                      <Box
+                                        sx={{
+                                          position: "absolute",
+                                          bottom: 8,
+                                          left: 8,
+                                          bgcolor: "rgba(0,0,0,0.6)",
+                                          borderRadius: 1,
+                                          px: 1,
+                                          py: 0.3,
+                                        }}
                                       >
-                                        <CardMedia
-                                          component="img"
-                                          image={linkThumb.thumbnail}
-                                          sx={{ height: '100%', objectFit: 'cover' }}
-                                        />
-                                      </Card>
-                                    </Grid>
-                                  ))}
+                                        <FaExternalLinkAlt size={12} color="white" />
+                                      </Box>
+                                    </Card>
+                                  </motion.div>
                                 </Grid>
-                              </Box>
+                              ))}
+                              {item.linkThumbnails.length > 4 && (
+                                <Grid item xs={12}>  // NEW: "See more" for overflow
+                                  <Typography variant="caption" color="text.secondary">
+                                    +{item.linkThumbnails.length - 4} more...
+                                  </Typography>
+                                </Grid>
+                              )}
                             </Grid>
-                          )}
-                          {item.files?.length > 0 && (
-                            <Grid item xs={12}>
-                              <Box sx={{ height: 80, overflow: 'hidden' }}>
-                                <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1} sx={{ fontSize: '0.875rem' }}>
-                                  Files ({item.files.length})
-                                </Typography>
-                                <Grid container spacing={1}>
-                                  {item.files.slice(0, 2).map((file, idx) => (
-                                    <Grid item xs={6} key={idx}>
-                                      <Card
-                                        onClick={() => handleFileClick(file)}
-                                        sx={{ height: 60, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', '&:hover': { boxShadow: 1 } }}
+                          </Box>
+                        )}
+
+                        {item.files?.length > 0 && (
+                          <Box sx={{ height: 120, overflow: 'hidden' }}>
+                            <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
+                              Files
+                            </Typography>
+                            <Grid container spacing={1}>
+                              {item.files.slice(0, 4).map((file, idx) => (  // Limit to 4 items max
+                                <Grid item xs={6} key={idx}>
+                                  <motion.div whileHover={{ scale: 1.03 }}>
+                                    <Card
+                                      onClick={() => handleFileClick(file)}
+                                      sx={{
+                                        height: 90,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        bgcolor: "grey.50",
+                                        borderRadius: 2,
+                                        cursor: "pointer",
+                                        "&:hover": { bgcolor: "grey.100" },
+                                      }}
+                                    >
+                                      <IconRenderer
+                                        iconComponent={file.iconComponent}
+                                        color={file.color}
+                                        size={28}
+                                      />
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          ml: 1,
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                          // whiteSpace: "nowrap",
+                                          fontWeight: 500,
+                                          color: "text.primary",
+                                        }}
                                       >
-                                        <IconRenderer iconComponent={file.iconComponent} color={file.color} size={20} />
-                                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                                          {file.name.slice(0, 10)}...
-                                        </Typography>
-                                      </Card>
-                                    </Grid>
-                                  ))}
+                                        {file.name}
+                                      </Typography>
+                                    </Card>
+                                  </motion.div>
                                 </Grid>
-                              </Box>
+                              ))}
                             </Grid>
-                          )}
-                        </Grid>
+                          </Box>
+                        )}
+
+                        <Box sx={{ flexGrow: 1 }} />
                       </CardContent>
+
                     </Card>
                   </motion.div>
                 </Grid>
@@ -2072,7 +2124,212 @@ const PartnerResources = () => {
                 </Box>
               </Grid>
             )}
-          </Grid>
+          </Grid> */}
+          <Grid container spacing={3} justifyContent="flex-start" alignItems="stretch">
+  {content[activeTab]?.length > 0 ? (
+    content[activeTab].map((item, index) => (
+      <Grid item xs={12} sm={6} md={6} lg={6} key={index}>
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ type: "spring", stiffness: 250, damping: 20 }}
+        >
+          <Card
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%", // Matches the tallest card in the row
+              maxWidth: 400, // Fixed maximum width to control stretching
+              width: "100%", // Ensures it fits within Grid item
+              borderRadius: 3,
+              boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+              transition: "all .4s ease-in-out",
+              border: "1px solid rgba(0,0,0,0.05)",
+              "&:hover": {
+                boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                transform: "translateY(-2px)",
+              },
+            }}
+          >
+            {/* Image */}
+            {item.coverImage ? (
+              <CardMedia
+                component="img"
+                image={item.coverImage}
+                alt={item.title}
+                sx={{
+                  height: 250,
+                  width: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <Box sx={{ height: 250, bgcolor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <FaFile size={48} color="grey.400" />
+              </Box>
+            )}
+
+            <Divider />
+            <CardContent sx={{ 
+              p: 3, 
+              display: "flex", 
+              flexDirection: "column", 
+              flexGrow: 1,
+            }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  color="text.primary"
+                  fontWeight={600}
+                  sx={{ flexGrow: 1, mr: 2, lineHeight: 1.4 }}
+                >
+                  {item.title}
+                </Typography>
+                <Chip
+                  label={item.resourceType}
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                  sx={{ fontSize: "0.7rem", fontWeight: 500 }}
+                />
+              </Box>
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mt: 1.5,
+                  mb: 2,
+                  lineHeight: 1.6,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  maxWidth: "100%",
+                }}
+              >
+                {item.description}
+              </Typography>
+
+              {/* Links */}
+              {item.linkThumbnails?.length > 0 && (
+                <Box sx={{ mb: 2, overflow: 'auto', maxHeight: 200 }}> {/* Increased maxHeight for more links */}
+                  <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
+                    Links
+                  </Typography>
+                  <Grid container spacing={1}>
+                    {item.linkThumbnails.map((linkThumb, idx) => ( // Removed .slice(0, 4)
+                      <Grid item xs={6} key={idx}>
+                        <motion.div whileHover={{ scale: 1.03 }}>
+                          <Card
+                            onClick={() => handleLinkClick(linkThumb.url)}
+                            sx={{
+                              position: "relative",
+                              cursor: "pointer",
+                              borderRadius: 2,
+                              overflow: "hidden",
+                              height: 90,
+                              "&:hover": { boxShadow: 2 },
+                            }}
+                          >
+                            <CardMedia
+                              component="img"
+                              image={linkThumb.thumbnail}
+                              alt="Link Thumbnail"
+                              sx={{ height: "100%", objectFit: "cover" }}
+                            />
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                bottom: 8,
+                                left: 8,
+                                bgcolor: "rgba(0,0,0,0.6)",
+                                borderRadius: 1,
+                                px: 1,
+                                py: 0.3,
+                              }}
+                            >
+                              <FaExternalLinkAlt size={12} color="white" />
+                            </Box>
+                          </Card>
+                        </motion.div>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              )}
+
+              {/* Files */}
+              {item.files?.length > 0 && (
+                <Box sx={{ overflow: 'auto', maxHeight: 200 }}> {/* Increased maxHeight for more files */}
+                  <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
+                    Files
+                  </Typography>
+                  <Grid container spacing={1}>
+                    {item.files.map((file, idx) => ( // Removed .slice(0, 4)
+                      <Grid item xs={6} key={idx}>
+                        <motion.div whileHover={{ scale: 1.03 }}>
+                          <Card
+                            onClick={() => handleFileClick(file)}
+                            sx={{
+                              height: 90,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              bgcolor: "grey.50",
+                              borderRadius: 2,
+                              cursor: "pointer",
+                              "&:hover": { bgcolor: "grey.100" },
+                            }}
+                          >
+                            <IconRenderer
+                              iconComponent={file.iconComponent}
+                              color={file.color}
+                              size={28}
+                            />
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                ml: 1,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                fontWeight: 500,
+                                color: "text.primary",
+                              }}
+                            >
+                              {file.name}
+                            </Typography>
+                          </Card>
+                        </motion.div>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              )}
+
+              {/* Spacer to push content up if sections are empty */}
+              <Box sx={{ flexGrow: 1 }} />
+            </CardContent>
+          </Card>
+        </motion.div>
+      </Grid>
+    ))
+  ) : (
+    <Grid item xs={12}>
+      <Box sx={{ textAlign: "center", py: 8 }}>
+        <Typography variant="h6" color="text.secondary" fontWeight={500}>
+          No resources available for this category.
+        </Typography>
+        <Box sx={{ mt: 2, color: 'grey.400' }}>
+          <FaFile size={48} />
+        </Box>
+      </Box>
+    </Grid>
+  )}
+</Grid>
         </>
       ) : (
         <Box sx={{ textAlign: 'center', py: 8 }}>
