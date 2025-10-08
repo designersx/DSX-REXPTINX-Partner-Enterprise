@@ -28,5 +28,8 @@
   "others": "Altele",
   "fire": "Foc",
   "gitbook": "GitBook",
-  "home": "Acasă"
+  "home": "Acasă",
+  "invoice-summary":"invoice-summary",
+    "my-dashboard":"my-dashboard"
+
 }

@@ -6,6 +6,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import { NavItemType } from 'types/menu';
 import CallIcon from '@mui/icons-material/Call';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import VideoLibrary from '@mui/icons-material/VideoLibrary';
+
 // import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
 // icons
 const icons = {
@@ -32,6 +35,20 @@ const mointor: NavItemType = {
       type: 'item',
       url: '/mointor/callHistory',
       icon: CallIcon
+    },
+    {
+      id: 'raiseTicket',
+      title: 'Raise Ticket',
+      type: 'item',
+      url: '/mointor/raiseTicket',
+      icon: ConfirmationNumberIcon
+    },
+    {
+      id: 'partner-resources',
+      title: 'Partner Resources',
+      type: 'item',
+      url: '/mointor/partner-resources',
+      icon: VideoLibrary
     }
   ]
 };
