@@ -719,9 +719,9 @@
 //           </Box>
 //         </DialogContent>
 //         <DialogActions sx={{ px: 3, pb: 3 }}>
-//           <Button 
-//             onClick={() => setShowPreviewModal(false)} 
-//             variant="outlined" 
+//           <Button
+//             onClick={() => setShowPreviewModal(false)}
+//             variant="outlined"
 //             color="primary"
 //             sx={{ borderRadius: 1, px: 3 }}
 //           >
@@ -1155,7 +1155,7 @@
 //               ))
 //             ) : content[activeTab]?.length > 0 ? (
 //               content[activeTab].map((item, index) => (
-//                 <Grid item xs={12} sm={6} key={index}>  
+//                 <Grid item xs={12} sm={6} key={index}>
 //                   <motion.div
 //                     whileHover={{ scale: 1.02 }}
 //                     whileTap={{ scale: 0.98 }}
@@ -1191,10 +1191,10 @@
 //                           }}
 //                         />
 //                       )}
-//                       <CardContent sx={{ 
-//                         p: 3, 
-//                         display: "flex", 
-//                         flexDirection: "column", 
+//                       <CardContent sx={{
+//                         p: 3,
+//                         display: "flex",
+//                         flexDirection: "column",
 //                         flexGrow: 1,
 //                         justifyContent: "space-between"
 //                       }}>
@@ -1235,7 +1235,7 @@
 
 //                         {/* FIXED LINKS: Fixed height container, show ellipsis if overflow */}
 //                         {item.linkThumbnails?.length > 0 && (
-//                           <Box sx={{ mb: 2, height: 120, overflow: 'hidden' }}>  
+//                           <Box sx={{ mb: 2, height: 120, overflow: 'hidden' }}>
 //                             <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1}>
 //                               Links
 //                             </Typography>
@@ -1488,9 +1488,9 @@
 //           </Box>
 //         </DialogContent>
 //         <DialogActions sx={{ px: 3, pb: 3 }}>
-//           <Button 
-//             onClick={() => setShowPreviewModal(false)} 
-//             variant="outlined" 
+//           <Button
+//             onClick={() => setShowPreviewModal(false)}
+//             variant="outlined"
 //             color="primary"
 //             sx={{ borderRadius: 1, px: 3 }}
 //           >
@@ -1503,11 +1503,11 @@
 // };
 
 // export default PartnerResources;
-"use client"
+'use client';
 import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from "framer-motion";
-import Skeleton from "@mui/material/Skeleton";
+import { motion } from 'framer-motion';
+import Skeleton from '@mui/material/Skeleton';
 import {
   Box,
   Button,
@@ -1529,7 +1529,8 @@ import {
   Stack,
   Rating,
   Divider,
-  IconButton,
+  Tooltip,
+  IconButton
 } from '@mui/material';
 import {
   FaFilePdf,
@@ -1544,7 +1545,7 @@ import {
   FaFileVideo,
   FaFile,
   FaExternalLinkAlt,
-  FaHeart,
+  FaHeart
 } from 'react-icons/fa';
 
 const PartnerResources = () => {
@@ -1566,7 +1567,7 @@ const PartnerResources = () => {
     coverImage: null,
     files: [],
     coverPreview: '',
-    filePreviews: [],
+    filePreviews: []
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -1580,20 +1581,10 @@ const PartnerResources = () => {
       'Case Studies',
       'Brochures & Data Sheets',
       'Marketing Collateral',
-      'Competitive Analysis',
+      'Competitive Analysis'
     ],
-    'Training Resources': [
-      'Onboarding Guides',
-      'Troubleshooting Guides',
-      'Technical Docs',
-      'FAQs',
-      'Webinar',
-    ],
-    'Support & Communications': [
-      'Leads',
-      'Partner Manager Contact Info',
-      'Newsletters',
-    ],
+    'Training Resources': ['Onboarding Guides', 'Troubleshooting Guides', 'Technical Docs', 'FAQs', 'Webinar'],
+    'Support & Communications': ['Leads', 'Partner Manager Contact Info', 'Newsletters']
   };
 
   const fileIcons = {
@@ -1601,25 +1592,25 @@ const PartnerResources = () => {
     'application/msword': { component: FaFileWord, color: 'primary.main' },
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {
       component: FaFileWord,
-      color: 'primary.main',
+      color: 'primary.main'
     },
     'application/vnd.ms-excel': { component: FaFileExcel, color: 'success.main' },
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
       component: FaFileExcel,
-      color: 'success.main',
+      color: 'success.main'
     },
     'application/vnd.ms-powerpoint': { component: FaFilePowerpoint, color: 'warning.main' },
     'application/vnd.openxmlformats-officedocument.presentationml.presentation': {
       component: FaFilePowerpoint,
-      color: 'warning.main',
+      color: 'warning.main'
     },
     'text/plain': { component: FaFileAlt, color: 'grey.600' },
     'text/csv': { component: FaFileCsv, color: 'info.main' },
     'application/json': { component: FaFileCode, color: 'secondary.main' },
     'application/zip': { component: FaFileArchive, color: 'warning.main' },
-    'image': { component: FaFileImage, color: 'secondary.main' },
-    'video': { component: FaFileVideo, color: 'info.main' },
-    default: { component: FaFile, color: 'grey.400' },
+    image: { component: FaFileImage, color: 'secondary.main' },
+    video: { component: FaFileVideo, color: 'info.main' },
+    default: { component: FaFile, color: 'grey.400' }
   };
 
   // Fetch resources on component mount
@@ -1629,8 +1620,8 @@ const PartnerResources = () => {
         setLoading(true);
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/resources/getresources`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
         });
         let groupedContent = {};
 
@@ -1647,9 +1638,7 @@ const PartnerResources = () => {
           }
           const formattedResource = {
             ...resource,
-            coverImage: resource.coverImage
-              ? `${process.env.NEXT_PUBLIC_API_URL}${resource.coverImage}`
-              : null,
+            coverImage: resource.coverImage ? `${process.env.NEXT_PUBLIC_API_URL}${resource.coverImage}` : null,
             files: resource.files.map((file) => {
               const icon = getFileIcon(file.fileType);
               return {
@@ -1658,14 +1647,14 @@ const PartnerResources = () => {
                 type: file.fileType,
                 size: (file.fileSize / 1024).toFixed(2) + ' KB',
                 iconComponent: icon.component,
-                color: icon.color,
+                color: icon.color
               };
             }),
             links: parsedLinks,
             linkThumbnails: parsedLinks.map((link) => ({
               url: link,
-              thumbnail: getLinkThumbnail(link),
-            })),
+              thumbnail: getLinkThumbnail(link)
+            }))
           };
           const category = resource.category?.trim();
           if (category) {
@@ -1709,7 +1698,7 @@ const PartnerResources = () => {
         setNewContent({
           ...newContent,
           coverImage: compressed,
-          coverPreview: preview,
+          coverPreview: preview
         });
       });
     } else if (name === 'files') {
@@ -1722,7 +1711,7 @@ const PartnerResources = () => {
       setNewContent({
         ...newContent,
         files: [...newContent.files, ...selectedFiles],
-        filePreviews: [...newContent.filePreviews, ...previews],
+        filePreviews: [...newContent.filePreviews, ...previews]
       });
       setError('');
       fileInputRef.current.value = null;
@@ -1782,7 +1771,7 @@ const PartnerResources = () => {
           if (blob) {
             const compressedFile = new File([blob], file.name, {
               type: 'image/jpeg',
-              lastModified: Date.now(),
+              lastModified: Date.now()
             });
             callback(compressedFile);
           }
@@ -1821,7 +1810,7 @@ const PartnerResources = () => {
     setNewContent({
       ...newContent,
       files: updatedFiles,
-      filePreviews: updatedPreviews,
+      filePreviews: updatedPreviews
     });
     setError('');
   };
@@ -1865,18 +1854,16 @@ const PartnerResources = () => {
       const videoId = getYouTubeVideoId(link);
       return `https://img.youtube.com/vi/${videoId}/0.jpg`;
     }
-    return '/icons/link-icon.svg';
+    return '/assets/link-icon.png';
   };
 
-  const IconRenderer = ({ iconComponent: Icon, color, size = 48 }) => (
-    <Icon sx={{ fontSize: size, color }} />
-  );
+  const IconRenderer = ({ iconComponent: Icon, color, size = 48 }) => <Icon sx={{ fontSize: size, color }} />;
 
   // Wishlist state
   const [wishlistedResources, setWishlistedResources] = useState({});
 
   const toggleWishlist = (id) => {
-    setWishlistedResources(prev => ({ ...prev, [id]: !prev[id] }));
+    setWishlistedResources((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   if (loading) {
@@ -1914,33 +1901,39 @@ const PartnerResources = () => {
 
           <Grid container spacing={3} justifyContent="flex-start" alignItems="stretch">
             {content[activeTab]?.length > 0 ? (
-              content[activeTab].map((item, index) => ( // FIXED: Ensure map renders ALL items
-                <Grid item xs={12} sm={6} md={4} key={index}> {/* Reference: 3-col on md */}
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 250, damping: 20 }}
-                  >
-                    <Card
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
-                        minHeight: 450,
-                        borderRadius: 3,
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-                        overflow: "hidden",
-                        transition: "all .4s ease-in-out",
-                        border: "1px solid rgba(0,0,0,0.05)",
-                        position: 'relative',
-                        "&:hover": {
-                          boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
-                          transform: "translateY(-2px)",
-                        },
-                      }}
+              content[activeTab].map(
+                (
+                  item,
+                  index // FIXED: Ensure map renders ALL items
+                ) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    {' '}
+                    {/* Reference: 3-col on md */}
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ type: 'spring', stiffness: 250, damping: 20 }}
                     >
-                      {/* Absolute chips on top */}
-                      {/* <Stack
+                      <Card
+                        sx={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%',
+                          minHeight: 450,
+                          borderRadius: 3,
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+                          overflow: 'hidden',
+                          transition: 'all .4s ease-in-out',
+                          border: '1px solid rgba(0,0,0,0.05)',
+                          position: 'relative',
+                          '&:hover': {
+                            boxShadow: '0 8px 25px rgba(0,0,0,0.12)',
+                            transform: 'translateY(-2px)'
+                          }
+                        }}
+                      >
+                        {/* Absolute chips on top */}
+                        {/* <Stack
                         direction="row"
                         sx={{ 
                           alignItems: 'center', 
@@ -1971,78 +1964,81 @@ const PartnerResources = () => {
                         </IconButton>
                       </Stack> */}
 
-                      {/* Image */}
-                      {item.coverImage ? (
-                        <CardMedia
-                          component="img"
-                          image={item.coverImage}
-                          alt={item.title}
-                          sx={{
-                            height: 250,
-                            width: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        <Box sx={{ height: 250, bgcolor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <FaFile size={48} color="grey.400" />
-                        </Box>
-                      )}
+                        {/* Image */}
+                        {item.coverImage ? (
+                          <CardMedia
+                            component="img"
+                            image={item.coverImage}
+                            alt={item.title}
+                            sx={{
+                              height: 250,
+                              width: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        ) : (
+                          <Box sx={{ height: 250, bgcolor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <FaFile size={48} color="grey.400" />
+                          </Box>
+                        )}
 
-                      <Divider />
+                        <Divider />
 
-                      <CardContent sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                        <Grid container spacing={2}>
-                          <Grid item xs={12}>
-                            <Stack>
-                              <Typography
-                                variant="h5"
-                                component="div"
-                                sx={{
-                                  color: 'text.primary',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                  display: 'block',
-                                }}
-                              >
-                                {item.title}
-                              </Typography>
-                              <Chip
-                                label={item.resourceType}
-                                size="small"
-                                color="primary"
-                                variant="filled"
-                                sx={{ fontSize: "0.7rem", fontWeight: 500, mt: 0.5 }}
-                              />
-                            </Stack>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{
-                                mt: 1,
-                                mb: 2,
-                                lineHeight: 1.6,
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                              }}
-                            >
-                              {item.description}
-                            </Typography>
-                          </Grid>
-                          {/* Rating placeholder */}
-                          {/* <Grid item xs={12}>
+                        <CardContent sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                              <Stack>
+                                <Typography
+                                  variant="h5"
+                                  component="div"
+                                  sx={{
+                                    color: 'text.primary',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    display: 'block'
+                                  }}
+                                >
+                                  {item.title}
+                                </Typography>
+                                <Chip
+                                  label={item.resourceType}
+                                  size="small"
+                                  color="primary"
+                                  variant="filled"
+                                  sx={{ fontSize: '0.7rem', fontWeight: 500, mt: 0.5 }}
+                                />
+                              </Stack>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                              <Tooltip title={item.description || ''} arrow>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{
+                                    mt: 1,
+                                    mb: 2,
+                                    lineHeight: 1.6,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  {item.description?.length > 30 ? item.description.slice(0, 30) + '...' : item.description}
+                                </Typography>
+                              </Tooltip>
+                            </Grid>
+                            {/* Rating placeholder */}
+                            {/* <Grid item xs={12}>
                             <Stack direction="row" sx={{ alignItems: 'flex-start' }}>
                               <Rating precision={0.5} value={4.5} size="small" readOnly />
                               <Typography variant="caption" sx={{ ml: 1 }}>(4.5)</Typography>
                             </Stack>
                           </Grid> */}
-                          {/* Total items as "price" */}
-                          {/* <Grid item xs={12}>
+                            {/* Total items as "price" */}
+                            {/* <Grid item xs={12}>
                             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-end', mt: 1 }}>
                               <Stack>
                                 <Typography variant="h5" color="success.main">
@@ -2067,65 +2063,85 @@ const PartnerResources = () => {
                               </Button>
                             </Stack>
                           </Grid> */}
-                          {/* FIXED: Add back summary grids for files/links - but compact to avoid height issues */}
-                          {item.linkThumbnails?.length > 0 && (
-                            <Grid item xs={12}>
-                              <Box sx={{ height: 80, overflow: 'hidden' }}>
-                                <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1} sx={{ fontSize: '0.875rem' }}>
-                                  Links ({item.linkThumbnails.length})
-                                </Typography>
-                                <Grid container spacing={1}>
-                                  {item.linkThumbnails.slice(0, 2).map((linkThumb, idx) => (
-                                    <Grid item xs={6} key={idx}>
-                                      <Card
-                                        onClick={() => handleLinkClick(linkThumb.url)}
-                                        sx={{ height: 60, cursor: 'pointer', '&:hover': { boxShadow: 1 } }}
-                                      >
-                                        <CardMedia
-                                          component="img"
-                                          image={linkThumb.thumbnail}
-                                          sx={{ height: '100%', objectFit: 'cover' }}
-                                        />
-                                      </Card>
-                                    </Grid>
-                                  ))}
-                                </Grid>
-                              </Box>
-                            </Grid>
-                          )}
-                          {item.files?.length > 0 && (
-                            <Grid item xs={12}>
-                              <Box sx={{ height: 80, overflow: 'hidden' }}>
-                                <Typography variant="subtitle2" color="text.primary" fontWeight={600} mb={1} sx={{ fontSize: '0.875rem' }}>
-                                  Files ({item.files.length})
-                                </Typography>
-                                <Grid container spacing={1}>
-                                  {item.files.slice(0, 2).map((file, idx) => (
-                                    <Grid item xs={6} key={idx}>
-                                      <Card
-                                        onClick={() => handleFileClick(file)}
-                                        sx={{ height: 60, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', '&:hover': { boxShadow: 1 } }}
-                                      >
-                                        <IconRenderer iconComponent={file.iconComponent} color={file.color} size={20} />
-                                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                                          {file.name.slice(0, 10)}...
-                                        </Typography>
-                                      </Card>
-                                    </Grid>
-                                  ))}
-                                </Grid>
-                              </Box>
-                            </Grid>
-                          )}
-                        </Grid>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Grid>
-              ))
+                            {/* FIXED: Add back summary grids for files/links - but compact to avoid height issues */}
+                            {item.linkThumbnails?.length > 0 && (
+                              <Grid item xs={12}>
+                                <Box sx={{ height: 80, overflow: 'hidden' }}>
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="text.primary"
+                                    fontWeight={600}
+                                    mb={1}
+                                    sx={{ fontSize: '0.875rem' }}
+                                  >
+                                    Links ({item.linkThumbnails.length})
+                                  </Typography>
+                                  <Grid container spacing={1}>
+                                    {item.linkThumbnails.slice(0, 2).map((linkThumb, idx) => (
+                                      <Grid item xs={6} key={idx}>
+                                        <Card
+                                          onClick={() => handleLinkClick(linkThumb.url)}
+                                          sx={{ height: 60, cursor: 'pointer', '&:hover': { boxShadow: 1 } }}
+                                        >
+                                          <CardMedia
+                                            component="img"
+                                            image={linkThumb.thumbnail}
+                                            sx={{ height: '100%', objectFit: 'cover' }}
+                                          />
+                                        </Card>
+                                      </Grid>
+                                    ))}
+                                  </Grid>
+                                </Box>
+                              </Grid>
+                            )}
+                            {item.files?.length > 0 && (
+                              <Grid item xs={12}>
+                                <Box sx={{ height: 80, overflow: 'hidden' }}>
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="text.primary"
+                                    fontWeight={600}
+                                    mb={1}
+                                    sx={{ fontSize: '0.875rem' }}
+                                  >
+                                    Files ({item.files.length})
+                                  </Typography>
+                                  <Grid container spacing={1}>
+                                    {item.files.slice(0, 2).map((file, idx) => (
+                                      <Grid item xs={6} key={idx}>
+                                        <Card
+                                          onClick={() => handleFileClick(file)}
+                                          sx={{
+                                            height: 60,
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            '&:hover': { boxShadow: 1 }
+                                          }}
+                                        >
+                                          <IconRenderer iconComponent={file.iconComponent} color={file.color} size={20} />
+                                          <Typography variant="caption" sx={{ ml: 0.5 }}>
+                                            {file.name.slice(0, 10)}...
+                                          </Typography>
+                                        </Card>
+                                      </Grid>
+                                    ))}
+                                  </Grid>
+                                </Box>
+                              </Grid>
+                            )}
+                          </Grid>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </Grid>
+                )
+              )
             ) : (
               <Grid item xs={12}>
-                <Box sx={{ textAlign: "center", py: 8 }}>
+                <Box sx={{ textAlign: 'center', py: 8 }}>
                   <Typography variant="h6" color="text.secondary" fontWeight={500}>
                     No resources available for this category.
                   </Typography>
@@ -2168,19 +2184,10 @@ const PartnerResources = () => {
                   {selectedFile.name}
                 </Typography>
                 {selectedFile.type.startsWith('image/') && (
-                  <img
-                    src={selectedFile.url}
-                    alt={selectedFile.name}
-                    style={{ width: '100%', maxHeight: '80vh', objectFit: 'contain' }}
-                  />
+                  <img src={selectedFile.url} alt={selectedFile.name} style={{ width: '100%', maxHeight: '80vh', objectFit: 'contain' }} />
                 )}
                 {selectedFile.type.startsWith('video/') && (
-                  <video
-                    src={selectedFile.url}
-                    controls
-                    autoPlay
-                    style={{ width: '100%', maxHeight: '80vh' }}
-                  />
+                  <video src={selectedFile.url} controls autoPlay style={{ width: '100%', maxHeight: '80vh' }} />
                 )}
                 {selectedFile.type === 'application/pdf' && (
                   <iframe
@@ -2200,14 +2207,10 @@ const PartnerResources = () => {
                         p: 4,
                         bgcolor: 'grey.50',
                         borderRadius: 2,
-                        textAlign: 'center',
+                        textAlign: 'center'
                       }}
                     >
-                      <IconRenderer
-                        iconComponent={selectedFile.iconComponent}
-                        color={selectedFile.color}
-                        size={64}
-                      />
+                      <IconRenderer iconComponent={selectedFile.iconComponent} color={selectedFile.color} size={64} />
                       <Typography variant="h6" color="text.primary" sx={{ mt: 2, mb: 1 }}>
                         {selectedFile.name}
                       </Typography>
@@ -2260,12 +2263,7 @@ const PartnerResources = () => {
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button 
-            onClick={() => setShowPreviewModal(false)} 
-            variant="outlined" 
-            color="primary"
-            sx={{ borderRadius: 1, px: 3 }}
-          >
+          <Button onClick={() => setShowPreviewModal(false)} variant="outlined" color="primary" sx={{ borderRadius: 1, px: 3 }}>
             Close
           </Button>
         </DialogActions>

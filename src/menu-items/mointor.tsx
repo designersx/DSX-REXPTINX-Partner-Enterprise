@@ -11,8 +11,10 @@ import VideoLibrary from '@mui/icons-material/VideoLibrary';
 
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import { useAuth } from 'contexts/AuthContext';
 // import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
-// icons
+// // icons
+// const { user } = useAuth();
 const icons = {
   page: DashboardIcon,
   authentication: Security,
@@ -23,7 +25,7 @@ const icons = {
   agent: SmartToyIcon
 };
 
-// ==============================|| MENU ITEMS - PAGES ||============================== //
+// // ==============================|| MENU ITEMS - PAGES ||============================== //
 
 const mointor: NavItemType = {
   id: 'group-pages',
@@ -77,3 +79,59 @@ const mointor: NavItemType = {
 };
 
 export default mointor;
+
+// const monitor = (): NavItemType => {
+//   const { user } = useAuth();
+
+//   return {
+//     id: 'group-pages',
+//     title: 'monitor',
+//     type: 'group',
+//     children: [
+//       {
+//         id: 'callHistory',
+//         title: 'Call History',
+//         type: 'item',
+//         url: '/monitor/callHistory',
+//         icon: CallIcon
+//       },
+//       {
+//         id: 'raiseTicket',
+//         title: 'Raise Ticket',
+//         type: 'item',
+//         url: '/monitor/raiseTicket',
+//         icon: ConfirmationNumberIcon
+//       },
+//       {
+//         id: 'partner-resources',
+//         title: 'Partner Resources',
+//         type: 'item',
+//         url: '/monitor/partner-resources',
+//         icon: VideoLibrary
+//       },
+//       user?.roleId === '3' && {
+//         id: 'Earning',
+//         title: 'Partner Earning',
+//         type: 'item',
+//         url: '/monitor/Earning',
+//         icon: DollarSquare
+//       },
+//       {
+//         id: 'Marketing',
+//         title: 'Marketing Material',
+//         type: 'item',
+//         url: '/monitor/Marketing',
+//         icon: Airplane
+//       },
+//       {
+//         id: 'PartnerAgent',
+//         title: 'Partner Agent',
+//         type: 'item',
+//         url: '/monitor/Partneragent',
+//         icon: SupportAgentIcon
+//       }
+//     ].filter(Boolean)
+//   };
+// };
+
+// export default monitor;

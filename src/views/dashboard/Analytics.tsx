@@ -231,9 +231,9 @@ export default function DashboardFinance() {
   const userId = getUserId();
   const { user } = useAuth();
   console.log(user, 'userdashboard');
+  const roleId = user?.roleId || localStorage.getItem('roleId');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const {user}=useAuth();
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -254,98 +254,98 @@ export default function DashboardFinance() {
 
   return (
     <>
-    {user.roleId== "4"?
-      <Grid container spacing={GRID_COMMON_SPACING}>
-      {userId == 'RXDI7Q1759578841' ? (
-        <Grid style={{ display: 'flex', gap: '5px' }}>
-          <Grid size={12}>
-            <WelcomeBanner />
+      {roleId == '4' ? (
+        <Grid container spacing={GRID_COMMON_SPACING}>
+          {userId == 'RXDI7Q1759578841' ? (
+            <Grid style={{ display: 'flex', gap: '5px' }}>
+              <Grid size={12}>
+                <WelcomeBanner />
+              </Grid>
+              <Grid size={12}>
+                <MyownAgent />
+              </Grid>
+            </Grid>
+          ) : (
+            <Grid size={12}>
+              <WelcomeBanner />
+            </Grid>
+          )}
+
+          <Grid size={{ xs: 12, lg: 12 }}>
+            <Grid container spacing={GRID_COMMON_SPACING}>
+              {user.roleId == '3' ? (
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                  <TransactionCard
+                    title="Total Calls"
+                    caption="Enterprise Data"
+                    color={theme.palette.primary.main}
+                    data={[0, 70, 120, 80, 0, 130, 199]}
+                    amount={loading ? '...' : dashboardData?.totalCallCount || '0'}
+                    // iconPrimary={<CallCalling />}
+                  />
+                </Grid>
+              ) : null}
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                <TransactionCard
+                  title="Total Bulk Minutes"
+                  caption="Enterprise Data"
+                  color={theme.palette.primary.main}
+                  data={[0, 70, 120, 80, 0, 130, 199]}
+                  amount={loading ? '...' : `${dashboardData?.totalMinutes || 0} Mins`}
+                  // iconPrimary={<Call />}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                <TransactionCard
+                  title="Assigned Bulk Minutes"
+                  caption="Enterprise Data"
+                  color={theme.palette.success.main}
+                  data={[180, 110, 50, 80, 100, 199, 50]}
+                  amount={loading ? '...' : `${dashboardData?.usedMinutes || 0} Mins`}
+                  // iconPrimary={<CallAdd />}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                <TransactionCard
+                  title="Exhausted Minutes"
+                  caption="Enterprise Data"
+                  color={theme.palette.error.main}
+                  data={[70, 199, 130, 140, 80, 20, 70]}
+                  amount={loading ? '...' : `${dashboardData?.exhaustedMinutes || 0} Mins`}
+                  // iconPrimary={<CallMinus />}
+                />
+              </Grid>
+              {dashboardData?.agents?.length > 0 && (
+                <Grid size={12}>
+                  {/* <AgentDetailCard agents={dashboardData?.agents || []}/> */}
+                  <AgentDetailCard agents={dashboardData?.agents?.slice(0, 4)} />
+                </Grid>
+              )}
+            </Grid>
           </Grid>
-          <Grid size={12}>
-            <MyownAgent />
+          <Grid size={{ xs: 12, lg: 12 }}>
+            <Grid container spacing={GRID_COMMON_SPACING}>
+              <Grid size={12}>
+                <CashflowChartCard />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid size={{ xs: 12, lg: 12 }}>
+            <Grid container spacing={GRID_COMMON_SPACING}>
+              <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+                <CategoryCard />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
+                <CategoryCard1 />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       ) : (
-        <Grid size={12}>
-          <WelcomeBanner />
-        </Grid>
+        <InvoiceDashboard />
       )}
-
-      <Grid size={{ xs: 12, lg: 12 }}>
-        <Grid container spacing={GRID_COMMON_SPACING}>
-
-          {user.roleId== '3'?
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Total Calls"
-              caption="Enterprise Data"
-              color={theme.palette.primary.main}
-              data={[0, 70, 120, 80, 0, 130, 199]}
-              amount={loading ? '...' : dashboardData?.totalCallCount || '0'}
-              // iconPrimary={<CallCalling />}
-            />
-          </Grid>
-:null}
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Total Bulk Minutes"
-              caption="Enterprise Data"
-              color={theme.palette.primary.main}
-              data={[0, 70, 120, 80, 0, 130, 199]}
-              amount={loading ? '...' : `${dashboardData?.totalMinutes || 0} Mins`}
-              // iconPrimary={<Call />}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Assigned Bulk Minutes"
-              caption="Enterprise Data"
-              color={theme.palette.success.main}
-              data={[180, 110, 50, 80, 100, 199, 50]}
-              amount={loading ? '...' : `${dashboardData?.usedMinutes || 0} Mins`}
-              // iconPrimary={<CallAdd />}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-            <TransactionCard
-              title="Exhausted Minutes"
-              caption="Enterprise Data"
-              color={theme.palette.error.main}
-              data={[70, 199, 130, 140, 80, 20, 70]}
-              amount={loading ? '...' : `${dashboardData?.exhaustedMinutes || 0} Mins`}
-              // iconPrimary={<CallMinus />}
-            />
-          </Grid>
-          {dashboardData?.agents?.length > 0 && (
-            <Grid size={12}>
-              {/* <AgentDetailCard agents={dashboardData?.agents || []}/> */}
-              <AgentDetailCard agents={dashboardData?.agents?.slice(0, 4)} />
-            </Grid>
-          )}
-        </Grid>
-      </Grid>
-      <Grid size={{ xs: 12, lg: 12 }}>
-        <Grid container spacing={GRID_COMMON_SPACING}>
-          <Grid size={12}>
-            <CashflowChartCard />
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid size={{ xs: 12, lg: 12 }}>
-        <Grid container spacing={GRID_COMMON_SPACING}>
-          <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
-            <CategoryCard />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
-            <CategoryCard1 />
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
-
-    : <InvoiceDashboard/>}
-  </>
+    </>
   );
 }
