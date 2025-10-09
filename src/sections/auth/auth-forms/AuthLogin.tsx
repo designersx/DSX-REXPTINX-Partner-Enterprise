@@ -89,6 +89,7 @@ export default function AuthLogin({ providers, csrfToken }: any) {
             localStorage.setItem('referralCode', result.referralCode);
             localStorage.setItem('referralName', result.referalname);
             localStorage.setItem('partnername', result.name);
+            localStorage.setItem('roleId', result.roleId);
 
             console.log('Login result:', result);
 

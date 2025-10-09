@@ -1,0 +1,823 @@
+'use client';
+// material-ui
+import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+import axios from 'axios';
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import CallIcon from '@mui/icons-material/Call';
+import TableBody from '@mui/material/TableBody';
+import Box from '@mui/material/Box';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert, { AlertColor } from '@mui/material/Alert';
+import BusinessIcon from '@mui/icons-material/Business';
+// import AlertCustomerDelete from '../AlertCustomerDelete';
+import { FormControl, InputLabel, Select } from '@mui/material';
+// project-imports
+import IconButton from 'components/@extended/IconButton';
+import MainCard from 'components/MainCard';
+import AgentGeneralInfoModal from '../AgentgeneralinfoModal';
+import StoreIcon from '@mui/icons-material/Store';
+import Fade from '@mui/material/Fade';
+import LanguageIcon from '@mui/icons-material/Language';
+import { Link2, Sms } from '@wandersonalwes/iconsax-react';
+import Menu from '@mui/material/Menu';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import AbcIcon from '@mui/icons-material/Abc';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+// assets
+import { Add, Edit, Eye, Trash, UserEdit } from '@wandersonalwes/iconsax-react';
+
+import { useEffect, useRef, useState } from 'react';
+import CallDialog from 'components/CallDialog';
+import { RetellWebClient } from 'retell-client-js-sdk';
+
+import { useRouter } from 'next/navigation';
+import { fetchAgent } from '../../../../Services/auth';
+import { TablePagination } from '@mui/material';
+import Loader from 'components/Loader';
+import Grid from '@mui/material/Grid';
+import { useConversation } from '@elevenlabs/react';
+import { getUserId } from 'utils/auth';
+
+import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
+import { formatTimeAgo } from 'lib/formatTimeAgo';
+import { Label } from '@mui/icons-material';
+import { retrieveAllRegisteredUsersforAgents } from '../../../../Services/auth';
+const Avatar1 = '/assets/images/avatrs/Female-01.png';
+const Avatar2 = '/assets/images/avatrs/male-01.png';
+const Avatar3 = '/assets/images/avatrs/Female-02.png';
+const Avatar4 = '/assets/images/avatrs/male-02.png';
+const Avatar5 = '/assets/images/avatrs/male-03.png';
+
+// table data
+function createData(
+  name: string,
+  avatar: string,
+  position: string,
+  date: string,
+  time: string,
+  Amount: number,
+  status: string,
+  color: string
+) {
+  return { name, avatar, position, date, time, Amount, status, color };
+}
+
+type ChipColor = 'default' | 'success' | 'warning' | 'error' | 'secondary' | 'primary' | 'info';
+
+const getValidColor = (color: string): ChipColor => {
+  const validColors: ChipColor[] = ['default', 'success', 'warning', 'error', 'secondary', 'primary', 'info'];
+  return validColors.includes(color as ChipColor) ? (color as ChipColor) : 'default';
+};
+
+const agentdataa = [
+  {
+    id: 'agent_7801k6q89jegf5pvgpaq9awwvz0q',
+    businessname: 'Rexpt Pvt ltd.',
+    agentPlan: 'Regional',
+    mins_left: '1200',
+    avatar: '/images/Male-01.png',
+    agentName: 'REX',
+    businessType: 'AI Receptionist Service',
+    agentLanguage: 'Hindi + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'Regional',
+    description: 'Handles customer queries',
+    userId: 'RXQ1NM1759328246',
+    createdAt: '2025-10-04T12:35:23.000Z'
+  },
+  {
+    id: 'agent_2101k6qb02psethsw45h9h6b9zce',
+    businessname: 'State Bank of India',
+    agentPlan: 'Regional',
+    mins_left: '1200',
+    avatar: '/images/Male-02.png',
+    agentName: 'Suraj',
+    businessType: 'Banking',
+    agentLanguage: 'Hindi + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'Regional',
+    description: 'Handles customer queries',
+    userId: 'RXQ1NM1759328246',
+    createdAt: '2025-10-04T12:35:23.000Z'
+  },
+  {
+    id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
+    businessname: 'Zouma Consulting Services',
+    agentPlan: 'partner',
+    mins_left: '45000',
+    avatar: '/images/Male-01.png',
+    agentName: 'Himanshu (Arabic)',
+    businessType: 'Software & CX Management',
+    agentLanguage: 'Arabic + Multi',
+    agentGender: 'male',
+    agentAccent: 'American',
+    plantype: 'partner',
+    description: 'Handles customer queries',
+    userId: 'RXDI7Q1759578841',
+    createdAt: '2025-10-04T12:35:23.000Z'
+  }
+];
+export default function AgentPagePartner({ type }) {
+  // "partner" 'Regional' "Enterprise"
+  console.log(type, 'HELELO');
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [agents, setAgents] = useState<any[]>([]); // store API data
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [callLoading, setCallLoading] = useState(false);
+  const isEndingRef = useRef(false);
+  const [isCallInProgress, setIsCallInProgress] = useState(false);
+  const [callId, setCallId] = useState('');
+  const [retellWebClient, setRetellWebClient] = useState(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [planFilter, setPlanFilter] = useState(type?.toLowerCase() || 'all');
+  const [selectAgent, setSelectAgent] = useState(null);
+  const [conversation, setConversation] = useState(null);
+  const [error, setError] = useState(null);
+  // const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info'
+  });
+  const userId = getUserId();
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+  useEffect(() => {
+    const loadAgents = async () => {
+      try {
+        const res = await fetchAgent();
+        let agentsData = res?.agents || [];
+        setAgents(agentsData);
+      } catch (err) {
+        console.error('Error fetching agents:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAgents();
+  }, []);
+  const handleCreateAgentClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleAgentSubmit = async (agentData) => {
+    await loadAgents();
+    // Handle successful agent creation - you might want to refresh your agents list here
+    setIsModalOpen(false);
+    // Optionally refresh the table data or show a success message
+  };
+
+  const handleModalClose = (event, reason) => {
+    if (reason === 'backdropClick') {
+      return;
+    }
+    setIsModalOpen(false);
+  };
+  const loadAgents = async () => {
+    try {
+      setLoading(true);
+      const res = await retrieveAllRegisteredUsersforAgents(); // ✅ call your API function
+      // Assuming res is an array of agents
+      setAgents(res?.agents || []);
+    } catch (err) {
+      console.error('Error fetching agents:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const handleOpenDialog = (agent: any,source) => {
+  //   setSelectedAgent(agent);
+  //   setOpenDialog(true);
+  // };
+
+  const handleOpenDialog = (agent: any) => {
+    setSelectedAgent(agent); // agent + source together
+    setOpenDialog(true);
+  };
+
+  const conv = useConversation({
+    onConnect: () => console.log('Connected'),
+    onDisconnect: () => console.log('Disconnected'),
+    onMessage: (message) => console.log('Message:', message),
+    onError: (error) => console.error('Error:', error)
+  });
+  const startCall = async (agentdatass) => {
+    console.log(agentdatass, 'agent');
+    setSelectedAgent(agentdatass);
+    setError(null);
+    try {
+      console.log(process.env.NEXT_API_PUBLIC_URL, 'process.env.NEXT_API_PUBLIC_URL');
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const response = await fetch(`${process.env.NEXT_API_PUBLIC_URL}/api/agent/regionalagents/signed-url/${agentdatass.id}`);
+      const data = await response.json();
+      const conversationToken = data.token;
+      if (!conversationToken) {
+        throw new Error('No conversation token received from backend');
+      }
+      // Use the vanilla JavaScript SDK approach for WebRTC
+      const { Conversation } = await import('@elevenlabs/client');
+      const conversation = await Conversation.startSession({
+        conversationToken,
+        connectionType: 'webrtc'
+      });
+      setConversation(conversation);
+      console.log('Conversation started');
+    } catch (err) {
+      setError(`Failed to start call: ${err.message}`);
+      console.error('Error starting call:', err);
+    }
+  };
+  const endCall = async () => {
+    if (conversation) {
+      await conversation.endSession();
+      setConversation(null);
+      setSelectedAgent(null);
+      setError(null);
+    }
+  };
+  const handleCloseDialog = () => {
+    handleEndCall();
+    if (isCallActive) {
+      isEndingRef.current = true;
+      setCallLoading(true);
+      setTimeout(() => {
+        isEndingRef.current = false;
+        setIsCallActive(false);
+        setCallLoading(false);
+        setOpenDialog(false);
+        setSelectedAgent(null);
+      }, 1000); // Simulate call ending delay
+    } else {
+      setOpenDialog(false);
+      setSelectedAgent(null);
+    }
+  };
+
+  const handleStartCall = async () => {
+    setCallLoading(true);
+
+    let micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+    if (micPermission.state !== 'granted') {
+      try {
+        // Step 2: Ask for mic access
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        // Step 3: Recheck permission after user action
+        micPermission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+        if (micPermission.state !== 'granted') {
+          setSnackbar({
+            open: true,
+            message: 'You must grant microphone access to start the call.',
+            severity: 'warning'
+          });
+
+          return;
+        }
+      } catch (err) {
+        // User denied mic access
+        setSnackbar({
+          open: true,
+          message: 'Please allow microphone permission to continue.',
+          severity: 'error'
+        });
+        setCallLoading(false);
+        // setShowCallModal(false);
+        return;
+      }
+    }
+    setCallLoading(true);
+    try {
+      const agentId = selectedAgent?.agent_id;
+
+      if (!agentId) throw new Error('No agent ID found');
+
+      // Example: Initiate a call with Retell AI
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/agent/create-web-call`,
+        {
+          agent_id: agentId
+          // Add other required parameters, e.g., phone number or call settings
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_RETELL_API}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      setCallLoading(true);
+
+      if (response.status == 403) {
+        setSnackbar({
+          open: true,
+          message: 'Agent Plan minutes exhausted',
+          severity: 'error'
+        });
+        setIsCallInProgress(false);
+        // setTimeout(() => {
+        //   setPopupMessage("");
+        // }, 5000);
+        return;
+      }
+
+      await retellWebClient.startCall({ accessToken: response?.data?.access_token });
+      setCallId(response?.data?.call_id);
+      setIsCallActive(true);
+    } catch (error) {
+      console.error('Error starting call:', error);
+
+      if (error.status == 403) {
+        setSnackbar({
+          open: true,
+          message: 'Agent Plan minutes exhausted',
+          severity: 'error'
+        });
+        setIsCallInProgress(false);
+        // setTimeout(() => {
+        //   setPopupMessage("");
+        // }, 5000);
+        return;
+      } else {
+        setSnackbar({
+          open: true,
+          message: 'Failed to start call. Please try again.',
+          severity: 'error'
+        });
+      }
+    } finally {
+      setCallLoading(false);
+    }
+  };
+
+  const handleEndCall = async () => {
+    isEndingRef.current = true;
+    setCallLoading(true);
+    isEndingRef.current = false;
+    // setRefresh((prev) => !prev);
+    try {
+      const response = await retellWebClient.stopCall();
+      setIsCallActive(false);
+      isEndingRef.current = false;
+    } catch (error) {
+      console.error('Error ending call:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to end call. Please try again.',
+        severity: 'error'
+      });
+    }
+    setTimeout(() => {
+      isEndingRef.current = false;
+      setIsCallActive(false);
+      setCallLoading(false);
+      setOpenDialog(false);
+      setSelectedAgent(null);
+    }, 1000); // Simulate call ending delay
+  };
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // reset to first page
+  };
+  const userFilteredAgentdataa = agentdataa.filter((agent) => agent.userId == userId);
+  // normalize type
+  const normalizedFilter = planFilter.toLowerCase();
+  // merge both sources into one array first
+  const mergedAgents = [
+    ...agents.map((agent) => ({ ...agent, source: 'filtered' })),
+    ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+  ];
+  // now filter based on plan type
+  const filteredAgents = mergedAgents.filter((agent) => {
+    const plan = agent.agentPlan?.toLowerCase() || agent.plantype?.toLowerCase() || '';
+
+    switch (normalizedFilter) {
+      case 'all':
+        return true;
+      case 'my': // "My Own Agents"
+        return plan === 'partner';
+      case 'regional':
+        return plan === 'regional';
+      case 'enterprise':
+        return plan === 'enterprise';
+      default:
+        return true;
+    }
+  });
+  // finally, sort by creation date
+  filteredAgents.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+  console.log(filteredAgents, 'filteredAgents');
+  //LOCK
+  useEffect(() => {
+    const client = new RetellWebClient();
+    client.on('call_started', () => setIsCallActive(true));
+    client.on('call_ended', () => setIsCallActive(false));
+    client.on('update', (update) => {
+      //  Mark the update clearly as AGENT message
+      const customUpdate = {
+        ...update,
+        source: 'agent' // Add explicit source
+      };
+
+      // Dispatch custom event for CallTest
+      window.dispatchEvent(new CustomEvent('retellUpdate', { detail: customUpdate }));
+    });
+
+    setRetellWebClient(client);
+  }, []);
+  useEffect(() => {
+    loadAgents();
+  }, []);
+  return (
+    <>
+      {isModalOpen ? (
+        <AgentGeneralInfoModal open={isModalOpen} onClose={handleModalClose} onSubmit={handleAgentSubmit} />
+      ) : (
+        <MainCard
+          title={<Typography variant="h5">Your Agents</Typography>}
+          content={false}
+          secondary={
+            <>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <FormControl sx={{ minWidth: 200, mb: 2 }}>
+                  <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
+                  <Select labelId="agent-plan-filter" value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
+                    <MenuItem value="all">All</MenuItem>
+                    {/* <MenuItem value="smb">SMB</MenuItem> */}
+                    <MenuItem value="enterprise">Enterprise</MenuItem>
+                    {userId == 'RXQ1NM1759328246' ? <MenuItem value="regional">Regional</MenuItem> : null}
+                    <MenuItem value="my">My Agents</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Button variant="contained" startIcon={<Add />} size="large" onClick={handleCreateAgentClick}>
+                  <Link href="#" variant="h5" color="white" component="button" sx={{ textDecoration: 'none' }}>
+                    Create Agent
+                  </Link>
+                </Button>
+              </Stack>
+            </>
+          }
+        >
+          <Grid
+            container
+            spacing={5}
+            sx={{
+              alignItems: 'stretch',
+              display: 'flex',
+              p: 3
+            }}
+          >
+            {loading ? (
+              <Loader />
+            ) : [
+                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+              ].length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  <Typography>No agents found.</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              [
+                ...(planFilter === 'Regional'
+                  ? userFilteredAgentdataa.map((agent) => ({ ...agent }))
+                  : filteredAgents.map((agent) => ({ ...agent })))
+              ]
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((agent, index) => (
+                  <Grid
+                    key={`${agent.agent_id}-${agent.source}-${index}`} // Unique key to avoid conflicts
+                    size={{ xs: 12, sm: 10, lg: 4 }}
+                    style={{
+                      alignItems: 'stretch',
+                      display: 'flex',
+                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled
+                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto' // prevent clicks
+                    }}
+                  >
+                    <Grid
+                      id="print"
+                      container
+                      spacing={2.25}
+                      style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
+                    >
+                      <Grid size={12}>
+                        <List sx={{ width: 1, p: 0 }}>
+                          <ListItem
+                            disablePadding
+                            secondaryAction={
+                              agent.source == 'filtered' ? (
+                                <>
+                                  <Tooltip title="View call history">
+                                    <IconButton
+                                      color="secondary"
+                                      onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
+                                    >
+                                      <Eye />
+                                    </IconButton>
+                                  </Tooltip>
+                                  {/* <Tooltip title="Edit agent">
+                                    <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
+                                      <UserEdit />
+                                    </IconButton>
+                                  </Tooltip> */}
+                                </>
+                              ) : null
+                            }
+                          >
+                            <ListItemAvatar>
+                              <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
+                              secondary={
+                                <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
+                                    {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
+                                  </Typography>
+                                </Tooltip>
+                              }
+                            />
+                          </ListItem>
+                        </List>
+                      </Grid>
+                      <Grid size={12}>
+                        <Divider />
+                      </Grid>
+                      {agent.agentPlan == 'partner' ? (
+                        <Grid item xs={12}>
+                          <Box display="flex" alignItems="center" gap={1}>
+                            <Label sx={{ fontWeight: 500, color: 'text.secondary' }}>Type:</Label>
+                            <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>My Own Agent</Typography>
+                          </Box>
+                        </Grid>
+                      ) : (
+                        <>
+                          <Grid item xs={12}>
+                            <Typography>Hello, {agent.agentName}</Typography>
+                          </Grid>
+                        </>
+                      )}
+                      <Grid size={12}>
+                        <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
+                          <Grid size={6}>
+                            <List
+                              sx={{
+                                p: 0,
+                                overflow: 'hidden',
+                                '& .MuiListItem-root': { px: 0, py: 0.5 },
+                                '& .MuiListItemIcon-root': { minWidth: 28 }
+                              }}
+                            >
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <Sms size={18} />
+                                </ListItemIcon>
+                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
+                              </ListItem>
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <AbcIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentAccent}</Typography>} />
+                              </ListItem>
+                            </List>
+                          </Grid>
+                          <Grid size={6}>
+                            <List
+                              sx={{
+                                p: 0,
+                                overflow: 'hidden',
+                                '& .MuiListItem-root': { px: 0, py: 0.5 },
+                                '& .MuiListItemIcon-root': { minWidth: 28 }
+                              }}
+                            >
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <LanguageIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
+                              </ListItem>
+                              {/* <ListItem alignItems="flex-start">
+                                <ListItemIcon>
+                                  <Link2 size={18} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={
+                                    <Link href="https://google.com" target="_blank" sx={{ textTransform: 'lowercase' }}>
+                                      https://rxpt.us
+                                    </Link>
+                                  }
+                                />
+                              </ListItem> */}
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <AccessTimeIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {' '}
+                                      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
+                                    </Typography>
+                                  }
+                                />
+                              </ListItem>
+                            </List>
+                          </Grid>
+                          <Grid size={6}>
+                            <List
+                              sx={{
+                                p: 0,
+                                overflow: 'hidden',
+                                '& .MuiListItem-root': { px: 0, py: 0.5 },
+                                '& .MuiListItemIcon-root': { minWidth: 28 },
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <BusinessIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {agent?.businessDetails?.BusinessType || agent?.businessType}
+                                    </Typography>
+                                  }
+                                />
+                              </ListItem>
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <Link2 size={18} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={
+                                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                                      {agent?.agentPlan}
+                                    </Typography>
+                                  }
+                                />
+                              </ListItem>
+                            </List>
+                          </Grid>
+                          <Grid size={6}>
+                            <List
+                              sx={{
+                                p: 0,
+                                overflow: 'hidden',
+                                '& .MuiListItem-root': { px: 0, py: 0.5 },
+                                '& .MuiListItemIcon-root': { minWidth: 28 }
+                              }}
+                            >
+                              <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <StoreIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {agent.businessDetails?.name || agent?.businessname}
+                                    </Typography>
+                                  }
+                                />
+                              </ListItem>
+                              {/* <ListItem alignItems="flex-start">
+                                <ListItemIcon style={{ marginTop: '3px' }}>
+                                  <AccessTimeIcon size={18} />
+                                </ListItemIcon>
+                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
+                              </ListItem> */}
+                            </List>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid size={12}>
+                        <Box>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul"></Box>
+                        </Box>
+                      </Grid>
+                      <Stack
+                        direction="row"
+                        className="hideforPDf"
+                        sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
+                      >
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          Updated {formatTimeAgo(agent?.createdAt)}
+                        </Typography>
+
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          startIcon={<CallIcon />}
+                          sx={{
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            px: 3,
+                            boxShadow: 2
+                          }}
+                          onClick={() =>
+                            agent.source === 'filtered'
+                              ? handleOpenDialog({ ...agent, source: agent.source })
+                              : handleOpenDialog({ ...agent, source: agent.source })
+                          }
+                        >
+                          Test Agent
+                        </Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                ))
+            )}
+          </Grid>
+          <TablePagination
+            component="div"
+            count={[...filteredAgents, ...userFilteredAgentdataa].length} // Total count of both agent sets
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+          />
+        </MainCard>
+      )}
+
+      {/* Call Dialog */}
+      {selectedAgent && (
+        <CallDialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          agent={selectedAgent}
+          isCallActive={isCallActive}
+          callLoading={callLoading}
+          onStartCall={handleStartCall}
+          onEndCall={handleEndCall}
+          isEndingRef={isEndingRef}
+          setCallLoading={setCallLoading}
+          setIsCallActive={setIsCallActive}
+        />
+      )}
+
+      {/* Agent Creation Modal */}
+      {/* <AgentGeneralInfoModal
+        open={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleAgentSubmit}
+      /> */}
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+}
