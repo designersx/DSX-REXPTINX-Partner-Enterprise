@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogTitle, Slide, Button, Typography, Box } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
-import AgentGeneralInfo from './CreateAgent';
-// import AgentGeneralInfo from './CreatePartnerAgent';
+// import AgentGeneralInfo from './CreateAgent';
+import PartnerAgentGeneralInfo from './CreatePartnerAgent';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -36,7 +36,11 @@ export default function AgentGeneralInfoModal({ open, onClose, onSubmit }) {
     //   }}
     // >
     //   <DialogContent sx={{ p: 4, width: '130%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-    <AgentGeneralInfo open={open} onClose={onClose} onSubmit={onSubmit} />
+
+    // <AgentGeneralInfo open={open} onClose={onClose} onSubmit={onSubmit} /> fddfdf
+   <PartnerAgentGeneralInfo open={open} onClose={onClose} onSubmit={onSubmit} /> 
+
+
     //   </DialogContent>
     // </Dialog>
   );
