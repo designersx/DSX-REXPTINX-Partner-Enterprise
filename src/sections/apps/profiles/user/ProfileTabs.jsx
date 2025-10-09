@@ -21,7 +21,7 @@ import Avatar from 'components/@extended/Avatar';
 import MoreIcon from 'components/@extended/MoreIcon';
 import IconButton from 'components/@extended/IconButton';
 import MainCard from 'components/MainCard';
-import { facebookColor, linkedInColor } from 'config';
+// import { facebookColor, linkedInColor } from 'config';
 
 // assets
 import { Apple, Camera, Facebook, Google } from '@wandersonalwes/iconsax-react';
@@ -139,9 +139,9 @@ export default function ProfileTabs({ focusInput }) {
               <Typography color="secondary">Full Stack Developer</Typography>
             </Stack>
             <Stack direction="row" sx={{ gap: 3, '& svg': { fontSize: '1.15rem', cursor: 'pointer' }, color: 'error.main' }}>
-              <Google variant="Bold" />
+              {/* <Google variant="Bold" />
               <Facebook variant="Bold" color={facebookColor} />
-              <Apple variant="Bold" color={linkedInColor} />
+              <Apple variant="Bold" color={linkedInColor} /> */}
             </Stack>
           </Stack>
         </Grid>
