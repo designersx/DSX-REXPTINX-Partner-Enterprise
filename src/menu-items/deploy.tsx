@@ -33,6 +33,17 @@ const deploy: NavItemType = {
       url: '/deploy/phoneNumbers',
       icon: ContactPhoneIcon
     },
+    ...(localStorage.getItem('roleId') !== '4'
+      ? [
+          {
+            id: 'phoneNumbers',
+            title: 'Phone Numbers',
+            type: 'item',
+            url: '/deploy/phoneNumbers',
+            icon: ContactPhoneIcon
+          }
+        ]
+      : []),
     {
       id: 'DemoApp',
       title: 'Demo',

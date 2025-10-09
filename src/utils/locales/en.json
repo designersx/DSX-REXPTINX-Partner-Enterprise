@@ -1,10 +1,13 @@
 {
-  "agents":"Agents",
+  "agents": "Agents",
   "dashboard": "Dashboard",
   "Demo Agents view": "Demo Agents view",
-  "Demo Agents":"Demo Agents",
+  "Demo Agents": "Demo Agents",
   "maintenance": "Maintenance",
-  "knowledge Base":"knowledge Base",
+  "knowledge Base": "knowledge Base",
+  "Basic Account": "Basic Account",
+  "Account Profile": "Account Profile",
+  "Home": "Home",
   "error-404": "Error 404",
   "error-500": "Error 500",
   "coming-soon": "Coming Soon",
@@ -14,9 +17,9 @@
   "under-construction 1": "Under Construction 1",
   "under-construction 2": "Under Construction 2",
   "contact-us": "Contact Us",
-  "View":"View",
-  "create invoice":"create invoice",
-  "invoice":"invoice",
+  "View": "View",
+  "create invoice": "create invoice",
+  "invoice": "invoice",
   "level": "Level",
   "level 1": "Level 1",
   "level 2": "Level 2",
@@ -36,7 +39,6 @@
   "fire": "Fire",
   "gitbook": "GitBook",
   "home": "Home",
-  "invoice-summary":"invoice-summary",
-    "my-dashboard":"my-dashboard"
-
+  "invoice-summary": "invoice-summary",
+  "my-dashboard": "my-dashboard"
 }

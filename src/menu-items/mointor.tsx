@@ -200,11 +200,18 @@ const mointor: NavItemType = {
       url: '/mointor/Marketing',
       icon: Airplane
     },
+    // {
+    //   id: 'PartnerAgent',
+    //   title: 'Partner Agent',
+    //   type: 'item',
+    //   url: '/mointor/Partneragent',
+    //   icon: SupportAgentIcon
+    // }
     {
       id: 'PartnerAgent',
       title: 'Partner Agent',
       type: 'item',
-      url: '/mointor/Partneragent',
+      url: '/mointor/AgentDetails/basic',
       icon: SupportAgentIcon
     }
   ]

@@ -134,7 +134,7 @@ export default function Visitors() {
       <Grid container spacing={2}>
         <Grid size={12}>
           <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h5">Visitors</Typography>
+            <Typography variant="h5">Agents</Typography>
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth size="small">
                 <Select id="demo-simple-select" value={age} onChange={handleChange}>
@@ -151,7 +151,7 @@ export default function Visitors() {
         </Grid>
         <Grid size={12}>
           <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Typography variant="subtitle1">$30,200</Typography>
+            <Typography variant="subtitle1">30</Typography>
             <Typography sx={{ color: 'error.dark', display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 500 }}>
               <ArrowDown size={14} style={{ transform: 'rotate(-45deg)' }} />
               30.6%

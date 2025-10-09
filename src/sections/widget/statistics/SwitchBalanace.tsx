@@ -38,7 +38,7 @@ export default function SwitchBalanace() {
         <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between' }}>
           <Stack>
             <Typography>Available Balance</Typography>
-            <Typography variant="h4">$1,234.90</Typography>
+            <Typography variant="h4">$1,5000</Typography>
           </Stack>
           <Avatar
             variant="rounded"
