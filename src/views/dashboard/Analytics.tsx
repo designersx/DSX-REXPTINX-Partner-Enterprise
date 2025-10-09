@@ -225,6 +225,7 @@ import { display } from '@mui/system';
 import MyownAgent from './MyowneAgent';
 import InvoiceDashboard from './PartnerAnalytics';
 import { useAuth } from 'contexts/AuthContext';
+import DashboardAnalytics from './PartnerDashboard';
 
 export default function DashboardFinance() {
   const theme = useTheme();
@@ -345,7 +346,7 @@ export default function DashboardFinance() {
           </Grid>
         </Grid>
       ) : (
-        <InvoiceDashboard />
+        <DashboardAnalytics />
       )}
     </>
   );

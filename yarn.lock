@@ -409,6 +409,67 @@
     intl-messageformat "10.7.16"
     tslib "^2.8.0"
 
+"@fullcalendar/common@5.11.5":
+  version "5.11.5"
+  resolved "https://registry.npmjs.org/@fullcalendar/common/-/common-5.11.5.tgz"
+  integrity sha512-3iAYiUbHXhjSVXnYWz27Od2cslztUPsOwiwKlfGvQxBixv2Kl6a8IPwaijKFYJHXdwYmfPoEgK7rvqAGVoIYwA==
+  dependencies:
+    tslib "^2.1.0"
+
+"@fullcalendar/core@~6.1.17", "@fullcalendar/core@~6.1.19", "@fullcalendar/core@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/core/-/core-6.1.17.tgz"
+  integrity sha512-0W7lnIrv18ruJ5zeWBeNZXO8qCWlzxDdp9COFEsZnyNjiEhUVnrW/dPbjRKYpL0edGG0/Lhs0ghp1z/5ekt8ZA==
+  dependencies:
+    preact "~10.12.1"
+
+"@fullcalendar/daygrid@~6.1.17", "@fullcalendar/daygrid@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/daygrid/-/daygrid-6.1.17.tgz"
+  integrity sha512-K7m+pd7oVJ9fW4h7CLDdDGJbc9szJ1xDU1DZ2ag+7oOo1aCNLv44CehzkkknM6r8EYlOOhgaelxQpKAI4glj7A==
+
+"@fullcalendar/interaction@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/interaction/-/interaction-6.1.17.tgz"
+  integrity sha512-AudvQvgmJP2FU89wpSulUUjeWv24SuyCx8FzH2WIPVaYg+vDGGYarI7K6PcM3TH7B/CyaBjm5Rqw9lXgnwt5YA==
+
+"@fullcalendar/list@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/list/-/list-6.1.17.tgz"
+  integrity sha512-fkyK49F9IxwlGUBVhJGsFpd/LTi/vRVERLIAe1HmBaGkjwpxnynm8TMLb9mZip97wvDk3CmZWduMe6PxscAlow==
+
+"@fullcalendar/premium-common@~6.1.17", "@fullcalendar/premium-common@~6.1.19":
+  version "6.1.19"
+  resolved "https://registry.npmjs.org/@fullcalendar/premium-common/-/premium-common-6.1.19.tgz"
+  integrity sha512-bOWHm1u1dUy6M4fQ0hNK7qEI7SrVWrN1ovv/z4/FE/ybfM19ukz7SFs907Ur7KUBWLNKTQYXBtdrY/ginwWraw==
+
+"@fullcalendar/react@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/react/-/react-6.1.17.tgz"
+  integrity sha512-AA8soHhlfRH5dUeqHnfAtzDiXa2vrgWocJSK/F5qzw/pOxc9MqpuoS/nQBROWtHHg6yQUg3DoGqOOhi7dmylXQ==
+
+"@fullcalendar/scrollgrid@~6.1.17":
+  version "6.1.19"
+  resolved "https://registry.npmjs.org/@fullcalendar/scrollgrid/-/scrollgrid-6.1.19.tgz"
+  integrity sha512-S1pbiYHvmV0ep6z5sWXJQfgW4Y/jrS5iLIAqSagDFPK0jr327nBxl7Ryi3Zb5UdMIP0/O4GXs8jwZabQPd8SOg==
+  dependencies:
+    "@fullcalendar/premium-common" "~6.1.19"
+
+"@fullcalendar/timegrid@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/timegrid/-/timegrid-6.1.17.tgz"
+  integrity sha512-K4PlA3L3lclLOs3IX8cvddeiJI9ZVMD7RA9IqaWwbvac771971foc9tFze9YY+Pqesf6S+vhS2dWtEVlERaGlQ==
+  dependencies:
+    "@fullcalendar/daygrid" "~6.1.17"
+
+"@fullcalendar/timeline@6.1.17":
+  version "6.1.17"
+  resolved "https://registry.npmjs.org/@fullcalendar/timeline/-/timeline-6.1.17.tgz"
+  integrity sha512-UhL2OOph/S0cEKs3lzbXjS2gTxmQwaNug2XFjdljvO/ERj10v7OBXj/zvJrPyhjvWR/CSgjNgBaUpngkCu4JtQ==
+  dependencies:
+    "@fullcalendar/premium-common" "~6.1.17"
+    "@fullcalendar/scrollgrid" "~6.1.17"
+
 "@hookform/resolvers@^5.2.2":
   version "5.2.2"
   resolved "https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.2.tgz"
@@ -4513,6 +4574,11 @@ preact@^10.6.3, preact@>=10:
   resolved "https://registry.npmjs.org/preact/-/preact-10.26.9.tgz"
   integrity sha512-SSjF9vcnF27mJK1XyFMNJzFd5u3pQiATFqoaDy03XuN00u4ziveVVEGt5RKJrDR8MHE/wJo9Nnad56RLzS2RMA==
 
+preact@~10.12.1:
+  version "10.12.1"
+  resolved "https://registry.npmjs.org/preact/-/preact-10.12.1.tgz"
+  integrity sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
@@ -4753,6 +4819,11 @@ react-is@^16.7.0:
   version "19.2.0"
   resolved "https://registry.npmjs.org/react-is/-/react-is-19.2.0.tgz"
   integrity sha512-x3Ax3kNSMIIkyVYhWPyO09bu0uttcAIoecO/um/rKGQ4EltYWVYtyiGkS/3xMynrbVQdS69Jhlv8FXUEZehlzA==
+
+react-number-format@^5.4.4:
+  version "5.4.4"
+  resolved "https://registry.npmjs.org/react-number-format/-/react-number-format-5.4.4.tgz"
+  integrity sha512-wOmoNZoOpvMminhifQYiYSTCLUDOiUbBunrMrMjA+dV52sY+vck1S4UhR6PkgnoCquvvMSeJjErXZ4qSaWCliA==
 
 react-phone-input-2@^2.15.1:
   version "2.15.1"

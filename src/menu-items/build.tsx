@@ -9,6 +9,7 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { useGetMenuMaster } from 'api/menu';
 
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import { CalendarViewDayRounded } from '@mui/icons-material';
 // icons
 const icons = {
   page: DashboardIcon,
@@ -85,6 +86,17 @@ const build: NavItemType = {
           }
         ]
       : []),
+    ...(localStorage.getItem('roleId') == '4'
+      ? [
+          {
+            id: 'Calender',
+            title: 'Calender',
+            type: 'item',
+            url: '/build/calendar',
+            icon: CalendarViewDayRounded
+          }
+        ]
+      : []),
     {
       id: 'UserManagement',
       title: 'User Management',
@@ -97,40 +109,40 @@ const build: NavItemType = {
 
 export default build;
 
-export function MenuFromAPI() {
-  const { menu, menuLoading } = useGetMenuMaster();
+// export function MenuFromAPI() {
+//   const { menu, menuLoading } = useGetMenuMaster();
 
-  if (menuLoading) return build;
+//   if (menuLoading) return build;
 
-  const subChildrenList = (children: NavItemType[]) => {
-    return children?.map((subList: NavItemType) => {
-      return fillItem(subList);
-    });
-  };
+//   const subChildrenList = (children: NavItemType[]) => {
+//     return children?.map((subList: NavItemType) => {
+//       return fillItem(subList);
+//     });
+//   };
 
-  const itemList = (subList: NavItemType) => {
-    const list = fillItem(subList);
+//   const itemList = (subList: NavItemType) => {
+//     const list = fillItem(subList);
 
-    // if collapsible item, we need to feel its children as well
-    if (subList.type === 'collapse') {
-      list.children = subChildrenList(subList.children!);
-    }
-    return list;
-  };
+//     // if collapsible item, we need to feel its children as well
+//     if (subList.type === 'collapse') {
+//       list.children = subChildrenList(subList.children!);
+//     }
+//     return list;
+//   };
 
-  const childrenList: NavItemType[] | undefined = menu?.children?.map((subList: NavItemType) => {
-    return itemList(subList);
-  });
+//   const childrenList: NavItemType[] | undefined = menu?.children?.map((subList: NavItemType) => {
+//     return itemList(subList);
+//   });
 
-  const menuList = fillItem(menu, childrenList);
-  return menuList;
-}
+//   const menuList = fillItem(menu, childrenList);
+//   return menuList;
+// }
 
-function fillItem(item: NavItemType, children?: NavItemType[] | undefined) {
-  return {
-    ...item,
-    title: item?.title,
-    icon: item?.icon ? icons[item.icon as keyof typeof icons] : undefined,
-    ...(children && { children })
-  };
-}
+// function fillItem(item: NavItemType, children?: NavItemType[] | undefined) {
+//   return {
+//     ...item,
+//     title: item?.title,
+//     icon: item?.icon ? icons[item.icon as keyof typeof icons] : undefined,
+//     ...(children && { children })
+//   };
+// }

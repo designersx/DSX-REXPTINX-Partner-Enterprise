@@ -35,7 +35,7 @@ export default function NewOrders() {
       <Grid container spacing={2}>
         <Grid size={12}>
           <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h5">New Orders</Typography>
+            <Typography variant="h5">New Earning</Typography>
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth size="small">
                 <Select id="demo-simple-select" value={age} onChange={handleChange}>
