@@ -170,9 +170,9 @@ const mointor: NavItemType = {
     },
     {
       id: 'raiseTicket',
-      title: 'Raise Ticket',
+      title: 'Help Desk',
       type: 'item',
-      url: '/mointor/raiseTicket',
+      url: '/mointor/tickets',
       icon: ConfirmationNumberIcon
     },
     {
@@ -182,7 +182,7 @@ const mointor: NavItemType = {
       url: '/mointor/partner-resources',
       icon: VideoLibrary
     },
-    ...(localStorage.getItem('roleId') !== '4'
+    ...(localStorage.getItem('roleId') != '4'
       ? [
           {
             id: 'Earning',

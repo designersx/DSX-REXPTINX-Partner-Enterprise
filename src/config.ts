@@ -45,6 +45,11 @@ export let Gender;
   Gender['MALE'] = 'Male';
   Gender['FEMALE'] = 'Female';
 })(Gender || (Gender = {}));
+
+export enum DropzopType {
+  default = 'DEFAULT',
+  standard = 'STANDARD'
+}
 // ==============================|| THEME CONFIG ||============================== //
 
 const config: DefaultConfigProps = {
