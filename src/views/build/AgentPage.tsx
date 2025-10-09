@@ -57,6 +57,7 @@ import { getUserId } from 'utils/auth';
 import Search from 'layout/DashboardLayout/Header/HeaderContent/Search';
 import { formatTimeAgo } from 'lib/formatTimeAgo';
 import { Label } from '@mui/icons-material';
+import { Trash2 } from 'lucide-react';
 const Avatar1 = '/assets/images/avatrs/Female-01.png';
 const Avatar2 = '/assets/images/avatrs/male-01.png';
 const Avatar3 = '/assets/images/avatrs/Female-02.png';
@@ -132,12 +133,11 @@ const agentdataa = [
     description: 'Handles customer queries',
     userId: 'RXDI7Q1759578841',
     createdAt: '2025-10-04T12:35:23.000Z'
-
   }
 ];
 export default function TransactionHistoryCard({ type }) {
   // "partner" 'Regional' "Enterprise"
-  console.log(type, "HELELO")
+  console.log(type, 'HELELO');
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -420,17 +420,17 @@ export default function TransactionHistoryCard({ type }) {
   const normalizedFilter = planFilter.toLowerCase();
   // merge both sources into one array first
   const mergedAgents = [
-    ...agents.map(agent => ({ ...agent, source: 'filtered' })),
-    ...userFilteredAgentdataa.map(agent => ({ ...agent, source: 'elevenLabs' }))
+    ...agents.map((agent) => ({ ...agent, source: 'filtered' })),
+    ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
   ];
   // now filter based on plan type
-  const filteredAgents = mergedAgents.filter(agent => {
+  const filteredAgents = mergedAgents.filter((agent) => {
     const plan = agent.agentPlan?.toLowerCase() || agent.plantype?.toLowerCase() || '';
 
     switch (normalizedFilter) {
       case 'all':
         return true;
-      case 'my':  // "My Own Agents"
+      case 'my': // "My Own Agents"
         return plan === 'partner';
       case 'regional':
         return plan === 'regional';
@@ -482,10 +482,8 @@ export default function TransactionHistoryCard({ type }) {
                     <MenuItem value="all">All</MenuItem>
                     {/* <MenuItem value="smb">SMB</MenuItem> */}
                     <MenuItem value="enterprise">Enterprise</MenuItem>
-                    {userId == "RXQ1NM1759328246" ? <MenuItem value="regional">Regional</MenuItem> : null
-                    }
-                    <MenuItem value="my">My  Agents</MenuItem>
-
+                    {userId == 'RXQ1NM1759328246' ? <MenuItem value="regional">Regional</MenuItem> : null}
+                    <MenuItem value="my">My Agents</MenuItem>
                   </Select>
                 </FormControl>
 
@@ -510,9 +508,9 @@ export default function TransactionHistoryCard({ type }) {
             {loading ? (
               <Loader />
             ) : [
-              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-            ].length === 0 ? (
+                ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
+                ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
+              ].length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center">
                   <Typography>No agents found.</Typography>
@@ -543,45 +541,47 @@ export default function TransactionHistoryCard({ type }) {
                       style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
                     >
                       <Grid size={12}>
-                        <List sx={{ width: 1, p: 0 }}>
-                          <ListItem
-                            disablePadding
-                            secondaryAction={
-                              agent.source == 'filtered' ? (
-                                <>
-                                  <Tooltip title="View call history">
-                                    <IconButton
-                                      color="secondary"
-                                      onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
-                                    >
-                                      <Eye />
-                                    </IconButton>
-                                  </Tooltip>
-                                  {/* <Tooltip title="Edit agent">
+                        {localstorage.getItem('roleId') == 4 ? (
+                          <List sx={{ width: 1, p: 0 }}>
+                            <ListItem
+                              disablePadding
+                              secondaryAction={
+                                agent.source == 'filtered' ? (
+                                  <>
+                                    <Tooltip title="View call history">
+                                      <IconButton
+                                        color="secondary"
+                                        onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
+                                      >
+                                        <Eye />
+                                      </IconButton>
+                                    </Tooltip>
+                                    {/* <Tooltip title="Edit agent">
                                     <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
-                                </>
-                              ) : null
-                            }
-                          >
-                            <ListItemAvatar>
-                              <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
-                              secondary={
-                                <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
-                                  <Typography sx={{ color: 'text.secondary' }}>
-                                    {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
-                                    {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
-                                  </Typography>
-                                </Tooltip>
+                                  </>
+                                ) : null
                               }
-                            />
-                          </ListItem>
-                        </List>
+                            >
+                              <ListItemAvatar>
+                                <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
+                              </ListItemAvatar>
+                              <ListItemText
+                                primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
+                                secondary={
+                                  <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
+                                    <Typography sx={{ color: 'text.secondary' }}>
+                                      {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
+                                      {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
+                                    </Typography>
+                                  </Tooltip>
+                                }
+                              />
+                            </ListItem>
+                          </List>
+                        ) : null}
                       </Grid>
                       <Grid size={12}>
                         <Divider />
@@ -749,26 +749,44 @@ export default function TransactionHistoryCard({ type }) {
                           Updated {formatTimeAgo(agent?.createdAt)}
                         </Typography>
 
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="large"
-                          startIcon={<CallIcon />}
-                          sx={{
-                            borderRadius: 2,
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            px: 3,
-                            boxShadow: 2
-                          }}
-                          onClick={() =>
-                            agent.source === 'filtered'
-                              ? handleOpenDialog({ ...agent, source: agent.source })
-                              : handleOpenDialog({ ...agent, source: agent.source })
-                          }
-                        >
-                          Test Agent
-                        </Button>
+                        {localStorage.getItem('roleId') === '4' ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            startIcon={<CallIcon />}
+                            sx={{
+                              borderRadius: 2,
+                              textTransform: 'none',
+                              fontWeight: 600,
+                              px: 3,
+                              boxShadow: 2
+                            }}
+                            onClick={() =>
+                              agent.source === 'filtered'
+                                ? handleOpenDialog({ ...agent, source: agent.source })
+                                : handleOpenDialog({ ...agent, source: agent.source })
+                            }
+                          >
+                            Test Agent
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            startIcon={<Trash2 />}
+                            sx={{
+                              borderRadius: 2,
+                              textTransform: 'none',
+                              fontWeight: 600,
+                              px: 3,
+                              boxShadow: 2
+                            }}
+                          >
+                            Deletion Request
+                          </Button>
+                        )}
                       </Stack>
                     </Grid>
                   </Grid>

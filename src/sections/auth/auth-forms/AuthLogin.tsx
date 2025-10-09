@@ -83,7 +83,7 @@ export default function AuthLogin({ providers, csrfToken }: any) {
             const result = await Login(trimmedEmail, values.password);
             console.log(result, 'result');
             const userData = result;
-            login(userData);
+            // login(userData);
             localStorage.setItem('token', result.token);
             localStorage.setItem('userId', result.userId);
             localStorage.setItem('referralCode', result.referralCode);

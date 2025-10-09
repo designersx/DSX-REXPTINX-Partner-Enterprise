@@ -43,8 +43,7 @@ const build: NavItemType = {
           type: 'item',
           url: '/build/agents/all',
           breadcrumbs: false
-        }
-        ,
+        },
         {
           id: 'myAgents',
           title: 'My Agents',
@@ -68,13 +67,24 @@ const build: NavItemType = {
         }
       ]
     },
-    {
-      id: 'knowledgeBase',
-      title: 'knowledge Base',
-      type: 'item',
-      url: '/build/knowledgeBase',
-      icon: icons.landing
-    },
+    // {
+    //   id: 'knowledgeBase',
+    //   title: 'knowledge Base',
+    //   type: 'item',
+    //   url: '/build/knowledgeBase',
+    //   icon: icons.landing
+    // },
+    ...(localStorage.getItem('roleId') == '4'
+      ? [
+          {
+            id: 'knowledgeBase',
+            title: 'knowledge Base',
+            type: 'item',
+            url: '/build/knowledgeBase',
+            icon: DollarSquare
+          }
+        ]
+      : []),
     {
       id: 'UserManagement',
       title: 'User Management',
@@ -86,7 +96,6 @@ const build: NavItemType = {
 };
 
 export default build;
-
 
 export function MenuFromAPI() {
   const { menu, menuLoading } = useGetMenuMaster();

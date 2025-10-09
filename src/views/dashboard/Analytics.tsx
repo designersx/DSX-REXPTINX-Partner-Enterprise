@@ -230,9 +230,9 @@ export default function DashboardFinance() {
   const theme = useTheme();
   const userId = getUserId();
 
-  const { user } = useAuth();
-  console.log(user, 'userdashboard');
-  const roleId = user?.roleId || localStorage.getItem('roleId');
+  // const { user } = useAuth();
+  // console.log(user, 'userdashboard');
+  const roleId = localStorage.getItem('roleId');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -274,7 +274,7 @@ export default function DashboardFinance() {
 
           <Grid size={{ xs: 12, lg: 12 }}>
             <Grid container spacing={GRID_COMMON_SPACING}>
-              {user.roleId == '3' ? (
+              {roleId == '3' ? (
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <TransactionCard
                     title="Total Calls"
