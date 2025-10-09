@@ -229,6 +229,7 @@ import { useAuth } from 'contexts/AuthContext';
 export default function DashboardFinance() {
   const theme = useTheme();
   const userId = getUserId();
+
   const { user } = useAuth();
   console.log(user, 'userdashboard');
   const roleId = user?.roleId || localStorage.getItem('roleId');

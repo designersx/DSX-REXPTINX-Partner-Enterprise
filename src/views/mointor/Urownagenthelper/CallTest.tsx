@@ -1,5 +1,6 @@
 'use client';
 
+import { PhoneIcon } from 'lucide-react';
 import React from 'react';
 
 type CallTestProps = {
@@ -80,9 +81,9 @@ const CallTest: React.FC<CallTestProps> = ({
           </div>
         </div>
       ) : callLoading ? (
-        <div className={`${baseDivClasses} bg-green-100 cursor-not-allowed opacity-70 pointer-events-none`}>
+        <div className={`${baseDivClasses}  cursor-not-allowed opacity-70 pointer-events-none`}>
           <div className={iconTextLayout}>
-            {phoneIcon}
+            {PhoneIcon}
             <div>
               <p className="text-green-800 font-semibold">Connecting...</p>
               <small className="text-gray-700">{displayBusinessName} Agent is LIVE</small>
@@ -93,7 +94,7 @@ const CallTest: React.FC<CallTestProps> = ({
           </div>
         </div>
       ) : (
-        <div className={`${baseDivClasses} bg-green-100 hover:bg-green-200 cursor-pointer transition`} onClick={onStartCall}>
+        <div className={`${baseDivClasses}  hover:bg-green-200 cursor-pointer transition`} onClick={onStartCall}>
           <div className={iconTextLayout}>
             {phoneIcon}
             <div>
