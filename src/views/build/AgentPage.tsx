@@ -117,23 +117,23 @@ const agentdataa = [
     userId: 'RXQ1NM1759328246',
     createdAt: '2025-10-04T12:35:23.000Z'
   },
-  {
-    id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
-    businessname: 'Zouma Consulting Services',
-    agentPlan: 'partner',
-    mins_left: '45000',
-    avatar: '/images/Male-01.png',
-    agentName: 'Himanshu (Arabic)',
-    businessType: 'Software & CX Management',
-    agentLanguage: 'Arabic + Multi',
-    agentGender: 'male',
-    agentAccent: 'American',
-    plantype: 'partner',
-    description: 'Handles customer queries',
-    userId: 'RXDI7Q1759578841',
-    createdAt: '2025-10-04T12:35:23.000Z'
+  // {
+  //   id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
+  //   businessname: 'Zouma Consulting Services',
+  //   agentPlan: 'partner',
+  //   mins_left: '45000',
+  //   avatar: '/images/Male-01.png',
+  //   agentName: 'Himanshu (Arabic)',
+  //   businessType: 'Software & CX Management',
+  //   agentLanguage: 'Arabic + Multi',
+  //   agentGender: 'male',
+  //   agentAccent: 'American',
+  //   plantype: 'partner',
+  //   description: 'Handles customer queries',
+  //   userId: 'RXDI7Q1759578841',
+  //   createdAt: '2025-10-04T12:35:23.000Z'
 
-  }
+  // }
 ];
 export default function TransactionHistoryCard({ type }) {
   // "partner" 'Regional' "Enterprise"
