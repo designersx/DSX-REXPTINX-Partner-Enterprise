@@ -80,16 +80,7 @@ function ReactTable({ data, columns, modalToggler }: any) {
     getPaginationRowModel: getPaginationRowModel()
   });
 
-  const headers: LabelKeyObject[] = [];
-  columns.map(
-    (col) =>
-      col.accessorKey &&
-      headers.push({
-        label: typeof col.header === 'string' ? col.header : '#',
-        key: col.accessorKey
-      })
-  );
-
+ 
   return (
     <MainCard content={false}>
       <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ gap: 2, justifyContent: 'space-between', p: 3 }}>

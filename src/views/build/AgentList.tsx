@@ -14,7 +14,8 @@ import AgentPagePartner from './Usermanager/AgentPageaPartner';
 
 export default function AgentList({ type }: { type: string }) {
   const { user } = useAuth();
-  const roleId =  localStorage.getItem('roleId');
+  const roleId = localStorage.getItem('roleId');
 
-  return roleId == '3' ? <TransactionHistoryCard type={type} /> : <AgentPagePartner type={type} />;
+  return <TransactionHistoryCard type={type} />; 
+  // return roleId == '3' ? <TransactionHistoryCard type={type} /> : <AgentPagePartner type={type} />;
 }

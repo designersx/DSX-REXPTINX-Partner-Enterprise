@@ -18,7 +18,7 @@ import { PatternFormat } from 'react-number-format';
 // project-imports
 import Avatar from 'components/@extended/Avatar';
 import MainCard from 'components/MainCard';
-import { GRID_COMMON_SPACING, facebookColor, linkedInColor } from 'config';
+import { GRID_COMMON_SPACING } from 'config';
 
 // assets
 import { Apple, Camera, Facebook, Google } from '@wandersonalwes/iconsax-react';
@@ -179,21 +179,15 @@ export default function TabPersonal() {
                 <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                   <Button
                     size="small"
-                    startIcon={<Facebook variant="Bold" style={{ color: facebookColor }} />}
+                    startIcon={<Facebook variant="Bold" />}
                     sx={{ color: facebookColor, '&:hover': { bgcolor: 'transparent' } }}
                   >
                     Facebook
                   </Button>
-                  <Typography variant="subtitle1" sx={{ color: facebookColor }}>
-                    Anshan Handgun
-                  </Typography>
+                  <Typography variant="subtitle1">Anshan Handgun</Typography>
                 </Stack>
                 <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Button
-                    size="small"
-                    startIcon={<Apple variant="Bold" style={{ color: linkedInColor }} />}
-                    sx={{ color: linkedInColor, '&:hover': { bgcolor: 'transparent' } }}
-                  >
+                  <Button size="small" startIcon={<Apple variant="Bold" />}>
                     Apple
                   </Button>
                   <Button color="error">Connect</Button>

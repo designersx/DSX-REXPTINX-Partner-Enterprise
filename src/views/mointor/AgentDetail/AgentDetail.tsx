@@ -16,12 +16,12 @@ import { handlerActiveItem, useGetMenuMaster } from 'api/menu';
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
 import MainCard from 'components/MainCard';
 import { APP_DEFAULT_PATH, GRID_COMMON_SPACING } from 'config';
-import TabProfile from 'sections/apps/profiles/account/TabProfile';
-import TabPersonal from 'sections/apps/profiles/account/TabPersonal';
-import TabAccount from 'sections/apps/profiles/account/TabAccount';
-import TabPassword from 'sections/apps/profiles/account/TabPassword';
-import TabRole from 'sections/apps/profiles/account/TabRole';
-import TabSettings from 'sections/apps/profiles/account/TabSettings';
+import TabProfile from '../../../sections/apps/profiles/account/TabProfile';
+import TabPersonal from '../../../sections/apps/profiles/account/TabPersonal';
+import TabAccount from '../../../sections/apps/profiles/account/TabAccount';
+import TabPassword from '../../../sections/apps/profiles/account/TabPassword';
+import TabRole from '../../../sections/apps/profiles/account/TabRole';
+import TabSettings from '../../../sections/apps/profiles/account/TabSettings';
 
 // assets
 import { DocumentText, Lock, Profile, Profile2User, Setting3, TableDocument } from '@wandersonalwes/iconsax-react';
@@ -100,10 +100,10 @@ export default function AccountProfile({ tab }: Props) {
           <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
             <Tabs value={currentTab} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="account profile tab">
               <Tab label="Details" icon={<Profile />} value="basic" iconPosition="start" />
-              <Tab label="Agent info" icon={<DocumentText />} value="personal" iconPosition="start" />
-              <Tab label="Phone number" icon={<TableDocument />} value="my-account" iconPosition="start" />
+              <Tab label="Knowledgebase Details" icon={<DocumentText />} value="personal" iconPosition="start" />
+              {/* <Tab label="Phone number" icon={<TableDocument />} value="my-account" iconPosition="start" /> */}
               <Tab label="Language & Accent" icon={<Lock />} value="password" iconPosition="start" />
-              <Tab label="Role" icon={<Profile2User />} value="role" iconPosition="start" />
+              <Tab label="call Details" icon={<Profile2User />} value="role" iconPosition="start" />
               <Tab label="Settings" icon={<Setting3 />} value="settings" iconPosition="start" />
             </Tabs>
           </Box>
@@ -113,7 +113,6 @@ export default function AccountProfile({ tab }: Props) {
             {currentTab === 'my-account' && <TabAccount />}
             {currentTab === 'password' && <TabPassword />}
             {currentTab === 'role' && <TabRole />}
-            {currentTab === 'settings' && <TabSettings />}
           </Box>
         </Stack>
       </MainCard>
