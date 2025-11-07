@@ -63,10 +63,18 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
 
   const isSelected = openItem === item.id;
   const pathname = usePathname();
-
+// console.log('Current Pathname:', pathname); // Yeh har render pe dikhega
+// console.log('Item URL:', item.url, 'Match?', pathname === item.url || pathname.startsWith(item.url || ''));
   // active menu item on page load
+  // useEffect(() => {
+  //   if (pathname === item.url) handlerActiveItem(item.id!);
+  //   // eslint-disable-next-line
+  // }, [pathname]);
   useEffect(() => {
-    if (pathname === item.url) handlerActiveItem(item.id!);
+    const normalizedPathname = pathname.replace(/\/$/, '');
+    const normalizedUrl = (item.url || '').replace(/\/$/, '');
+    // console.log('normalizedPathname',normalizedPathname,normalizedUrl,item.id)
+    if (normalizedPathname === normalizedUrl) handlerActiveItem(item.id!);
     // eslint-disable-next-line
   }, [pathname]);
 
@@ -79,6 +87,11 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
       setSelectedID();
     }
   };
+
+//   useEffect(() => {
+//   console.log('NavItem useEffect - Pathname:', pathname, 'Item URL:', item.url, 'Match Exact?', pathname === item.url);
+// }, [pathname]);
+  
 
   return (
     <>

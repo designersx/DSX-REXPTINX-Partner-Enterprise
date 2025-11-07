@@ -13,10 +13,12 @@ import Locales from 'components/Locales';
 import ScrollTop from 'components/ScrollTop';
 
 import Snackbar from 'components/@extended/Snackbar';
+import { AuthProvider } from 'contexts/AuthContext';
 
 // ==============================|| PROVIDER WRAPPER  ||============================== //
 
 export default function ProviderWrapper({ children }: { children: ReactElement }) {
+  console.log(AuthProvider, 'AuthProvider');
   return (
     <ConfigProvider>
       <ThemeCustomization>
@@ -24,8 +26,10 @@ export default function ProviderWrapper({ children }: { children: ReactElement }
           <Locales>
             <ScrollTop>
               <SessionProvider refetchInterval={0}>
-                <Snackbar />
-                {children}
+                <AuthProvider>
+                  <Snackbar />
+                  {children}
+                </AuthProvider>
               </SessionProvider>
             </ScrollTop>
           </Locales>

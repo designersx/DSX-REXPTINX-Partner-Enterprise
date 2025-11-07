@@ -1,5 +1,5 @@
 // assets
-import { Book1, Security, MessageProgramming, DollarSquare, Airplane } from '@wandersonalwes/iconsax-react';
+import { Book1, Security, MessageProgramming, DollarSquare, UserSquare, Airplane } from '@wandersonalwes/iconsax-react';
 import { SupportAgent } from '@mui/icons-material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 // types
@@ -14,6 +14,7 @@ const icons = {
   maintenance: MessageProgramming,
   pricing: DollarSquare,
   // contactus: I24Support,
+  profile: UserSquare,
   landing: Airplane,
   agent: SmartToyIcon
 };
@@ -32,6 +33,21 @@ const system: NavItemType = {
       type: 'item',
       url: '/system/billingHistory',
       icon: AccountBalanceIcon
+    },
+    {
+      id: 'profile',
+      title: 'profile',
+      type: 'collapse',
+      icon: icons.profile,
+      children: [
+        {
+          id: 'userprofile',
+          title: 'user-profile',
+          type: 'item',
+          url: '/system/userprofile',
+          breadcrumbs: false
+        }
+      ]
     }
   ]
 };

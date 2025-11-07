@@ -43,8 +43,8 @@ export default function TabProfile() {
                   <Stack sx={{ gap: 2.5, alignItems: 'center' }}>
                     <Avatar alt="Avatar 1" size="xl" src={`${avatarImage}/default.png`} />
                     <Stack sx={{ gap: 0.5, alignItems: 'center' }}>
-                      <Typography variant="h5">Anshan H.</Typography>
-                      <Typography color="secondary">Project Manager</Typography>
+                      <Typography variant="h5">Billy</Typography>
+                      <Typography color="secondary">General Receptionist</Typography>
                     </Stack>
                   </Stack>
                 </Grid>
@@ -55,17 +55,17 @@ export default function TabProfile() {
                   <Stack direction="row" sx={{ justifyContent: 'space-around', alignItems: 'center' }}>
                     <Stack sx={{ gap: 0.5, alignItems: 'center' }}>
                       <Typography variant="h5">86</Typography>
-                      <Typography color="secondary">Post</Typography>
+                      <Typography color="secondary">Inbound Call</Typography>
                     </Stack>
                     <Divider orientation="vertical" flexItem />
                     <Stack sx={{ gap: 0.5, alignItems: 'center' }}>
                       <Typography variant="h5">40</Typography>
-                      <Typography color="secondary">Project</Typography>
+                      <Typography color="secondary">Outbound call</Typography>
                     </Stack>
                     <Divider orientation="vertical" flexItem />
                     <Stack sx={{ gap: 0.5, alignItems: 'center' }}>
                       <Typography variant="h5">4.5K</Typography>
-                      <Typography color="secondary">Members</Typography>
+                      <Typography color="secondary">Mins Left</Typography>
                     </Stack>
                   </Stack>
                 </Grid>
@@ -105,60 +105,10 @@ export default function TabProfile() {
               </Grid>
             </MainCard>
           </Grid>
-          <Grid size={12}>
-            <MainCard title="Skills">
-              <Grid container spacing={1.25}>
-                <Grid size={6}>
-                  <Typography color="secondary">Junior</Typography>
-                </Grid>
-                <Grid size={6}>
-                  <LinearWithLabel value={30} />
-                </Grid>
-                <Grid size={6}>
-                  <Typography color="secondary">UX Reseacher</Typography>
-                </Grid>
-                <Grid size={6}>
-                  <LinearWithLabel value={80} />
-                </Grid>
-                <Grid size={6}>
-                  <Typography color="secondary">Wordpress</Typography>
-                </Grid>
-                <Grid size={6}>
-                  <LinearWithLabel value={90} />
-                </Grid>
-                <Grid size={6}>
-                  <Typography color="secondary">HTML</Typography>
-                </Grid>
-                <Grid size={6}>
-                  <LinearWithLabel value={30} />
-                </Grid>
-                <Grid size={6}>
-                  <Typography color="secondary">Graphic Design</Typography>
-                </Grid>
-                <Grid size={6}>
-                  <LinearWithLabel value={95} />
-                </Grid>
-                <Grid size={6}>
-                  <Typography color="secondary">Code Style</Typography>
-                </Grid>
-                <Grid size={6}>
-                  <LinearWithLabel value={75} />
-                </Grid>
-              </Grid>
-            </MainCard>
-          </Grid>
         </Grid>
       </Grid>
       <Grid size={{ xs: 12, sm: 7, md: 8, xl: 9 }}>
         <Grid container spacing={GRID_COMMON_SPACING}>
-          <Grid size={12}>
-            <MainCard title="About me">
-              <Typography color="secondary">
-                Hello, I’m Anshan Handgun Creative Graphic Designer & User Experience Designer based in Website, I create digital Products a
-                more Beautiful and usable place. Morbid accusant ipsum. Nam nec tellus at.
-              </Typography>
-            </MainCard>
-          </Grid>
           <Grid size={12}>
             <MainCard title="Personal Details">
               <List sx={{ py: 0 }}>
@@ -166,14 +116,14 @@ export default function TabProfile() {
                   <Grid container spacing={3} size={12}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Full Name</Typography>
-                        <Typography>Anshan Handgun</Typography>
+                        <Typography color="secondary">Agent Name</Typography>
+                        <Typography>Billy</Typography>
                       </Stack>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Father Name</Typography>
-                        <Typography>Mr. Deepen Handgun</Typography>
+                        <Typography color="secondary">Role</Typography>
+                        <Typography>General receptionst</Typography>
                       </Stack>
                     </Grid>
                   </Grid>
@@ -200,7 +150,7 @@ export default function TabProfile() {
                   <Grid container spacing={3} size={12}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Email</Typography>
+                        <Typography color="secondary">Business Email</Typography>
                         <Typography>anshan.dh81@gmail.com</Typography>
                       </Stack>
                     </Grid>
@@ -214,7 +164,7 @@ export default function TabProfile() {
                 </ListItem>
                 <ListItem>
                   <Stack sx={{ gap: 0.5 }}>
-                    <Typography color="secondary">Address</Typography>
+                    <Typography color="secondary"> Business Address</Typography>
                     <Typography>Street 110-B Kalians Bag, Dewan, M.P. New York</Typography>
                   </Stack>
                 </ListItem>
@@ -222,36 +172,20 @@ export default function TabProfile() {
             </MainCard>
           </Grid>
           <Grid size={12}>
-            <MainCard title="Education">
+            <MainCard title="Details">
               <List sx={{ py: 0 }}>
                 <ListItem divider>
                   <Grid container spacing={{ xs: 0.5, md: 3 }} size={12}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Master Degree (Year)</Typography>
-                        <Typography>2014-2017</Typography>
+                        <Typography color="secondary">Business Type</Typography>
+                        <Typography>Electronics</Typography>
                       </Stack>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Institute</Typography>
-                        <Typography>-</Typography>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </ListItem>
-                <ListItem divider>
-                  <Grid container spacing={{ xs: 0.5, md: 3 }} size={12}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Bachelor (Year)</Typography>
-                        <Typography>2011-2013</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Institute</Typography>
-                        <Typography>Imperial College London</Typography>
+                        <Typography color="secondary">Business name</Typography>
+                        <Typography>Samsung</Typography>
                       </Stack>
                     </Grid>
                   </Grid>
@@ -260,55 +194,8 @@ export default function TabProfile() {
                   <Grid container spacing={{ xs: 0.5, md: 3 }} size={12}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">School (Year)</Typography>
-                        <Typography>2009-2011</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Institute</Typography>
-                        <Typography>School of London, England</Typography>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </ListItem>
-              </List>
-            </MainCard>
-          </Grid>
-          <Grid size={12}>
-            <MainCard title="Employment">
-              <List sx={{ py: 0 }}>
-                <ListItem divider>
-                  <Grid container spacing={{ xs: 0.5, md: 3 }} size={12}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Senior UI/UX designer (Year)</Typography>
-                        <Typography>2019-Current</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Job Responsibility</Typography>
-                        <Typography>
-                          Perform task related to project manager with the 100+ team under my observation. Team management is key role in
-                          this company.
-                        </Typography>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </ListItem>
-                <ListItem>
-                  <Grid container spacing={{ xs: 0.5, md: 3 }} size={12}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Trainee cum Project Manager (Year)</Typography>
-                        <Typography>2017-2019</Typography>
-                      </Stack>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <Stack sx={{ gap: 0.5 }}>
-                        <Typography color="secondary">Job Responsibility</Typography>
-                        <Typography>Team management is key role in this company.</Typography>
+                        <Typography color="secondary">Created At</Typography>
+                        <Typography>09/10/2025</Typography>
                       </Stack>
                     </Grid>
                   </Grid>

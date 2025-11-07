@@ -117,7 +117,7 @@ export default function CategoryCard() {
     <MainCard content={false} sx={{ p: 2.5 }}>
       <Stack sx={{ gap: 1 }}>
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h5">User Sentiment's</Typography>
+          <Typography variant="h5">Users </Typography>
           {/* <IconButton
             color="secondary"
             id="wallet-button"

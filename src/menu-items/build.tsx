@@ -5,6 +5,11 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 // types
 import { NavItemType } from 'types/menu';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+
+import { useGetMenuMaster } from 'api/menu';
+
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import { CalendarViewDayRounded } from '@mui/icons-material';
 // icons
 const icons = {
   page: DashboardIcon,
@@ -30,43 +35,114 @@ const build: NavItemType = {
       type: 'collapse',
       url: '/build/agents/all',
       icon: SmartToyIcon,
-       open: true,
+      // open: true,
+
       children: [
-         {
+        {
           id: 'allAgents',
           title: 'All',
           type: 'item',
-          url: '/build/agents/all'
-        }
-        ,
+          url: '/build/agents/all',
+          breadcrumbs: false
+        },
         {
           id: 'myAgents',
           title: 'My Agents',
           type: 'item',
-          url: '/build/agents/my'
+          url: '/build/agents/my',
+          breadcrumbs: false
         },
         {
           id: 'regionalAgents',
           title: 'Regional',
           type: 'item',
-          url: '/build/agents/regional'
+          url: '/build/agents/regional',
+          breadcrumbs: false
         },
         {
           id: 'enterpriseAgents',
           title: 'Enterprise',
           type: 'item',
-          url: '/build/agents/enterprise'
+          url: '/build/agents/enterprise',
+          breadcrumbs: false
         }
       ]
     },
+    // {
+    //   id: 'knowledgeBase',
+    //   title: 'knowledge Base',
+    //   type: 'item',
+    //   url: '/build/knowledgeBase',
+    //   icon: icons.landing
+    // },
+    ...(localStorage.getItem('roleId') == '4'
+      ? [
+          {
+            id: 'knowledgeBase',
+            title: 'knowledge Base',
+            type: 'item',
+            url: '/build/knowledgeBase',
+            icon: DollarSquare
+          }
+        ]
+      : []),
+    ...(localStorage.getItem('roleId') == '4'
+      ? [
+          {
+            id: 'Calender',
+            title: 'Calender',
+            type: 'item',
+            url: '/build/calendar',
+            icon: CalendarViewDayRounded
+          }
+        ]
+      : []),
     {
-      id: 'knowledgeBase',
-      title: 'knowledge Base',
+      id: 'UserManagement',
+      title: 'User Management',
       type: 'item',
-      url: '/build/knowledgeBase',
-      icon: icons.landing
+      url: '/build/Usermanagement',
+      icon: ManageAccountsIcon
     }
   ]
 };
 
 export default build;
+
+// export function MenuFromAPI() {
+//   const { menu, menuLoading } = useGetMenuMaster();
+
+//   if (menuLoading) return build;
+
+//   const subChildrenList = (children: NavItemType[]) => {
+//     return children?.map((subList: NavItemType) => {
+//       return fillItem(subList);
+//     });
+//   };
+
+//   const itemList = (subList: NavItemType) => {
+//     const list = fillItem(subList);
+
+//     // if collapsible item, we need to feel its children as well
+//     if (subList.type === 'collapse') {
+//       list.children = subChildrenList(subList.children!);
+//     }
+//     return list;
+//   };
+
+//   const childrenList: NavItemType[] | undefined = menu?.children?.map((subList: NavItemType) => {
+//     return itemList(subList);
+//   });
+
+//   const menuList = fillItem(menu, childrenList);
+//   return menuList;
+// }
+
+// function fillItem(item: NavItemType, children?: NavItemType[] | undefined) {
+//   return {
+//     ...item,
+//     title: item?.title,
+//     icon: item?.icon ? icons[item.icon as keyof typeof icons] : undefined,
+//     ...(children && { children })
+//   };
+// }

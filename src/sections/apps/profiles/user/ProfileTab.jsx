@@ -15,23 +15,21 @@ import { CardCoin, Lock, Profile, Setting3 } from '@wandersonalwes/iconsax-react
 function getPathIndex(pathname) {
   let selectedTab = 0;
   switch (pathname) {
-    case '/apps/profiles/user/payment':
+    case '':
       selectedTab = 1;
       break;
-    case '/apps/profiles/user/password':
+    case '':
       selectedTab = 2;
       break;
-    case '/apps/profiles/user/settings':
+    case '':
       selectedTab = 3;
       break;
-    case '/apps/profiles/user/personal':
+    case '/system/userprofile':
     default:
       selectedTab = 0;
   }
   return selectedTab;
 }
-
-// ==============================|| USER PROFILE - BASIC ||============================== //
 
 export default function ProfileTab() {
   const router = useRouter();
@@ -55,19 +53,13 @@ export default function ProfileTab() {
         </ListItemIcon>
         <ListItemText primary="Personal Information" />
       </ListItemButton>
-      <ListItemButton selected={selectedIndex === 1} onClick={() => handleListItemClick(1, '/apps/profiles/user/payment')}>
-        <ListItemIcon>
-          <CardCoin size={18} />
-        </ListItemIcon>
-        <ListItemText primary="Payment" />
-      </ListItemButton>
-      <ListItemButton selected={selectedIndex === 2} onClick={() => handleListItemClick(2, '/apps/profiles/user/password')}>
+      <ListItemButton selected={selectedIndex === 2} onClick={() => handleListItemClick(2, '/system/userprofile')}>
         <ListItemIcon>
           <Lock size={18} />
         </ListItemIcon>
         <ListItemText primary="Change Password" />
       </ListItemButton>
-      <ListItemButton selected={selectedIndex === 3} onClick={() => handleListItemClick(3, '/apps/profiles/user/settings')}>
+      <ListItemButton selected={selectedIndex === 3} onClick={() => handleListItemClick(3, '')}>
         <ListItemIcon>
           <Setting3 size={18} />
         </ListItemIcon>

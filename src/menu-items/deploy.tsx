@@ -6,6 +6,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import { NavItemType } from 'types/menu';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import LiveTvIcon from '@mui/icons-material/LiveTv';
 // icons
 const icons = {
   page: DashboardIcon,
@@ -31,15 +32,25 @@ const deploy: NavItemType = {
       type: 'item',
       url: '/deploy/phoneNumbers',
       icon: ContactPhoneIcon
+    },
+    ...(localStorage.getItem('roleId') !== '4'
+      ? [
+          {
+            id: 'phoneNumbers',
+            title: 'Phone Numbers',
+            type: 'item',
+            url: '/deploy/phoneNumbers',
+            icon: ContactPhoneIcon
+          }
+        ]
+      : []),
+    {
+      id: 'DemoApp',
+      title: 'Demo',
+      type: 'item',
+      url: '/deploy/Demo',
+      icon: LiveTvIcon
     }
-    //  {
-    //     id: 'regionalAgent',
-    //     title: 'Regional Agents',
-    //     type: 'item',
-    //     url: '/regional/regionalAgnets',
-    //     icon: ContactPhoneIcon,
-
-    //   },
   ]
 };
 

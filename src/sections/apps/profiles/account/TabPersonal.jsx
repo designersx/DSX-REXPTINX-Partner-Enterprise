@@ -39,9 +39,11 @@ const MenuProps = {
 // ==============================|| ACCOUNT PROFILE - PERSONAL ||============================== //
 
 export default function TabPersonal() {
+  console.log('rete');
   const [selectedImage, setSelectedImage] = useState(undefined);
+  console.log('rete');
   const [avatar, setAvatar] = useState(`${avatarImage}/default.png`);
-
+  console.log('retee');
   useEffect(() => {
     if (selectedImage) {
       setAvatar(URL.createObjectURL(selectedImage));
@@ -49,11 +51,11 @@ export default function TabPersonal() {
   }, [selectedImage]);
 
   const [experience, setExperience] = useState('0');
-
+  console.log('reters');
   const handleChange = (event) => {
     setExperience(event.target.value);
   };
-
+  console.log('reterse');
   return (
     <Grid container spacing={GRID_COMMON_SPACING}>
       <Grid size={{ xs: 12, sm: 6 }}>

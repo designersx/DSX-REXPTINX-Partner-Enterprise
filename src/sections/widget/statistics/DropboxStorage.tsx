@@ -41,8 +41,8 @@ export default function DropboxStorage() {
       <Grid container spacing={2}>
         <Grid size={12}>
           <Stack direction="row" sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h5">Dropbox Storage</Typography>
-            <Typography variant="h4">150GB</Typography>
+            <Typography variant="h5">Last Transaction </Typography>
+            <Typography variant="h4">$15000</Typography>
           </Stack>
           <Avatar color="secondary" variant="rounded" sx={{ mt: 0.75, bgcolor: 'secondary.dark', color: 'secondary.light' }}>
             <Cloud />
@@ -50,7 +50,7 @@ export default function DropboxStorage() {
         </Grid>
         <Grid size={12}>
           <Stack sx={{ gap: 0.75 }}>
-            <Typography variant="caption">1,342GB of 150GB Users</Typography>
+            <Typography variant="caption">$1,5000 remaining out of $30000</Typography>
             <Box sx={{ display: 'flex' }}>
               <LinearProgress variant="determinate" value={100} color="error" sx={{ width: '15%' }} />
               <LinearProgress variant="determinate" value={100} color="warning" sx={{ width: '18%', right: 2 }} />

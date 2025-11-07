@@ -78,7 +78,6 @@ const tabStyle = {
 export default function ProfilePage() {
   const theme = useTheme();
   const router = useRouter();
-  // const user = useUser();
   const user = JSON.parse(sessionStorage.getItem('user') || '{}');
 
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
@@ -98,19 +97,22 @@ export default function ProfilePage() {
         signOut({ redirect: false });
     }
     localStorage.removeItem('authToken');
-
     router.push('/login');
   };
-
 
   const handleChangePassword = () => {
     setOpenPasswordDialog(true);
   };
 
-  const handlePasswordSubmit = (formData) => {
-    console.log("Password form submitted", formData);
+  const handlePasswordSubmit = (formData: any) => {
+    console.log('Password form submitted', formData);
     // yahan API call karo password change ke liye
     setOpenPasswordDialog(false);
+  };
+
+  const handleProfileClick = () => {
+    router.push('/system/userprofile');
+    setOpen(false);
   };
 
   const anchorRef = useRef<any>(null);
@@ -133,95 +135,96 @@ export default function ProfilePage() {
   };
 
   return (
-    <> 
-    <Box sx={{ flexShrink: 0, ml: 0.75 }}>
-      <ButtonBase
-        sx={(theme) => ({
-          p: 0.25,
-          borderRadius: 1,
-          '&:hover': { bgcolor: 'secondary.lighter', ...theme.applyStyles('dark', { bgcolor: 'secondary.light' }) },
-          '&:focus-visible': {
-            outline: `2px solid ${theme.palette.secondary.dark}`,
-            outlineOffset: 2
-          }
-        })}
-        aria-label="open profile"
-        ref={anchorRef}
-        aria-controls={open ? 'profile-grow' : undefined}
-        aria-haspopup="true"
-        onClick={handleToggle}
-      >
-        <Avatar alt="profile user" src={avatar1} />
-      </ButtonBase>
-      <Popper
-        placement="bottom-end"
-        open={open}
-        anchorEl={anchorRef.current}
-        role={undefined}
-        transition
-        disablePortal
-        popperOptions={{ modifiers: [{ name: 'offset', options: { offset: [0, 9] } }] }}
-      >
-        {({ TransitionProps }) => (
-          <Transitions type="grow" position="top-right" in={open} {...TransitionProps}>
-            <Paper
-              sx={(theme) => ({
-                boxShadow: theme.customShadows.z1,
-                width: 290,
-                minWidth: 240,
-                maxWidth: 290,
-                [theme.breakpoints.down('md')]: { maxWidth: 250 },
-                borderRadius: 1.5
-              })}
-            >
-              <ClickAwayListener onClickAway={handleClose}>
-                <MainCard border={false} content={false}>
-                  <CardContent sx={{ px: 2.5, pt: 3 }}>
-                    <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Grid>
-                        <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center' }}>
-                          <Avatar alt="profile user" src={avatar1} />
-                          <Stack>
-                            <Typography variant="subtitle1">{user ? user?.name : ''}</Typography>
-                            <Typography variant="body2" color="secondary">
-                              User
-                            </Typography>
+    <>
+      <Box sx={{ flexShrink: 0, ml: 0.75 }}>
+        <ButtonBase
+          sx={(theme) => ({
+            p: 0.25,
+            borderRadius: 1,
+            '&:hover': { bgcolor: 'secondary.lighter', ...theme.applyStyles('dark', { bgcolor: 'secondary.light' }) },
+            '&:focus-visible': {
+              outline: `2px solid ${theme.palette.secondary.dark}`,
+              outlineOffset: 2
+            }
+          })}
+          aria-label="open profile"
+          ref={anchorRef}
+          aria-controls={open ? 'profile-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}
+        >
+          <Avatar alt="profile user" src={avatar1} />
+        </ButtonBase>
+        <Popper
+          placement="bottom-end"
+          open={open}
+          anchorEl={anchorRef.current}
+          role={undefined}
+          transition
+          disablePortal
+          popperOptions={{ modifiers: [{ name: 'offset', options: { offset: [0, 9] } }] }}
+        >
+          {({ TransitionProps }) => (
+            <Transitions type="grow" position="top-right" in={open} {...TransitionProps}>
+              <Paper
+                sx={(theme) => ({
+                  boxShadow: theme.customShadows.z1,
+                  width: 290,
+                  minWidth: 240,
+                  maxWidth: 290,
+                  [theme.breakpoints.down('md')]: { maxWidth: 250 },
+                  borderRadius: 1.5
+                })}
+              >
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MainCard border={false} content={false}>
+                    <CardContent sx={{ px: 2.5, pt: 3 }}>
+                      <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Grid>
+                          <Stack direction="row" sx={{ gap: 1.25, alignItems: 'center' }}>
+                            <Avatar alt="profile user" src={avatar1} />
+                            <Stack>
+                              <Typography variant="subtitle1">{user ? user?.name : ''}</Typography>
+                              <Typography variant="body2" color="secondary">
+                                User
+                              </Typography>
+                            </Stack>
                           </Stack>
-                        </Stack>
+                        </Grid>
+                        <Grid>
+                          <Tooltip title="Logout">
+                            <IconButton size="large" color="error" sx={{ p: 1 }} onClick={handleLogout}>
+                              <Logout variant="Bulk" />
+                            </IconButton>
+                          </Tooltip>
+                        </Grid>
                       </Grid>
-                      <Grid>
-                        <Tooltip title="Logout">
-                          <IconButton size="large" color="error" sx={{ p: 1 }} onClick={handleLogout}>
-                            <Logout variant="Bulk" />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
+                    </CardContent>
 
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
-                      <Tab sx={tabStyle} icon={<Profile size={18} style={{ marginBottom: 0 }} />} label="Profile" {...a11yProps(0)} />
-                      {/* <Tab sx={tabStyle} icon={<Setting2 size={18} style={{ marginBottom: 0 }} />} label="Setting" {...a11yProps(1)} /> */}
-                    </Tabs>
-                  </Box>
-                  <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ProfileTab handleLogout={handleLogout} handleChangePassword={handleChangePassword} />
-                  </TabPanel>
-                  {/* <TabPanel value={value} index={1} dir={theme.direction}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                      {/* <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs"> */}
+                        {/* <Tab sx={tabStyle} icon={<Profile size={18} style={{ marginBottom: 0 }} />} label="Profile" {...a11yProps(0)} /> */}
+                        {/* <Tab sx={tabStyle} icon={<Setting2 size={18} style={{ marginBottom: 0 }} />} label="Setting" {...a11yProps(1)} /> */}
+                      {/* </Tabs> */}
+                    </Box>
+                    <TabPanel value={value} index={0} dir={theme.direction}>
+                      <ProfileTab
+                        handleLogout={handleLogout}
+                        handleChangePassword={handleChangePassword}
+                        onProfileClick={handleProfileClick} // new click handler
+                      />
+                    </TabPanel>
+                    {/* <TabPanel value={value} index={1} dir={theme.direction}>
                     <SettingTab />
                   </TabPanel> */}
-                </MainCard>
-              </ClickAwayListener>
-            </Paper>
-          </Transitions>
-        )}
-      </Popper>
-    </Box>
-      <ChangePasswordDialog 
-        open={openPasswordDialog}
-        onClose={() => setOpenPasswordDialog(false)}
-        onSubmit={handlePasswordSubmit}
-      /></>
+                  </MainCard>
+                </ClickAwayListener>
+              </Paper>
+            </Transitions>
+          )}
+        </Popper>
+      </Box>
+      <ChangePasswordDialog open={openPasswordDialog} onClose={() => setOpenPasswordDialog(false)} onSubmit={handlePasswordSubmit} />
+    </>
   );
 }

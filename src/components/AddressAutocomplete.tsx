@@ -21,6 +21,9 @@ interface AddressAutocompleteProps {
     postal_code: string;
     administrative_area: string;
     formatted_address: string
+    url:string,
+    website:string,
+    opening_hours:any,
   }) => void;
 }
 
@@ -88,7 +91,33 @@ export default function AddressAutocomplete({
             ? `${streetNumber} ${route}, ${city}, ${postalCode}`.replace(/\s+/g, ' ').trim()
             : result.formatted_address || '';
 
+        const address = [
+        addressComponents.find((c) => c.types.includes("street_number"))
+          ?.long_name,
+        addressComponents.find((c) => c.types.includes("route"))
+          ?.long_name,
+        addressComponents.find((c) => c.types.includes("premise"))
+          ?.long_name,
+        addressComponents.find((c) => c.types.includes("subpremise"))
+          ?.long_name,
+        addressComponents.find((c) =>
+          c.types.includes("sublocality_level_1")
+        )?.long_name,
+         addressComponents.find((c) => c.types.includes("locality"))
+          ?.long_name,
+         addressComponents.find((c) =>
+          c.types.includes("administrative_area_level_2")
+        )?.long_name,
+         addressComponents.find((c) =>
+          c.types.includes("administrative_area_level_1")
+        )?.long_name,
+        addressComponents.find((c) => c.types.includes("postal_code"))
+          ?.long_name,
+      ].filter(Boolean).join(" ");
 
+        const googleLink = `https://www.google.com/search?q=${encodeURIComponent(
+        result.name + " " + address
+      )}`;
           // Update address
           setAddress(normalizedAddress);
 
@@ -103,7 +132,10 @@ export default function AddressAutocomplete({
             last_name: '', // Not provided by Places API
             postal_code: postalCode,
             administrative_area: administrativeArea,
-            formatted_address: result.formatted_address || ''  // ✅ FIXED
+            formatted_address: result.formatted_address || '',
+            url:googleLink||'',
+            website:result.website||'',
+            opening_hours:result.opening_hours||{}, 
           };
 
           // Update parent with address details
@@ -124,6 +156,9 @@ export default function AddressAutocomplete({
             hours: result.opening_hours?.weekday_text || [],
             business_status: result.business_status || '',
             categories: result.types || [],
+            url:googleLink||'',
+            website:result.website||'',
+            opening_hours:result.opening_hours||{},
           };
           sessionStorage.setItem('placeDetailsExtract', JSON.stringify(updatedDetails));
           sessionStorage.setItem('addressDetails', JSON.stringify(addressDetails));
@@ -174,6 +209,9 @@ export default function AddressAutocomplete({
           last_name: '',
           postal_code: postalCode,
           administrative_area: administrativeArea,
+          url:googleLink||'',
+          website:result.website||'',
+          opening_hours:result.opening_hours||{},
         };
 
         if (onAddressDataChange) {

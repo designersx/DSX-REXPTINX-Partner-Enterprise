@@ -47,8 +47,13 @@ const ExpandMore = styled(IconButton, {
 
 export default function UserList() {
   const router = useRouter();
+
+  const handleProfileClick = () => {
+    handleClose(); // close the menu first
+    router.push('/dashboard/Profile'); // navigate
+  };
   // const user = useUser();
-const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}');
 
   const { menuMaster } = useGetMenuMaster();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
@@ -68,6 +73,8 @@ const user = JSON.parse(sessionStorage.getItem('user') || '{}');
         signOut({ redirect: false });
     }
     localStorage.removeItem('authToken');
+    localStorage.clear();
+    sessionStorage.clear();
     router.push('/login');
   };
 
@@ -121,12 +128,10 @@ const user = JSON.parse(sessionStorage.getItem('user') || '{}');
         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        {/* <MenuItem component={Link} href="#!" onClick={handleClose}>
+        {/* {/* <MenuItem component={Link} href="#!" onClick={handleClose}>
           Profile
-        </MenuItem>
-        <MenuItem component={Link} href="#!" onClick={handleClose}>
-          My account
         </MenuItem> */}
+        <MenuItem onClick={handleProfileClick}>My account</MenuItem>
       </Menu>
     </Box>
   );

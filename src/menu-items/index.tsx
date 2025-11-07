@@ -14,7 +14,7 @@ import system from './system';
 
 const menuItems: { items: NavItemType[] } = {
   // items: [samplePage, pages, support,build]
-    items: [dashboard,build,deploy,mointor,system]
+  items: [dashboard, build, deploy, mointor, system]
 };
 
 export default menuItems;
