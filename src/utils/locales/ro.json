@@ -30,6 +30,10 @@
   "gitbook": "GitBook",
   "home": "Acasă",
   "invoice-summary":"invoice-summary",
-    "my-dashboard":"my-dashboard"
+  "my-dashboard":"my-dashboard",
+  "tickets": "tickets",
+  "Create Ticket": "Create Ticket"
+
+
 
 }

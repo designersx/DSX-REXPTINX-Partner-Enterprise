@@ -3146,7 +3146,7 @@ export default function RaiseTickets() {
     setSearchText('');
   };
 
-  console.log('tickets',tickets)
+  console.log('tickets',tickets,selectedTicket)
   return (
     <Box sx={{ p: 3 }}>
       {/* <Breadcrumbs custom heading="Ticket List" links={breadcrumbLinks} /> */}
@@ -3268,6 +3268,9 @@ export default function RaiseTickets() {
                   customerAvatar={null}
                   productAvatar={null}
                   productName={ticket.category}
+                  description={ticket.description}
+                  department={ticket.department}
+                  ticketId={ticket.ticketId}
                   supporterAvatar={null}
                   supporterName="Support Team"
                   updateTime={format(new Date(ticket.updatedAt), 'dd MMMM yyyy, HH:mm')}
@@ -3294,6 +3297,22 @@ export default function RaiseTickets() {
         handleDrawerOpen={() => setOpenDrawer(false)}
         ticket={selectedTicket}
       /> */}
+      
+            <TicketDetailsDrawer
+              isOpen={openDrawer}
+              handleDrawerOpen={() => setOpenDrawer(false)}
+              ticket={{
+                ticketId: selectedTicket?.ticketId,
+                subject: selectedTicket?.subject,
+                priority: selectedTicket?.priority,
+                description: selectedTicket?.description,
+                category: selectedTicket?.category,
+                attachments: selectedTicket?.attachments,
+                status: selectedTicket?.status,
+                createdAt: selectedTicket?.createdAt,
+                updatedAt: selectedTicket?.updatedAt,
+              }}
+            />
     </Box>
   );
 }

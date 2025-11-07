@@ -40,5 +40,8 @@
   "gitbook": "GitBook",
   "home": "Home",
   "invoice-summary": "invoice-summary",
-  "my-dashboard": "my-dashboard"
+  "my-dashboard": "my-dashboard",
+  "tickets": "tickets",
+  "Create Ticket": "Create Ticket"
+
 }

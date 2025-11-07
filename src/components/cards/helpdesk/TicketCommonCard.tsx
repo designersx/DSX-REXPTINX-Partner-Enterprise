@@ -15,7 +15,8 @@ import MainCard from 'components/MainCard';
 import { TicketCommonCardProps } from 'types/helpdesk';
 
 // assets
-import { Calendar, Eye, Heart, Lock1, MessageText, Trash } from '@wandersonalwes/iconsax-react';
+import { Calendar, Eye, Heart, Lock1, MessageText, Trash,Hashtag} from '@wandersonalwes/iconsax-react';
+import SafeHtml from 'utils/SafeHtml';
 
 // ==============================|| TICKET COMMON CARD ||============================== //
 
@@ -38,7 +39,10 @@ export default function TicketCommonCard({
   issueTitle,
   addCode,
   removeCode,
-  drawerOpen
+  drawerOpen,
+  ticketId,
+  department,
+  description
 }: TicketCommonCardProps) {
   const router = useRouter();
 
@@ -61,7 +65,7 @@ export default function TicketCommonCard({
         </Stack>
         <Stack sx={{ gap: 1, width: 1 }}>
           <Stack direction="row" onClick={drawerOpen} sx={{ gap: 1, alignItems: 'flex-start', cursor: 'pointer' }}>
-            <Typography variant="h5">{customerName}</Typography>
+            <Typography variant="h5">{ticketId}</Typography>
             <Chip size="small" label={chipLabel} sx={{ color: 'text.secondary' }} />
           </Stack>
 
@@ -85,7 +89,7 @@ export default function TicketCommonCard({
                   assigned to
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                  {supporterName}
+                  {department}
                 </Typography>
               </Stack>
               <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
@@ -94,30 +98,30 @@ export default function TicketCommonCard({
                   Updated {updateTime}
                 </Typography>
               </Stack>
-              <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+              {/* <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
                 <MessageText size={14} />
                 <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                   {messageCount}
                 </Typography>
-              </Stack>
+              </Stack> */}
             </Stack>
           )}
 
           <Stack direction="row" sx={{ gap: 0.5, alignItems: 'center' }}>
-            <Lock1 size={16} />
+            {/* <Hashtag size={16} /> */}
             <Typography variant="h5">{issueTitle}</Typography>
           </Stack>
 
           {showBox && (
             <Box onClick={drawerOpen} sx={{ p: 2, bgcolor: 'secondary.lighter', borderRadius: 1, mb: 1, cursor: 'pointer' }}>
               <Stack direction="row" sx={{ gap: 1, alignItems: 'center', mb: 1 }}>
-                <Avatar variant="rounded" src={supporterAvatar} color="success" sx={avatarStyle} />
+                {/* <Avatar variant="rounded" src={supporterAvatar} color="success" sx={avatarStyle} /> */}
                 <Typography component="div" variant="body1" sx={{ fontWeight: 600, display: 'flex', gap: 0.5 }}>
-                  Last comment from
-                  <Typography sx={{ color: 'text.secondary' }}>{supporterName}:</Typography>
+                  Description
+                  <Typography sx={{ color: 'text.secondary' }}><SafeHtml html={description} sx={{ '& p': { my: 0 } }} /></Typography>
                 </Typography>
               </Stack>
-              <Stack>
+              {/* <Stack>
                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
                   hello {customerName},
                 </Typography>
@@ -126,7 +130,7 @@ export default function TicketCommonCard({
                   <br />
                   {removeCode} <br /> just remove those things and also in option button add
                 </Typography>
-              </Stack>
+              </Stack> */}
             </Box>
           )}
 
@@ -136,7 +140,7 @@ export default function TicketCommonCard({
               variant="dashed"
               sx={{ border: 'none' }}
               color="primary"
-              onClick={() => router.push('/mointor/tickets/details')}
+              onClick={() => router.push(`/mointor/tickets/${ticketId}`)}
             >
               View Ticket
             </Button>

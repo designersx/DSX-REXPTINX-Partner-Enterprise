@@ -98,12 +98,12 @@ export default function MultiFileUpload({ error, showList = false, files, type, 
 
       {type !== DropzopType.standard && files && files.length > 0 && (
         <Stack direction="row" sx={{ gap: 1.5, justifyContent: 'flex-end', mt: 1.5 }}>
-          <Button color="inherit" size="small" onClick={onRemoveAll}>
+          {/* <Button color="inherit" size="small" onClick={onRemoveAll}>
             Remove all
           </Button>
           <Button size="small" variant="contained" onClick={onUpload}>
             Upload files
-          </Button>
+          </Button> */}
         </Stack>
       )}
     </>

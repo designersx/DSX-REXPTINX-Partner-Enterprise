@@ -23,23 +23,40 @@ import ProductOverview from 'sections/widget/chart/ProductOverview';
 
 import PaymentHistory from 'sections/widget/data/PaymentHistory';
 import EcommerceRadial from 'sections/widget/chart/EcommerceRadial';
+import { useAnalyticsData } from './AnalyticsDataProvider';
 
 // ==============================|| DASHBOARD - ANALYTICS ||============================== //
 
 export default function DashboardAnalytics() {
+  const { totalUsers, totalAgents, totalEarning, commissionChartData, currency, loading } = useAnalyticsData();
+  console.log('dssd', totalUsers, totalAgents, totalEarning, commissionChartData, currency, loading)
+  if (loading) {
+    return (
+      <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '400px' }}>
+        <Grid item>
+          <div className="text-center">
+            <p className="text-gray-500">Loading analytics...</p>
+          </div>
+        </Grid>
+      </Grid>
+    );
+  }
   return (
     <Grid container spacing={GRID_COMMON_SPACING}>
       {/* row 1 */}
-      <Grid size={{ xs: 12, md: 4, lg: 3 }}>
-        <NewOrders />
+      <Grid size={{ xs: 12, md: 4, lg: 4 }}>
+        {/* total refered user */}
+        <NewOrders /> 
       </Grid>
-      <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+      <Grid size={{ xs: 12, md: 4, lg: 4 }}>
+      {/* refered Agent List  */}
         <NewUsers />
       </Grid>
-      <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+      <Grid size={{ xs: 12, md: 4, lg: 4 }}>
+          {/* total Referal earnings  */}
         <Visitors />
       </Grid>
-      <Grid size={{ xs: 12, md: 4, lg: 3 }}>
+      {/* <Grid size={{ xs: 12, md: 4, lg: 3 }}>
         <Grid container spacing={GRID_COMMON_SPACING}>
           <Grid size={12}>
             <DropboxStorage />
@@ -48,13 +65,13 @@ export default function DashboardAnalytics() {
             <SwitchBalanace />
           </Grid>
         </Grid>
-      </Grid>
+      </Grid> */}
       {/* row 2 */}
       <Grid size={12}>
         <ProjectAnalytics />
       </Grid>
       {/* row 3 */}
-      <Grid size={{ xs: 12, lg: 3 }}>
+      {/* <Grid size={{ xs: 12, lg: 3 }}>
         <Grid container spacing={GRID_COMMON_SPACING}>
           <Grid size={{ xs: 12, md: 6, lg: 12 }}>
             <EcommerceIncome />
@@ -79,7 +96,7 @@ export default function DashboardAnalytics() {
             </Stack>
           </Grid>
         </Grid>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

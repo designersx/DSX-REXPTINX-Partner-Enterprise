@@ -27,6 +27,7 @@ import MainCard from 'components/MainCard';
 import UploadMultiFile from 'components/third-party/dropzone/MultiFile';
 import ReactQuillDemo from 'components/third-party/ReactQuill';
 import { APP_DEFAULT_PATH } from 'config';
+import DOMPurify from 'dompurify';
 
 type FormData = {
   subject: string;
@@ -85,20 +86,20 @@ export default function CreateTicket() {
               });
               payload.append('userId', userId);
               payload.append('pageContext', 'tickets-page');
-              if (values.files) {
-                values.files.forEach((file: File) => {
-                  if (file.size > 5 * 1024 * 1024) {
-                    toast.error(`${file.name} must be under 5MB`);
-                    return;
-                  }
-                  if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type)) {
-                    toast.error(`${file.name} must be PNG, JPG, or PDF`);
-                    return;
-                  }
-                  payload.append('ticketAttachments', file);
-                });
+         if (values.files) {
+            values.files.forEach((file: File) => {
+              if (file.size > 5 * 1024 * 1024) {
+                toast.error(`${file.name} must be under 5MB`);
+                return;
               }
-
+              if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type)) {
+                toast.error(`${file.name} must be PNG, JPG, or PDF`);
+                return;
+              }
+              payload.append('ticketAttachments', file); // field name match with multer
+            });
+          }
+          
               const res = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/tickets/create_ticket`,
                 payload,
@@ -197,6 +198,11 @@ export default function CreateTicket() {
                     <ReactQuillDemo
                       value={values.description}
                       onChange={(value) => setFieldValue('description', value)}
+                      // onChange={(html) => {
+                      //   // Remove ALL tags → only plain text
+                      //   const plain = DOMPurify.sanitize(html, { ALLOWED_TAGS: [] });
+                      //   setFieldValue('description', plain);
+                      // }}
                     />
                     {touched.description && errors.description && (
                       <FormHelperText error>{errors.description}</FormHelperText>
