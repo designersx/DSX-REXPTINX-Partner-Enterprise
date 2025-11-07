@@ -32,7 +32,7 @@ const system: NavItemType = {
       type: 'item',
       url: '/system/billingHistory',
       icon: AccountBalanceIcon
-    }
+    },
   ]
 };
 
