@@ -392,15 +392,6 @@ export const raiseagentRequest = async (payload: { agentId: string; email: strin
     return { status: false, error: err };
   }
 };
-export const getAllRaiseUserRequest = async () => {
-  try {
-    const res = await axios.get(`${URL}/api/endusers/getallrequest`);
-    return res.data;
-  } catch (err) {
-    console.error('Error raising request:', err);
-    return { status: false, error: err };
-  }
-};
 
 export const checkUserRequestStatus = async (currentUserId: string) => {
   try {
@@ -449,3 +440,37 @@ export const getAgentRequestStatus = async (userId: string) => {
 //     throw new Error("Failed to delete agent from one or both systems.");
 //   }
 // };
+
+export async function getAllUsers() {
+  try {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/endusers/getAllUsers`);
+    return response.data; // backend returns { message, data }
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    throw error;
+  }
+}
+
+export const getAllRaiseUserRequest = async () => {
+  try {
+    const res = await axios.get(`${URL}/api/endusers/getallrequest`);
+    return res.data;
+  } catch (err) {
+    console.error('Error raising request:', err);
+    return { status: false, error: err };
+  }
+};
+export async function getAllUsersByReferralCode(referralCode) {
+  try {
+    if (!referralCode) {
+      throw new Error('Referral code is required');
+    }
+
+    const response = await axios.get(`${URL}/api/endusers/getAllUsersByreferalcode/${referralCode}`);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users by referral code:', error);
+    throw error;
+  }
+}

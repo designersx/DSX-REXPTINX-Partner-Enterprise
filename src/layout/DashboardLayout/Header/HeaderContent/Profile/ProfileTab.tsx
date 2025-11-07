@@ -9,37 +9,32 @@ import { Card, Edit2, Logout, Profile, Profile2User } from '@wandersonalwes/icon
 
 interface Props {
   handleLogout: () => void;
+  handleChangePassword: () => void;
+  onProfileClick: () => void; // new prop for profile redirect
 }
 
 // ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 
-export default function ProfileTab({ handleLogout ,handleChangePassword}: Props) {
+export default function ProfileTab({ handleLogout, handleChangePassword, onProfileClick }: Props) {
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-      <ListItemButton onClick={handleChangePassword}>
-        <ListItemIcon>
-          <Edit2 variant="Bulk" size={18} />
-        </ListItemIcon>
-        <ListItemText primary="Change Password"/>
-      </ListItemButton>
-      {/* <ListItemButton>
+      {/* Profile button */}
+      <ListItemButton onClick={onProfileClick}>
         <ListItemIcon>
           <Profile variant="Bulk" size={18} />
         </ListItemIcon>
-        <ListItemText primary="View Profile" />
+        <ListItemText primary="Profile" />
       </ListItemButton>
-      <ListItemButton>
+
+      {/* Change Password */}
+      {/* <ListItemButton onClick={handleChangePassword}>
         <ListItemIcon>
-          <Profile2User variant="Bulk" size={18} />
+          <Edit2 variant="Bulk" size={18} />
         </ListItemIcon>
-        <ListItemText primary="Social Profile" />
-      </ListItemButton>
-      <ListItemButton>
-        <ListItemIcon>
-          <Card variant="Bulk" size={18} />
-        </ListItemIcon>
-        <ListItemText primary="Billing" />
+        <ListItemText primary="Change Password" />
       </ListItemButton> */}
+
+      {/* Logout */}
       <ListItemButton onClick={handleLogout}>
         <ListItemIcon>
           <Logout variant="Bulk" size={18} />

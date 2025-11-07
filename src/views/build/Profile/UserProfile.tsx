@@ -44,15 +44,14 @@ export default function UserProfile() {
   return (
     <Grid container spacing={GRID_COMMON_SPACING}>
       <Grid size={12}>
-        <ProfileCard focusInput={focusInput} />
+        {/* <ProfileCard focusInput={focusInput} /> */}
       </Grid>
-      <Grid size={{ xs: 12, md: 3 }}>
-        <ProfileTabs focusInput={focusInput} />
-      </Grid>
+      <Grid size={{ xs: 12, md: 3 }}><ProfileTabs focusInput={focusInput} /></Grid>
       <Grid size={{ xs: 12, md: 9 }}>
-        {tab === 'personal' && <TabPersonal />}
+        <TabPersonal />
+
         {/* {tab === 'payment' && <TabPayment />} */}
-        {tab === 'password' && <TabPassword />}
+        {/* {tab === 'password' && <TabPassword />} */}
         {/* {tab === 'settings' && <TabSettings />} */}
       </Grid>
     </Grid>
