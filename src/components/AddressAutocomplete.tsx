@@ -127,6 +127,7 @@ export default function AddressAutocomplete({
             phone_number: result.international_phone_number || result.formatted_phone_number || '',
             street_address: `${streetNumber} ${route}`.trim(),
             locality: city,
+            country:addressComponents.find((c) => c.types.includes('country'))?.long_name || '',
             country_code: addressComponents.find((c) => c.types.includes('country'))?.short_name || '',
             first_name: '', // Not provided by Places API
             last_name: '', // Not provided by Places API
@@ -204,6 +205,7 @@ export default function AddressAutocomplete({
           phone_number: '',
           street_address: `${streetNumber} ${route}`.trim(),
           locality: city,
+          country:addressComponents.find((c) => c.types.includes('country'))?.long_name || '',
           country_code: addressComponents.find((c) => c.types.includes('country'))?.short_name || '',
           first_name: '',
           last_name: '',

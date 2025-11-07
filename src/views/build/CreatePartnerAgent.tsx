@@ -1,7 +1,11 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import avatars from 'lib/avatars';
+
+// MUI icons (named, no "Icon" suffix)
+
 import {
+  InputAdornment,
   Grid,
   TextField,
   InputLabel,
@@ -37,6 +41,9 @@ import { Snackbar } from '@mui/material';
 import KnowledgeBase from './KnowledgeBase';
 import AddressAutocomplete from 'components/AddressAutocomplete';
 import PauseIcon from '@mui/icons-material/Pause';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { Autocomplete } from '@mui/material';
 
 // ---------------- Business Data ----------------
 const allBusinessTypes = [
@@ -877,12 +884,7 @@ const languages = [
 ];
 
 // ---------------- Dummy User Data ----------------
-const dummyUsers = [
-  { id: 'RXU9LL1757509373', name: 'John Doe', email: 'john.doe@example.com' },
-  { id: 'RX427L1756452824', name: 'Jane Smith', email: 'jane.smith@example.com' },
-  { id: 'RX2DL21756092985', name: 'Amit Sharma', email: 'amit.sharma@example.com' },
-  { id: 'RX2V4R1756534484', name: 'Priya Patel', email: 'priya.patel@example.com' }
-];
+
 
 // ---------------- Helper Function ----------------
 // function getServicesByType(type) {
@@ -2335,6 +2337,14 @@ const dummyUsers = [
 //     </Grid>
 //   );
 // }
+
+const dummyUsers = [
+  { userId: 'RXU9LL1757509373', name: 'John Doe', email: 'john.doe@example.com' },
+  { userId: 'RX427L1756452824', name: 'Jane Smith', email: 'jane.smith@example.com' },
+  { userId: 'RX2DL21756092985', name: 'Amit Sharma', email: 'amit.sharma@example.com' },
+  { userId: 'RX2V4R1756534484', name: 'Priya Patel', email: 'priya.patel@example.com' }
+];
+
 function getServicesByType(type) {
   const found = businessServices.find((b) => b.type === type);
   return found ? found.services : [];
@@ -2407,7 +2417,6 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
   googleBusinessName: '',
   googleListing: '',
     businessAddress: {
-      officeType: 'Main Office',
       addressDetails: {
         businessName: '',
         streetAddress: '',
@@ -2452,16 +2461,18 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
   const genders = ['Male', 'Female'];
   const steps = ['User & Business', 'Agent Configuration'];
   const token = localStorage.getItem('authToken');
-
+  const referralCode = localStorage.getItem('referralCode');
+  console.log('users',users)
   // -------------------------------------------------------------------------
   // Fetch users
   // -------------------------------------------------------------------------
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/agentV2/getPartnerUsersListbyReferalCode/${referralCode}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUsers(response.data || dummyUsers);
+      console.log('response',response)
+      setUsers(response?.data?.users || dummyUsers);
     } catch {
       setUsers(dummyUsers);
       setSnackbar({ open: true, message: 'Using dummy users', severity: 'info' });
@@ -2589,13 +2600,15 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
     city: data.locality || data.city || '',
     district: data.administrative_area_level_2 || '',
     state: data.administrative_area || '',
-    country: data.country_code || '',
+    country: data.country || '',
     postalCode: data.postal_code || '',
     formattedAddress: data.formatted_address || '',
     placeId: data.place_id || '',
     url: data.url || '',
     phone: data.international_phone_number || data.phone_number ||'',
-    email: data.email || ''
+    email: data.email || '',
+    website:data.website||'',
+    opening_hours:data?.opening_hours?.weekday_text||'',
   });
 
   const handleAddressDataChange = (data: any) => {
@@ -2605,7 +2618,7 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
 
     setFormData(prev => ({
       ...prev,
-      businessAddress: { officeType: 'Main Office', addressDetails: mapped },
+      businessAddress:{addressDetails: mapped },
       businessName: mapped.businessName || prev.businessName,
       businessWebsite: mapped.website || prev.businessWebsite,
       businessPhone: mapped.phone || prev.businessPhone,
@@ -2655,6 +2668,9 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
 
       setWebsiteVerified(isValid ? 'valid' : 'invalid');
       localStorage.setItem('isVerified', isValid ? 'true' : 'false');
+      if (isValid) {
+      setErrors(prev => ({ ...prev, businessWebsite: '' }));
+    }
 
       if (isValid) {
         const res = await listSiteMap(url);
@@ -2751,7 +2767,8 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
 
     // === Sitemap URLs (Selected & Verified) ===
     const selectedSitemap = JSON.parse(localStorage.getItem('selectedSitemapUrls') || '[]');
-    fd.append('sitemapUrls', JSON.stringify(sitemapUrls));
+    const sitemapUrls2 = JSON.parse(localStorage.getItem('sitemapUrls') || '[]');
+    fd.append('sitemapUrls', JSON.stringify(sitemapUrls2));
     fd.append('selectedSitemapUrls', JSON.stringify(selectedSitemap));
 
     // === KnowledgeBase (if any) ===
@@ -2762,7 +2779,6 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
         urls: kb.urls || []
       }))));
     }
-    console.log('=== FormData Contents ===');
     for (const [key, value] of fd.entries()) {
       if (value instanceof File) {
         console.log(`${key}: [File] ${value.name} (${value.size} bytes, ${value.type})`);
@@ -2772,15 +2788,17 @@ export default function PartnerAgentGeneralInfo({ open, onClose, onSubmit }: {
         console.log(`${key}:`, value);
       }
     }
-    return;
+
     try {
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/agentV2/createAgent`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+    // setIsSubmitting(false);
+    // return;
       setSnackbar({ open: true, message: res.data.message, severity: 'success' });
       setTimeout(() => { onClose(); onSubmit(); localStorage.removeItem('selectedSitemapUrls');
-localStorage.removeItem('sitemapUrls');
-localStorage.removeItem('isVerified');}, 1500);
+      localStorage.removeItem('sitemapUrls');
+      localStorage.removeItem('isVerified');}, 1500);
     } catch (err: any) {
       setApiStatus({ status: 'error', message: err.response?.data?.message || 'Submission failed' });
     } finally {
@@ -2796,13 +2814,38 @@ localStorage.removeItem('isVerified');}, 1500);
       return (
         <Stack spacing={3}>
           {/* ---------- USER ---------- */}
-          <Stack spacing={1}>
+          {/* <Stack spacing={1}>
             <InputLabel>Select User</InputLabel>
             <Select name="selectedUser" value={formData.selectedUser} onChange={handleChange} error={!!errors.selectedUser} fullWidth>
               {users.map(u => <MenuItem key={u.id} value={u.id}>{u.name} ({u.email})</MenuItem>)}
             </Select>
             <FormHelperText error>{errors.selectedUser}</FormHelperText>
-          </Stack>
+          </Stack> */}
+          <Stack spacing={1}>
+          <InputLabel>Select User</InputLabel>
+
+          <Autocomplete
+            options={users}
+            getOptionLabel={(option) => `${option.name} (${option.email})`}
+            value={users.find(u => u.userId === formData.selectedUser) || null}
+            onChange={(_, newValue) => {
+              setFormData(prev => ({
+                ...prev,
+                selectedUser: newValue?.userId || ''
+              }));
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Search by name or email..."
+                error={!!errors.selectedUser}
+                helperText={errors.selectedUser}
+              />
+            )}
+            fullWidth
+            disableClearable={false}
+          />
+        </Stack>
 
           {/* ---------- INDUSTRY ---------- */}
           <Stack spacing={1}>
@@ -2891,7 +2934,8 @@ localStorage.removeItem('isVerified');}, 1500);
             <TextField
               fullWidth
               value={formData.businessName}
-              onChange={e => setFormData(p => ({ ...p, businessName: e.target.value }))}
+              onChange={e => handleFieldSync('businessName', e.target.value)}
+              // onChange={e => setFormData(p => ({ ...p, businessName: e.target.value }))}
             />
           </Stack>
 
@@ -2900,21 +2944,39 @@ localStorage.removeItem('isVerified');}, 1500);
             <TextField
               fullWidth
               value={formData.businessWebsite}
-              onChange={e => setFormData(p => ({ ...p, businessWebsite: e.target.value }))}
+              onChange={e => handleFieldSync('businessWebsite', e.target.value)}
+              // onChange={e => setFormData(p => ({ ...p, businessWebsite: e.target.value }))}
               onBlur={handleWebsiteBlur}
               disabled={verifying}
               placeholder="https://example.com"
               error={!!errors.businessWebsite}
               helperText={errors.businessWebsite}
+              // InputProps={{
+              //   endAdornment: verifying ? (
+              //     <CircularProgress size={20} />
+              //   ) : websiteVerified === 'valid' ? (
+              //     <Tooltip title="Verified"><InfoOutlinedIcon color="success" /></Tooltip>
+              //   ) : websiteVerified === 'invalid' ? (
+              //     <Tooltip title="Not verified"><InfoOutlinedIcon color="error" /></Tooltip>
+              //   ) : null
+              // }}
               InputProps={{
-                endAdornment: verifying ? (
-                  <CircularProgress size={20} />
-                ) : websiteVerified === 'valid' ? (
-                  <Tooltip title="Verified"><InfoOutlinedIcon color="success" /></Tooltip>
-                ) : websiteVerified === 'invalid' ? (
-                  <Tooltip title="Not verified"><InfoOutlinedIcon color="error" /></Tooltip>
-                ) : null
-              }}
+              endAdornment: (
+                <InputAdornment position="end">
+                  {verifying ? (
+                    <CircularProgress size={20} />
+                  ) : websiteVerified === 'valid' ? (
+                    <Tooltip title="Verified">
+                      <CheckCircleIcon sx={{ color: 'green' }} />
+                    </Tooltip>
+                  ) : websiteVerified === 'invalid' ? (
+                    <Tooltip title="Not verified">
+                      <CancelIcon  sx={{ color: 'red' }} />
+                    </Tooltip>
+                  ) : null}
+                </InputAdornment>
+              ),
+            }}
             />
           </Stack>
 
@@ -2923,7 +2985,8 @@ localStorage.removeItem('isVerified');}, 1500);
             <TextField
               fullWidth
               value={formData.businessPhone}
-              onChange={e => setFormData(p => ({ ...p, businessPhone: e.target.value }))}
+              onChange={e => handleFieldSync('businessPhone', e.target.value)}
+              // onChange={e => setFormData(p => ({ ...p, businessPhone: e.target.value }))}
             />
           </Stack>
 
@@ -2932,7 +2995,8 @@ localStorage.removeItem('isVerified');}, 1500);
             <TextField
               fullWidth
               value={formData.businessEmail}
-              onChange={e => setFormData(p => ({ ...p, businessEmail: e.target.value }))}
+              onChange={e => handleFieldSync('businessEmail', e.target.value)}
+              // onChange={e => setFormData(p => ({ ...p, businessEmail: e.target.value }))}
             />
           </Stack>
         </Stack>
@@ -3030,6 +3094,19 @@ localStorage.removeItem('isVerified');}, 1500);
     );
   };
 
+  const handleFieldSync = (field: keyof typeof formData.businessAddress.addressDetails, value: string) => {
+  setFormData(prev => ({
+    ...prev,
+    [field]: value, // top-level field
+    businessAddress: {
+      ...prev.businessAddress,
+      addressDetails: {
+        ...prev.businessAddress.addressDetails,
+        [field]: value
+      }
+    }
+  }));
+};
   // -------------------------------------------------------------------------
   // Render
   // -------------------------------------------------------------------------
@@ -3046,11 +3123,11 @@ localStorage.removeItem('isVerified');}, 1500);
           </Typography>
           <Divider sx={{ my: 2 }} />
 
-          {apiStatus.status && (
+          {/* {apiStatus.status && (
             <Alert severity={apiStatus.status} sx={{ mb: 2 }}>
               {apiStatus.message}
             </Alert>
-          )}
+          )} */}
 
           <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
             {steps.map(l => (

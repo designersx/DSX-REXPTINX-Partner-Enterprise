@@ -254,7 +254,7 @@ export const retrieveAllRegisteredUsers2 = async () => {
 export const retrieveAllRegisteredUsersforAgents = async () => {
   const referalcode = localStorage.getItem('referralCode');
   try {
-    const response = await axios.get(`${URL}/api/endusers/getAllUsersAgents/${referalcode}`);
+    const response = await axios.get(`${URL}/api/agentV2/getAllUsersAgentsbyReferalCode/${referalcode}`);
     return response.data;
   } catch (error) {
     if (error.response) {
