@@ -1557,7 +1557,7 @@ export default function ReferralLink() {
                     borderColor: 'grey.300',
                     p: 4,
                     borderRadius: 2,
-                    maxWidth: 'md',
+                    maxWidth: '400px',
                     mx: 'auto',
                     bgcolor: 'white',
                     boxShadow: 3,
@@ -1565,7 +1565,7 @@ export default function ReferralLink() {
                   }}
                 >
                   <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-                    <Box component="img" src="/rexpt-logo1.avif" alt="Icon" sx={{ width: 48, height: 48 }} />
+                    <Box component="img" src="/rexpt-logo1.avif" alt="Icon" sx={{ width: 30, height: 30 }} />
                     <Box>
                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                         {referralName}
@@ -1604,7 +1604,7 @@ export default function ReferralLink() {
                       />
                       <Box
                         component="img"
-                        src="/rexpt-logo1.avif" // Replace with your icon path
+                        src="/rexpt-logo1.avif"
                         alt="QR Code Icon"
                         sx={{
                           position: 'absolute',
