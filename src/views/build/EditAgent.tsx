@@ -18,12 +18,7 @@ import axios from 'axios';
 import { getAgentCallById } from '../../../Services/auth';
 import { TablePagination, CircularProgress, Box, Button } from '@mui/material';
 import { Eye } from '@wandersonalwes/iconsax-react';
-import {
-  Avatar,
-  Divider,
-  Grid,
-  Paper,
-} from '@mui/material';
+import { Avatar, Divider, Grid, Paper } from '@mui/material';
 
 // Material-UI Icons
 import {
@@ -33,7 +28,7 @@ import {
   Settings as SettingsIcon
 } from '@mui/icons-material';
 
-export default function TransactionHistoryCard({ agentId }) {
+export default function EditAgent({ agentId }) {
   const [open, setOpen] = useState(false);
   const [calldata, setCallData] = useState([]);
   const [Transcription, setTranscription] = useState([]);
@@ -56,20 +51,17 @@ export default function TransactionHistoryCard({ agentId }) {
   const fetchCalls = async (month, year, append = false) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("authToken");
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/callHistory/agent/${agentId}/calls-by-month`,
-        {
-          params: { month, year },
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const token = localStorage.getItem('authToken');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/callHistory/agent/${agentId}/calls-by-month`, {
+        params: { month, year },
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       const newCalls = res.data?.calls || [];
       if (newCalls.length === 0) setLoadMoreAvailable(false);
 
-      setCallData(prev => append ? [...prev, ...newCalls] : newCalls);
-      setLoadedMonths(prev => [...prev, `${month}-${year}`]);
+      setCallData((prev) => (append ? [...prev, ...newCalls] : newCalls));
+      setLoadedMonths((prev) => [...prev, `${month}-${year}`]);
       setLoadMoreError('');
     } catch (err) {
       console.error('Error fetching calls:', err);
@@ -95,7 +87,7 @@ export default function TransactionHistoryCard({ agentId }) {
     }
   };
 
-  console.log(loadMoreAvailable)
+  console.log(loadMoreAvailable);
   const formatDuration = (duration_ms) => {
     const totalSeconds = Math.floor(duration_ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -134,40 +126,43 @@ export default function TransactionHistoryCard({ agentId }) {
   };
 
   const getColor = (sentiment) => {
-    if (!sentiment) return "default";
+    if (!sentiment) return 'default';
     switch (sentiment.toLowerCase()) {
-      case "positive": return "success";
-      case "negative": return "error";
-      case "neutral": return "warning";
-      default: return "default";
+      case 'positive':
+        return 'success';
+      case 'negative':
+        return 'error';
+      case 'neutral':
+        return 'warning';
+      default:
+        return 'default';
     }
   };
 
   useEffect(() => {
-  const fetchAgent = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/getAgent/${agentId}`, { 
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Adjust token storage as needed
+    const fetchAgent = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/getAgent/${agentId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('authToken')}` // Adjust token storage as needed
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch agent');
         }
-      });
 
-      if (!res.ok) {
-        throw new Error('Failed to fetch agent');
+        const data = await res.json();
+        console.log(data, 'data'); // Fixed this line
+        setAgent(data);
+      } catch (err) {
+        console.log(err.message);
       }
-
-
-      const data = await res.json(); 
-      console.log(data, "data"); // Fixed this line
-      setAgent(data);
-    } catch (err) {
-      console.log(err.message); 
-    } 
-  }
-  fetchAgent();
-}, [agentId]);
+    };
+    fetchAgent();
+  }, [agentId]);
 
   const formatMinutes = (minutes) => {
     if (!minutes && minutes !== 0) return 'N/A';
@@ -190,28 +185,32 @@ export default function TransactionHistoryCard({ agentId }) {
     <>
       <MainCard title={<Typography variant="h5">Agent Details</Typography>} content={false}>
         {agent && (
-          <Box sx={{ 
-            mb: 3, 
-            p: { xs: 2, sm: 3 }, 
-            bgcolor: 'grey.50', 
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider'
-          }}>
+          <Box
+            sx={{
+              mb: 3,
+              p: { xs: 2, sm: 3 },
+              bgcolor: 'grey.50',
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
             {/* Header Section */}
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: { xs: 'flex-start', sm: 'center' }, 
-              flexDirection: { xs: 'column', sm: 'row' }, 
-              gap: 2, 
-              mb: 3 
-            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 2,
+                mb: 3
+              }}
+            >
               <Stack direction="row" spacing={2} alignItems="center" sx={{ flexShrink: 0 }}>
                 <Avatar
-                 src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`}
+                  src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`}
                   alt={agent.agentName}
-                  sx={{ 
-                    width: { xs: 50, sm: 60 }, 
+                  sx={{
+                    width: { xs: 50, sm: 60 },
                     height: { xs: 50, sm: 60 },
                     fontSize: { xs: '1.2rem', sm: '1.5rem' }
                   }}
@@ -219,10 +218,10 @@ export default function TransactionHistoryCard({ agentId }) {
                   {!agent.agentName ? 'A' : agent.agentName.charAt(0).toUpperCase()}
                 </Avatar>
                 <Box sx={{ minWidth: 0 }}>
-                  <Typography 
-                    variant="h5" 
-                    sx={{ 
-                      fontWeight: 700, 
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 700,
                       color: 'primary.main',
                       mb: { xs: 0.5, sm: 0 },
                       lineHeight: 1.2
@@ -230,30 +229,27 @@ export default function TransactionHistoryCard({ agentId }) {
                   >
                     {agent.agentName || 'Unknown Agent'}
                   </Typography>
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary"
-                    sx={{ fontSize: { xs: '0.85rem', sm: '0.875rem' } }}
-                  >
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '0.875rem' } }}>
                     {agent.agentRole || 'Agent'}
                   </Typography>
                 </Box>
               </Stack>
-              
+
               {/* Action Buttons - Only on larger screens */}
-              <Box sx={{ 
-                display: { xs: 'none', md: 'flex' }, 
-                ml: 'auto', 
-                gap: 1 
-              }}>
-                <Chip 
-                  size="small" 
-                  label={`Code: ${agent.agentCode || 'N/A'}`} 
-                  color="warning" 
+              <Box
+                sx={{
+                  display: { xs: 'none', md: 'flex' },
+                  ml: 'auto',
+                  gap: 1
+                }}
+              >
+                <Chip
+                  size="small"
+                  label={`Code: ${agent.agentCode || 'N/A'}`}
+                  color="warning"
                   variant="outlined"
                   sx={{ fontSize: '0.75rem' }}
                 />
-                
               </Box>
             </Box>
 
@@ -263,10 +259,10 @@ export default function TransactionHistoryCard({ agentId }) {
             <Grid container spacing={{ xs: 2, sm: 3 }}>
               {/* Language and Accent */}
               <Grid item xs={12} sm={6}>
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
                     height: '100%',
                     bgcolor: 'background.paper',
                     borderRadius: 1,
@@ -276,10 +272,10 @@ export default function TransactionHistoryCard({ agentId }) {
                 >
                   <Stack spacing={1.5}>
                     <Box>
-                      <Typography 
-                        variant="subtitle2" 
-                        sx={{ 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 600,
                           color: 'text.primary',
                           mb: 1,
                           display: 'flex',
@@ -292,23 +288,23 @@ export default function TransactionHistoryCard({ agentId }) {
                       </Typography>
                     </Box>
                     <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
-                      <Chip 
-                        size="small" 
-                        label={agent.agentLanguage || 'N/A'} 
-                        color="primary" 
+                      <Chip
+                        size="small"
+                        label={agent.agentLanguage || 'N/A'}
+                        color="primary"
                         variant="filled"
-                        sx={{ 
+                        sx={{
                           fontWeight: 500,
                           minWidth: 80,
                           justifyContent: 'center'
                         }}
                       />
-                      <Chip 
-                        size="small" 
-                        label={agent.agentAccent || 'N/A'} 
-                        color="secondary" 
+                      <Chip
+                        size="small"
+                        label={agent.agentAccent || 'N/A'}
+                        color="secondary"
                         variant="filled"
-                        sx={{ 
+                        sx={{
                           fontWeight: 500,
                           minWidth: 80,
                           justifyContent: 'center'
@@ -321,10 +317,10 @@ export default function TransactionHistoryCard({ agentId }) {
 
               {/* Plan and Usage */}
               <Grid item xs={12} sm={6}>
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
                     height: '100%',
                     bgcolor: 'background.paper',
                     borderRadius: 1,
@@ -334,10 +330,10 @@ export default function TransactionHistoryCard({ agentId }) {
                 >
                   <Stack spacing={1.5}>
                     <Box>
-                      <Typography 
-                        variant="subtitle2" 
-                        sx={{ 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 600,
                           color: 'text.primary',
                           mb: 1,
                           display: 'flex',
@@ -350,41 +346,41 @@ export default function TransactionHistoryCard({ agentId }) {
                       </Typography>
                     </Box>
                     <Stack spacing={2}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',gap:'5px' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '5px' }}>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                           Plan Type
                         </Typography>
-                        <Chip 
-                          size="small" 
-                          label={(agent.agentPlan || 'N/A').toUpperCase()} 
-                          color="info" 
+                        <Chip
+                          size="small"
+                          label={(agent.agentPlan || 'N/A').toUpperCase()}
+                          color="info"
                           variant="outlined"
-                          sx={{ 
+                          sx={{
                             fontWeight: 600,
                             fontSize: '0.75rem',
                             px: 1
                           }}
                         />
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',gap:'5px' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '5px' }}>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                           Minutes Left
                         </Typography>
                         <Box sx={{ textAlign: 'right' }}>
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
-                              fontWeight: 700, 
-                              color: (agent.mins_left < 100 && agent.mins_left !== null) ? 'error.main' : 'success.main',
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 700,
+                              color: agent.mins_left < 100 && agent.mins_left !== null ? 'error.main' : 'success.main',
                               lineHeight: 1
                             }}
                           >
                             {formatMinutes(agent.mins_left)}
                           </Typography>
                           {agent.planMinutes && (
-                            <Typography 
-                              variant="caption" 
-                              sx={{ 
+                            <Typography
+                              variant="caption"
+                              sx={{
                                 color: 'text.secondary',
                                 fontSize: '0.7rem'
                               }}
@@ -401,10 +397,10 @@ export default function TransactionHistoryCard({ agentId }) {
 
               {/* Status and Activity */}
               <Grid item xs={12} md={6}>
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
                     height: '100%',
                     bgcolor: 'background.paper',
                     borderRadius: 1,
@@ -414,10 +410,10 @@ export default function TransactionHistoryCard({ agentId }) {
                 >
                   <Stack spacing={1.5}>
                     <Box>
-                      <Typography 
-                        variant="subtitle2" 
-                        sx={{ 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 600,
                           color: 'text.primary',
                           mb: 1,
                           display: 'flex',
@@ -430,15 +426,15 @@ export default function TransactionHistoryCard({ agentId }) {
                       </Typography>
                     </Box>
                     <Stack spacing={2}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap:'5px', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '5px', alignItems: 'center' }}>
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                           Agent Status
                         </Typography>
-                        <Chip 
-                          size="medium" 
-                          label={agent.agentStatus ? 'Active' : 'Inactive'} 
+                        <Chip
+                          size="medium"
+                          label={agent.agentStatus ? 'Active' : 'Inactive'}
                           color={getStatusColor(agent.agentStatus)}
-                          sx={{ 
+                          sx={{
                             fontWeight: 600,
                             px: 1.5,
                             '& .MuiChip-label': {
@@ -451,10 +447,10 @@ export default function TransactionHistoryCard({ agentId }) {
                         <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
                           Total Calls
                         </Typography>
-                        <Typography 
-                          variant="h5" 
-                          sx={{ 
-                            fontWeight: 700, 
+                        <Typography
+                          variant="h5"
+                          sx={{
+                            fontWeight: 700,
                             color: 'primary.main',
                             lineHeight: 1
                           }}
@@ -474,10 +470,10 @@ export default function TransactionHistoryCard({ agentId }) {
 
               {/* Technical Details */}
               <Grid item xs={12} md={6}>
-                <Paper 
-                  elevation={0} 
-                  sx={{ 
-                    p: 2, 
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
                     height: '100%',
                     bgcolor: 'background.paper',
                     borderRadius: 1,
@@ -487,10 +483,10 @@ export default function TransactionHistoryCard({ agentId }) {
                 >
                   <Stack spacing={1.5}>
                     <Box>
-                      <Typography 
-                        variant="subtitle2" 
-                        sx={{ 
-                          fontWeight: 600, 
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 600,
                           color: 'text.primary',
                           mb: 1,
                           display: 'flex',
@@ -504,10 +500,10 @@ export default function TransactionHistoryCard({ agentId }) {
                     </Box>
                     <Grid container spacing={1}>
                       <Grid item xs={6}>
-                        <Typography 
-                          variant="caption" 
-                          color="text.secondary" 
-                          sx={{ 
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
                             display: 'block',
                             fontSize: '0.75rem',
                             mb: 0.5
@@ -515,9 +511,9 @@ export default function TransactionHistoryCard({ agentId }) {
                         >
                           Voice Model
                         </Typography>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
+                        <Typography
+                          variant="body2"
+                          sx={{
                             fontWeight: 500,
                             color: 'text.primary',
                             fontSize: '0.85rem'
@@ -527,10 +523,10 @@ export default function TransactionHistoryCard({ agentId }) {
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography 
-                          variant="caption" 
-                          color="text.secondary" 
-                          sx={{ 
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
                             display: 'block',
                             fontSize: '0.75rem',
                             mb: 0.5
@@ -538,19 +534,19 @@ export default function TransactionHistoryCard({ agentId }) {
                         >
                           Gender
                         </Typography>
-                        <Chip 
-                          size="small" 
-                          label={agent.agentGender || 'N/A'} 
-                          color={agent.agentGender === 'female' ? 'secondary' : 'primary'} 
+                        <Chip
+                          size="small"
+                          label={agent.agentGender || 'N/A'}
+                          color={agent.agentGender === 'female' ? 'secondary' : 'primary'}
                           variant="outlined"
                           sx={{ fontSize: '0.7rem' }}
                         />
                       </Grid>
                       <Grid item xs={6}>
-                        <Typography 
-                          variant="caption" 
-                          color="text.secondary" 
-                          sx={{ 
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
                             display: 'block',
                             fontSize: '0.75rem',
                             mb: 0.5
@@ -558,9 +554,9 @@ export default function TransactionHistoryCard({ agentId }) {
                         >
                           Created
                         </Typography>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
+                        <Typography
+                          variant="body2"
+                          sx={{
                             fontWeight: 500,
                             color: 'text.primary',
                             fontSize: '0.85rem'
@@ -569,7 +565,6 @@ export default function TransactionHistoryCard({ agentId }) {
                           {agent.createdAt ? new Date(agent.createdAt).toLocaleDateString() : 'N/A'}
                         </Typography>
                       </Grid>
-                     
                     </Grid>
                   </Stack>
                 </Paper>
@@ -577,25 +572,22 @@ export default function TransactionHistoryCard({ agentId }) {
             </Grid>
 
             {/* Mobile Action Row */}
-            <Box sx={{ 
-              display: { xs: 'flex', md: 'none' }, 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              mt: 2, 
-              pt: 2,
-              borderTop: '1px solid',
-              borderColor: 'divider'
-            }}>
-              <Chip 
-                size="small" 
-                label={`Code: ${agent.agentCode || 'N/A'}`} 
-                color="warning" 
-                variant="outlined"
-              />
-              <Chip 
-                size="small" 
-                label={agent.knowledgeBaseStatus ? 'KB Active' : 'No KB'} 
-                color={agent.knowledgeBaseStatus ? 'success' : 'default'} 
+            <Box
+              sx={{
+                display: { xs: 'flex', md: 'none' },
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mt: 2,
+                pt: 2,
+                borderTop: '1px solid',
+                borderColor: 'divider'
+              }}
+            >
+              <Chip size="small" label={`Code: ${agent.agentCode || 'N/A'}`} color="warning" variant="outlined" />
+              <Chip
+                size="small"
+                label={agent.knowledgeBaseStatus ? 'KB Active' : 'No KB'}
+                color={agent.knowledgeBaseStatus ? 'success' : 'default'}
                 variant="outlined"
               />
             </Box>
@@ -618,9 +610,8 @@ export default function TransactionHistoryCard({ agentId }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {calldata?.length > 0 ? calldata
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
+              {calldata?.length > 0 ? (
+                calldata.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow hover key={index}>
                     <TableCell>{new Date(row.start_timestamp).toLocaleString()}</TableCell>
                     <TableCell align="center">{formatDuration(row?.duration_ms)} min</TableCell>
@@ -635,7 +626,7 @@ export default function TransactionHistoryCard({ agentId }) {
                       <Chip size="small" color="info" label={row?.custom_analysis_data?.lead_type || 'N/A'} />
                     </TableCell>
                     <TableCell align="center">
-                      <Chip size="small" color={getColor(row?.user_sentiment)} label={row?.user_sentiment || "N/A"} />
+                      <Chip size="small" color={getColor(row?.user_sentiment)} label={row?.user_sentiment || 'N/A'} />
                     </TableCell>
                     <TableCell align="center">
                       <Chip size="small" color="primary" label={row?.call_type || 'N/A'} />
@@ -643,24 +634,34 @@ export default function TransactionHistoryCard({ agentId }) {
                     <TableCell>
                       <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
                         <Tooltip title="View Transcription">
-                          <IconButton color="secondary" onClick={() => handleViewCallHistory(row)}><Eye /></IconButton>
+                          <IconButton color="secondary" onClick={() => handleViewCallHistory(row)}>
+                            <Eye />
+                          </IconButton>
                         </Tooltip>
-                        <Tooltip title={playingCallId === row.call_id ? "Pause Recording" : "Play Recording"}>
+                        <Tooltip title={playingCallId === row.call_id ? 'Pause Recording' : 'Play Recording'}>
                           <IconButton color="primary" onClick={() => handlePlayPauseRecording(row.recording_url, row.call_id)}>
-                            {playingCallId === row.call_id
-                              ? <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                              : <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M8 5v14l11-7z"/></svg>
-                            }
+                            {playingCallId === row.call_id ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                              </svg>
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            )}
                           </IconButton>
                         </Tooltip>
                       </Stack>
                     </TableCell>
                   </TableRow>
                 ))
-                : <TableRow>
-                    <TableCell colSpan={7} align="center">No data available</TableCell>
-                  </TableRow>
-              }
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    No data available
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -672,21 +673,21 @@ export default function TransactionHistoryCard({ agentId }) {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[2,5,10,25,50]}
+          rowsPerPageOptions={[2, 5, 10, 25, 50]}
         />
 
-   {((page + 1) * rowsPerPage >= calldata.length && loadMoreAvailable) && (
-  <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-    {loadMoreError && (
-      <Typography color="error" sx={{ mr: 2 }}>
-        {loadMoreError}
-      </Typography>
-    )}
-    <Button variant="contained" onClick={loadMore} disabled={loading}>
-      {loading ? <CircularProgress size={20} sx={{ color: 'white' }}/> : "Load More"}
-    </Button>
-  </Box>
-)}
+        {(page + 1) * rowsPerPage >= calldata.length && loadMoreAvailable && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+            {loadMoreError && (
+              <Typography color="error" sx={{ mr: 2 }}>
+                {loadMoreError}
+              </Typography>
+            )}
+            <Button variant="contained" onClick={loadMore} disabled={loading}>
+              {loading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'Load More'}
+            </Button>
+          </Box>
+        )}
       </MainCard>
 
       <ChatModal open={open} onClose={() => setOpen(false)} transcription={Transcription} />

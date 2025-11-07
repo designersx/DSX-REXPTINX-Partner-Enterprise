@@ -20,7 +20,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert, { AlertColor } from '@mui/material/Alert';
 import BusinessIcon from '@mui/icons-material/Business';
 import AlertCustomerDelete from './AlertCustomerDelete';
-import { FormControl, InputLabel, Select } from '@mui/material';
+import { FormControl, InputLabel, Select, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 // project-imports
 import IconButton from 'components/@extended/IconButton';
 import MainCard from 'components/MainCard';
@@ -41,6 +41,7 @@ import AbcIcon from '@mui/icons-material/Abc';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 // assets
 import { Add, Edit, Eye, Trash, UserEdit } from '@wandersonalwes/iconsax-react';
+import { Grid2, TableDocument } from '@wandersonalwes/iconsax-react';
 
 import { useEffect, useRef, useState } from 'react';
 import CallDialog from 'components/CallDialog';
@@ -116,7 +117,7 @@ const agentdataa = [
     description: 'Handles customer queries',
     userId: 'RXQ1NM1759328246',
     createdAt: '2025-10-04T12:35:23.000Z'
-  },
+  }
   // {
   //   id: 'agent_4201k6vv7481e6gsc6v19ggazwzj',
   //   businessname: 'Zouma Consulting Services',
@@ -137,7 +138,7 @@ const agentdataa = [
 ];
 export default function TransactionHistoryCard({ type }) {
   // "partner" 'Regional' "Enterprise"
-  console.log(type, "HELELO")
+  console.log(type, 'HELELO');
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -157,6 +158,7 @@ export default function TransactionHistoryCard({ type }) {
   const [selectAgent, setSelectAgent] = useState(null);
   const [conversation, setConversation] = useState(null);
   const [error, setError] = useState(null);
+  const [mode, setMode] = useState('grid');
   // const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -192,9 +194,7 @@ export default function TransactionHistoryCard({ type }) {
 
   const handleAgentSubmit = async (agentData) => {
     await loadAgents();
-    // Handle successful agent creation - you might want to refresh your agents list here
     setIsModalOpen(false);
-    // Optionally refresh the table data or show a success message
   };
 
   const handleModalClose = (event, reason) => {
@@ -420,17 +420,17 @@ export default function TransactionHistoryCard({ type }) {
   const normalizedFilter = planFilter.toLowerCase();
   // merge both sources into one array first
   const mergedAgents = [
-    ...agents.map(agent => ({ ...agent, source: 'filtered' })),
-    ...userFilteredAgentdataa.map(agent => ({ ...agent, source: 'elevenLabs' }))
+    ...agents.map((agent) => ({ ...agent, source: 'filtered' })),
+    ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
   ];
   // now filter based on plan type
-  const filteredAgents = mergedAgents.filter(agent => {
+  const filteredAgents = mergedAgents.filter((agent) => {
     const plan = agent.agentPlan?.toLowerCase() || agent.plantype?.toLowerCase() || '';
 
     switch (normalizedFilter) {
       case 'all':
         return true;
-      case 'my':  // "My Own Agents"
+      case 'my': // "My Own Agents"
         return plan === 'partner';
       case 'regional':
         return plan === 'regional';
@@ -444,6 +444,14 @@ export default function TransactionHistoryCard({ type }) {
   filteredAgents.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   console.log(filteredAgents, 'filteredAgents');
+  let displayedAgents;
+  if (planFilter === 'Regional') {
+    displayedAgents = userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }));
+  } else {
+    displayedAgents = filteredAgents;
+  }
+  displayedAgents.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+  const displayedSlice = displayedAgents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   //LOCK
   useEffect(() => {
     const client = new RetellWebClient();
@@ -465,6 +473,10 @@ export default function TransactionHistoryCard({ type }) {
   useEffect(() => {
     loadAgents();
   }, []);
+  const viewModes = [
+    { value: 'grid', icons: Grid2 },
+    { value: 'table', icons: TableDocument }
+  ];
   return (
     <>
       {isModalOpen ? (
@@ -476,171 +488,171 @@ export default function TransactionHistoryCard({ type }) {
           secondary={
             <>
               <Stack direction="row" spacing={2} alignItems="center">
-                <FormControl sx={{ minWidth: 200, mb: 2 }}>
-                  <InputLabel id="agent-plan-filter">Filter by Agent Type</InputLabel>
-                  <Select labelId="agent-plan-filter" value={planFilter} onChange={(e) => setPlanFilter(e.target.value)}>
-                    <MenuItem value="all">All</MenuItem>
-                    {/* <MenuItem value="smb">SMB</MenuItem> */}
-                    <MenuItem value="enterprise">Enterprise</MenuItem>
-                    {userId == "RXQ1NM1759328246" ? <MenuItem value="regional">Regional</MenuItem> : null
-                    }
-                    <MenuItem value="my">My  Agents</MenuItem>
-
-                  </Select>
-                </FormControl>
-
                 <Button variant="contained" startIcon={<Add />} size="large" onClick={handleCreateAgentClick}>
                   <Link href="#" variant="h5" color="white" component="button" sx={{ textDecoration: 'none' }}>
                     Create Agent
                   </Link>
                 </Button>
+                <Box sx={{ p: 1.25, border: '1px solid', borderRadius: 1, borderColor: 'divider' }}>
+                  <RadioGroup row value={mode} onChange={(e) => setMode(e.target.value)}>
+                    {viewModes.map((item, index) => {
+                      const IconComponent = item.icons;
+                      return (
+                        <FormControlLabel
+                          key={index}
+                          value={item.value}
+                          control={<Radio sx={{ display: 'none' }} />}
+                          label={
+                            <MainCard content={false} border={false} sx={{ ...(mode == item.value && { bgcolor: 'secondary.lighter' }) }}>
+                              <Stack direction="row" sx={{ gap: 1, width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+                                <IconComponent size="20" />
+                              </Stack>
+                            </MainCard>
+                          }
+                          sx={{ m: 0 }}
+                        />
+                      );
+                    })}
+                  </RadioGroup>
+                </Box>
               </Stack>
             </>
           }
         >
-          <Grid
-            container
-            spacing={5}
-            sx={{
-              alignItems: 'stretch',
-              display: 'flex',
-              p: 3
-            }}
-          >
-            {loading ? (
-              <Loader />
-            ) : [
-              ...filteredAgents.map((agent) => ({ ...agent, source: 'filtered' })),
-              ...userFilteredAgentdataa.map((agent) => ({ ...agent, source: 'elevenLabs' }))
-            ].length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  <Typography>No agents found.</Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              [
-                ...(planFilter === 'Regional'
-                  ? userFilteredAgentdataa.map((agent) => ({ ...agent }))
-                  : filteredAgents.map((agent) => ({ ...agent })))
-              ]
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((agent, index) => (
+          {loading ? (
+            <Loader />
+          ) : displayedAgents.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} align="center">
+                <Typography>No agents found.</Typography>
+              </TableCell>
+            </TableRow>
+          ) : mode === 'grid' ? (
+            <Grid
+              container
+              spacing={5}
+              sx={{
+                alignItems: 'stretch',
+                display: 'flex',
+                p: 3
+              }}
+            >
+              {displayedSlice.map((agent, index) => (
+                <Grid
+                  key={`${agent.agent_id || agent.id}-${agent.source}-${index}`}
+                  size={{ xs: 12, sm: 10, lg: 4 }}
+                  style={{
+                    alignItems: 'stretch',
+                    display: 'flex',
+                    opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled
+                    pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto' // prevent clicks
+                  }}
+                >
                   <Grid
-                    key={`${agent.agent_id}-${agent.source}-${index}`} // Unique key to avoid conflicts
-                    size={{ xs: 12, sm: 10, lg: 4 }}
-                    style={{
-                      alignItems: 'stretch',
-                      display: 'flex',
-                      opacity: agent.agentStatus === 2 ? 0.6 : 1, // dim the card if disabled
-                      pointerEvents: agent.agentStatus === 2 ? 'none' : 'auto' // prevent clicks
-                    }}
+                    id="print"
+                    container
+                    spacing={2.25}
+                    style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
                   >
-                    <Grid
-                      id="print"
-                      container
-                      spacing={2.25}
-                      style={{ border: '1px solid rgb(231, 234, 238)', padding: '12px', borderRadius: '4%' }}
-                    >
-                      <Grid size={12}>
-                        <List sx={{ width: 1, p: 0 }}>
-                          <ListItem
-                            disablePadding
-                            secondaryAction={
-                              agent.source == 'filtered' ? (
-                                <>
-                                  <Tooltip title="View call history">
-                                    <IconButton
-                                      color="secondary"
-                                      onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id}`)}
-                                    >
-                                      <Eye />
-                                    </IconButton>
-                                  </Tooltip>
-                                  {/* <Tooltip title="Edit agent">
+                    <Grid size={12}>
+                      <List sx={{ width: 1, p: 0 }}>
+                        <ListItem
+                          disablePadding
+                          secondaryAction={
+                            agent.source == 'filtered' ? (
+                              <>
+                                <Tooltip title="View call history">
+                                  <IconButton
+                                    color="secondary"
+                                    onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id || agent.id}`)}
+                                  >
+                                    <Eye />
+                                  </IconButton>
+                                </Tooltip>
+                                {/* <Tooltip title="Edit agent">
                                     <IconButton color="secondary" onClick={() => router.push(`/build/agents/editAgent/${agent?.agent_id}`)}>
                                       <UserEdit />
                                     </IconButton>
                                   </Tooltip> */}
-                                </>
-                              ) : null
+                              </>
+                            ) : null
+                          }
+                        >
+                          <ListItemAvatar>
+                            <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
+                            secondary={
+                              <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
+                                <Typography sx={{ color: 'text.secondary' }}>
+                                  {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
+                                  {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
+                                </Typography>
+                              </Tooltip>
                             }
-                          >
-                            <ListItemAvatar>
-                              <Avatar alt={agent.agentName} src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`} />
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={<Typography variant="subtitle1">{agent.agentName}</Typography>}
-                              secondary={
-                                <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
-                                  <Typography sx={{ color: 'text.secondary' }}>
-                                    {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 15)}
-                                    {(agent?.businessDetails?.name || agent?.businessname || '').length > 15 ? '...' : ''}
-                                  </Typography>
-                                </Tooltip>
-                              }
-                            />
-                          </ListItem>
-                        </List>
+                          />
+                        </ListItem>
+                      </List>
+                    </Grid>
+                    <Grid size={12}>
+                      <Divider />
+                    </Grid>
+                    {agent.agentPlan == 'partner' ? (
+                      <Grid item xs={12}>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Label sx={{ fontWeight: 500, color: 'text.secondary' }}>Type:</Label>
+                          <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>My Own Agent</Typography>
+                        </Box>
                       </Grid>
-                      <Grid size={12}>
-                        <Divider />
-                      </Grid>
-                      {agent.agentPlan == 'partner' ? (
+                    ) : (
+                      <>
                         <Grid item xs={12}>
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <Label sx={{ fontWeight: 500, color: 'text.secondary' }}>Type:</Label>
-                            <Typography sx={{ fontWeight: 600, fontSize: '0.95rem' }}>My Own Agent</Typography>
-                          </Box>
+                          <Typography>Hello, {agent.agentName}</Typography>
                         </Grid>
-                      ) : (
-                        <>
-                          <Grid item xs={12}>
-                            <Typography>Hello, {agent.agentName}</Typography>
-                          </Grid>
-                        </>
-                      )}
-                      <Grid size={12}>
-                        <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 }
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <Sms size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
-                              </ListItem>
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <AbcIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentAccent}</Typography>} />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 }
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <LanguageIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
-                              </ListItem>
-                              {/* <ListItem alignItems="flex-start">
+                      </>
+                    )}
+                    <Grid size={12}>
+                      <Grid container spacing={1} direction={{ xs: 'column', md: 'row' }}>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 }
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <Sms size={18} />
+                              </ListItemIcon>
+                              <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentGender}</Typography>} />
+                            </ListItem>
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <AbcIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.agentAccent}</Typography>} />
+                            </ListItem>
+                          </List>
+                        </Grid>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 }
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <LanguageIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent.agentLanguage}</Typography>} />
+                            </ListItem>
+                            {/* <ListItem alignItems="flex-start">
                                 <ListItemIcon>
                                   <Link2 size={18} />
                                 </ListItemIcon>
@@ -652,132 +664,209 @@ export default function TransactionHistoryCard({ type }) {
                                   }
                                 />
                               </ListItem> */}
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <AccessTimeIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Typography sx={{ color: 'text.secondary' }}>
-                                      {' '}
-                                      {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
-                                    </Typography>
-                                  }
-                                />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 },
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <BusinessIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Typography sx={{ color: 'text.secondary' }}>
-                                      {agent?.businessDetails?.BusinessType || agent?.businessType}
-                                    </Typography>
-                                  }
-                                />
-                              </ListItem>
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <Link2 size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                                      {agent?.agentPlan}
-                                    </Typography>
-                                  }
-                                />
-                              </ListItem>
-                            </List>
-                          </Grid>
-                          <Grid size={6}>
-                            <List
-                              sx={{
-                                p: 0,
-                                overflow: 'hidden',
-                                '& .MuiListItem-root': { px: 0, py: 0.5 },
-                                '& .MuiListItemIcon-root': { minWidth: 28 }
-                              }}
-                            >
-                              <ListItem alignItems="flex-start">
-                                <ListItemIcon style={{ marginTop: '3px' }}>
-                                  <StoreIcon size={18} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={
-                                    <Typography sx={{ color: 'text.secondary' }}>
-                                      {agent.businessDetails?.name || agent?.businessname}
-                                    </Typography>
-                                  }
-                                />
-                              </ListItem>
-                              {/* <ListItem alignItems="flex-start">
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <AccessTimeIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {' '}
+                                    {agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min
+                                  </Typography>
+                                }
+                              />
+                            </ListItem>
+                          </List>
+                        </Grid>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 },
+                              justifyContent: 'center',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <BusinessIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {agent?.businessDetails?.BusinessType || agent?.businessType}
+                                  </Typography>
+                                }
+                              />
+                            </ListItem>
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <Link2 size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                                    {agent?.agentPlan}
+                                  </Typography>
+                                }
+                              />
+                            </ListItem>
+                          </List>
+                        </Grid>
+                        <Grid size={6}>
+                          <List
+                            sx={{
+                              p: 0,
+                              overflow: 'hidden',
+                              '& .MuiListItem-root': { px: 0, py: 0.5 },
+                              '& .MuiListItemIcon-root': { minWidth: 28 }
+                            }}
+                          >
+                            <ListItem alignItems="flex-start">
+                              <ListItemIcon style={{ marginTop: '3px' }}>
+                                <StoreIcon size={18} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={
+                                  <Typography sx={{ color: 'text.secondary' }}>
+                                    {agent.businessDetails?.name || agent?.businessname}
+                                  </Typography>
+                                }
+                              />
+                            </ListItem>
+                            {/* <ListItem alignItems="flex-start">
                                 <ListItemIcon style={{ marginTop: '3px' }}>
                                   <AccessTimeIcon size={18} />
                                 </ListItemIcon>
                                 <ListItemText primary={<Typography sx={{ color: 'text.secondary' }}>{agent?.mins_left}</Typography>} />
                               </ListItem> */}
-                            </List>
-                          </Grid>
+                          </List>
                         </Grid>
                       </Grid>
-                      <Grid size={12}>
-                        <Box>
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0 }} component="ul"></Box>
-                        </Box>
-                      </Grid>
-                      <Stack
-                        direction="row"
-                        className="hideforPDf"
-                        sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
-                      >
-                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                          Updated {formatTimeAgo(agent?.createdAt)}
-                        </Typography>
-
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="large"
-                          startIcon={<CallIcon />}
-                          sx={{
-                            borderRadius: 2,
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            px: 3,
-                            boxShadow: 2
-                          }}
-                          onClick={() =>
-                            agent.source === 'filtered'
-                              ? handleOpenDialog({ ...agent, source: agent.source })
-                              : handleOpenDialog({ ...agent, source: agent.source })
-                          }
-                        >
-                          Test Agent
-                        </Button>
-                      </Stack>
                     </Grid>
+
+                    <Stack
+                      direction="row"
+                      className="hideforPDf"
+                      sx={{ gap: 1, alignItems: 'center', justifyContent: 'space-between', mt: 'auto', mb: 0, pt: 2.25, width: '100%' }}
+                    >
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        Updated {formatTimeAgo(agent?.createdAt)}
+                      </Typography>
+
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        startIcon={<CallIcon />}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          px: 3,
+                          boxShadow: 2
+                        }}
+                        onClick={() =>
+                          agent.source === 'filtered'
+                            ? handleOpenDialog({ ...agent, source: agent.source })
+                            : handleOpenDialog({ ...agent, source: agent.source })
+                        }
+                      >
+                        Test Agent
+                      </Button>
+                    </Stack>
                   </Grid>
-                ))
-            )}
-          </Grid>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <TableContainer sx={{ p: 3 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Agent</TableCell>
+                    <TableCell>Business</TableCell>
+                    <TableCell>Plan</TableCell>
+                    <TableCell>Minutes Left</TableCell>
+                    <TableCell>Gender</TableCell>
+                    <TableCell>Language</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {displayedSlice.map((agent, index) => (
+                    <TableRow
+                      key={`${agent.agent_id || agent.id}-${agent.source}-${index}`}
+                      hover
+                      sx={{
+                        opacity: agent.agentStatus === 2 ? 0.6 : 1,
+                        ...(agent.agentStatus === 2 && { pointerEvents: 'none' })
+                      }}
+                    >
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <Avatar
+                            alt={agent.agentName}
+                            src={agent.avatar?.startsWith('/') ? agent.avatar : `/${agent.avatar}`}
+                            sx={{ width: 40, height: 40 }}
+                          />
+                          <Typography variant="subtitle1">{agent.agentName}</Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip title={agent?.businessDetails?.name || agent?.businessname || ''}>
+                          <Typography noWrap sx={{ maxWidth: 150 }}>
+                            {(agent?.businessDetails?.name || agent?.businessname || '').slice(0, 20)}
+                            {(agent?.businessDetails?.name || agent?.businessname || '').length > 20 ? '...' : ''}
+                          </Typography>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600}>
+                          {agent?.agentPlan || agent?.plantype}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{agent?.mins_left ? Math.floor(agent.mins_left / 60) : 0} min</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{agent?.agentGender}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{agent?.agentLanguage}</Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Stack direction="row" spacing={1}>
+                          {agent.source === 'filtered' && (
+                            <Tooltip title="View call history">
+                              <IconButton
+                                color="secondary"
+                                size="small"
+                                onClick={() => router.push(`/build/agents/agentdetails/${agent?.agent_id || agent.id}`)}
+                              >
+                                <Eye />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          <Tooltip title="Test Agent">
+                            <IconButton color="primary" size="small" onClick={() => handleOpenDialog({ ...agent, source: agent.source })}>
+                              <CallIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
           <TablePagination
             component="div"
-            count={[...filteredAgents, ...userFilteredAgentdataa].length} // Total count of both agent sets
+            count={displayedAgents.length}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
